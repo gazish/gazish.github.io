@@ -232,8 +232,10 @@ export function hBarChart(container, opts) {
       const lab = svg('text', { x: labelW, y: yy + rowH / 2 + 2, 'text-anchor': 'end', class: 'bar-label' }, s);
       lab.textContent = r.label;
       const p = svg('path', { d: hBarPath(x(0), x(r.value), yy + (rowH - bar) / 2, bar), class: 'bar ' + (r.cls || 'fill-accent') }, s);
-      const vx = r.value >= 0 ? x(r.value) + 6 : x(r.value) - 6;
-      const vt = svg('text', { x: vx, y: yy + rowH / 2 + 2, 'text-anchor': r.value >= 0 ? 'start' : 'end', class: 'bar-value' }, s);
+      // with negative values, all value labels sit in a column on the right so they never hit the row labels
+      const right = lo < 0;
+      const vx = right ? W - valueW + 8 : r.value >= 0 ? x(r.value) + 6 : x(r.value) - 6;
+      const vt = svg('text', { x: vx, y: yy + rowH / 2 + 2, 'text-anchor': right || r.value >= 0 ? 'start' : 'end', class: 'bar-value' }, s);
       vt.textContent = opts.format(r.value);
       const hit = svg('rect', { x: 0, y: yy, width: W, height: rowH, fill: 'transparent' }, s);
       hit.addEventListener('pointermove', (e) => {

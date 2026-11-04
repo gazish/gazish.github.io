@@ -140,7 +140,7 @@ function renderBridge() {
     { label: 'Average order value', value: b.change.aov, note: `£${b.P1.aov.toFixed(0)} → £${b.P2.aov.toFixed(0)}` },
     { label: 'Sales, identified', value: b.change.gross_sales, cls: 'c-ink', note: `${fmt.gbpCompact(b.P1.gross_sales)} → ${fmt.gbpCompact(b.P2.gross_sales)}` },
   ];
-  const lim = Math.max(0.03, ...rows.map((r) => Math.abs(r.value))) * 1.7;
+  const lim = Math.max(0.03, ...rows.map((r) => Math.abs(r.value))) * 1.1;
   hBarChart(sh.chart, {
     rows: rows.map((r) => ({ ...r, cls: r.cls || 'c-accent' })),
     format: (v) => fmt.signedPct(v), min: -lim, max: lim, labelWidth: 150, valueWidth: 60, rowHeight: 34,
