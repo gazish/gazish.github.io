@@ -32,4 +32,4 @@ SELECT
           / nullif(sum(net_sales) FILTER (WHERE period = 'P1'), 0) - 1, 4) AS growth
 FROM n
 GROUP BY country
-ORDER BY net_sales_p2 DESC NULLS LAST;
+ORDER BY net_sales_p2 DESC NULLS LAST, country;

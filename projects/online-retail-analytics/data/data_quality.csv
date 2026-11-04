@@ -1,9 +1,9 @@
 step,row_count,line_value
 raw_rows,1067371,
 exact_duplicates_removed,34335,
+sale,1003357,19643861.64
+cancellation,17915,-716462.57
 non_merchandise,5725,68182.42
 stock_adjustment,3391,0.0
-accounting_adjustment,76,-140047.79
-sale,1003357,19643861.64
 zero_price,2572,0.0
-cancellation,17915,-716462.57
+accounting_adjustment,76,-140047.79

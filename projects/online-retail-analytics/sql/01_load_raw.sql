@@ -10,7 +10,7 @@ SELECT
     "Description"                    AS description,
     "Quantity"                       AS quantity,
     "InvoiceDate"                    AS invoice_ts,
-    "Price"                          AS unit_price,      -- GBP per unit
+    "Price"                          AS unit_price,      -- GBP per unit, exact decimal so sums are reproducible
     CAST("Customer ID" AS INTEGER)   AS customer_id,     -- NULL for about 23% of lines
     "Country"                        AS country
 FROM read_csv(
@@ -18,7 +18,7 @@ FROM read_csv(
     header = true,
     columns = {
         'Invoice': 'VARCHAR', 'StockCode': 'VARCHAR', 'Description': 'VARCHAR',
-        'Quantity': 'INTEGER', 'InvoiceDate': 'TIMESTAMP', 'Price': 'DOUBLE',
+        'Quantity': 'INTEGER', 'InvoiceDate': 'TIMESTAMP', 'Price': 'DECIMAL(18,3)',
         'Customer ID': 'DOUBLE', 'Country': 'VARCHAR'
     }
 );

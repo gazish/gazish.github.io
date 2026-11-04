@@ -355,6 +355,7 @@ main { display: block; }
 
 /* ---------- case study ---------- */
 .case-layout { display: grid; gap: 2.5rem; }
+.case-layout > * { min-width: 0; }
 @media (min-width: 64em) { .case-layout { grid-template-columns: minmax(0, 1fr) 18rem; gap: 4rem; } .case-aside { order: 2; } }
 .case-aside .facts { position: sticky; top: 1.5rem; }
 .case-body h2 { margin-top: 2.5rem; padding-top: 1.75rem; border-top: 1px solid var(--line); font-size: clamp(1.3rem, 1vw + 1rem, 1.65rem); }

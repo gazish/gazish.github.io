@@ -131,10 +131,11 @@ def revenue_bridge(con) -> list[dict]:
             x = d[d.period == per]
             out[per] = {
                 "customers": int(x.customer_id.nunique()),
-                "orders_per_customer": float(x.orders.sum() / x.customer_id.nunique()),
-                "aov": float(x.gross_sales.sum() / x.orders.sum()),
-                "gross_sales": float(x.gross_sales.sum()),
+                "orders": int(x.orders.sum()),
+                "gross_sales": round(float(x.gross_sales.sum()), 2),
             }
+            out[per]["orders_per_customer"] = out[per]["orders"] / out[per]["customers"]
+            out[per]["aov"] = out[per]["gross_sales"] / out[per]["orders"]
         a, b = out["P1"], out["P2"]
         out["change"] = {
             "customers": b["customers"] / a["customers"] - 1,
@@ -145,6 +146,8 @@ def revenue_bridge(con) -> list[dict]:
         prod = (1 + out["change"]["customers"]) * (1 + out["change"]["orders_per_customer"]) * (1 + out["change"]["aov"])
         check(math.isclose(prod, 1 + out["change"]["gross_sales"], rel_tol=1e-9),
               f"revenue bridge closes for {market}")
+        for part in ("P1", "P2", "change"):  # round for stable, readable output
+            out[part] = {k: (round(v, 6) if isinstance(v, float) else v) for k, v in out[part].items()}
         rows.append(out)
     return rows
 

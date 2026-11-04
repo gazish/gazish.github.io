@@ -93,7 +93,7 @@ Other decisions:
 | Cancellation rate | Cancelled value / gross sales |
 | Sales without customer ID | Share of gross sales on lines with no customer ID |
 | Cohort retention | Share of customers first seen in month m who order in month m + k |
-| RFM segment | Recency, frequency and monetary scores (1 to 5) on P2, snapshot 1 Dec 2011. Recency and monetary are quintiles; frequency uses fixed bins (1, 2, 3 to 4, 5 to 9, 10+ orders) because a third of customers have exactly one order and quintiles would split identical customers |
+| RFM segment | Recency, frequency and monetary scores (1 to 5) on P2, snapshot 1 Dec 2011. Recency and monetary are quintile scores from `cume_dist()`, so customers with equal values always get the same score. Frequency uses fixed bins (1, 2, 3 to 4, 5 to 9, 10+ orders) because 36% of customers have exactly one order and quintiles could not separate them |
 
 ## Checks
 
@@ -107,6 +107,9 @@ Other decisions:
 - P2 net sales, orders, active customers, repeat rate and retention computed
   again in pandas, independently of the SQL, match the SQL results
 - The revenue bridge (customers x orders per customer x AOV) closes exactly
+
+Prices are read as exact decimals and every output table has a deterministic
+sort order, so running the pipeline twice gives byte-identical files.
 
 ## Findings (P2 = Dec 2010 to Nov 2011, compared with P1)
 
@@ -123,8 +126,8 @@ Other decisions:
    2010, about 20% ordered again the month after their first purchase and
    about 18% did so 12 months later.
 5. **Sales are concentrated.** The top 10% of customers brought 60.0% of P2
-   net sales and the top 1% brought 30.2%. The RFM "Champions" (442 customers,
-   10% of the base) brought 43.0%; with "Loyal" customers, 22% of customers
+   net sales and the top 1% brought 30.2%. The RFM "Champions" (446 customers,
+   10% of the base) brought 43.4%; with "Loyal" customers, 22% of customers
    brought 69.0%.
 6. **A clear reactivation list.** 371 "At risk" customers (median four orders,
    median 116 days since the last one) brought GBP 555k (7.0% of P2 net sales).

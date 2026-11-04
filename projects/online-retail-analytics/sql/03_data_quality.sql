@@ -13,7 +13,10 @@ SELECT 'exact_duplicates_removed', raw_rows - deduped_rows, NULL FROM totals
 UNION ALL
 SELECT line_type, count(*), round(sum(line_value), 2)
 FROM lines
-GROUP BY line_type;
+GROUP BY line_type
+ORDER BY
+    CASE step WHEN 'raw_rows' THEN 0 WHEN 'exact_duplicates_removed' THEN 1 ELSE 2 END,
+    row_count DESC;
 
 -- Customer ID coverage on merchandise sales lines.
 CREATE OR REPLACE TABLE customer_id_coverage AS

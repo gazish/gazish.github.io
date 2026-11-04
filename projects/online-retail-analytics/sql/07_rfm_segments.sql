@@ -4,9 +4,11 @@
 --   recency_days  days from the customer's last purchase to the snapshot date
 --   frequency     distinct orders in P2
 --   monetary      net sales in P2 (sales minus that customer's cancellations), GBP
--- Scores 1 to 5 (5 = best). Recency and monetary use quintiles (NTILE).
--- Frequency uses fixed bins because 1 in 3 customers has exactly one order,
--- and quintiles would split identical customers into different scores.
+-- Scores 1 to 5 (5 = best). Recency and monetary use quintile scores from
+-- cume_dist(), so customers with the same value always get the same score
+-- (NTILE would split ties arbitrarily and change between runs).
+-- Frequency uses fixed bins because so many customers have one or two orders
+-- that quintiles would not separate them.
 
 CREATE OR REPLACE TABLE rfm AS
 WITH p2_sales AS (
@@ -36,7 +38,7 @@ base AS (
 scored AS (
     SELECT
         *,
-        6 - ntile(5) OVER (ORDER BY recency_days)          AS r_score,   -- most recent = 5
+        ceil(5 * cume_dist() OVER (ORDER BY recency_days DESC))::INT   AS r_score,   -- most recent = 5
         CASE
             WHEN frequency = 1 THEN 1
             WHEN frequency = 2 THEN 2
@@ -44,7 +46,7 @@ scored AS (
             WHEN frequency BETWEEN 5 AND 9 THEN 4
             ELSE 5
         END                                                AS f_score,
-        ntile(5) OVER (ORDER BY monetary)                  AS m_score
+        ceil(5 * cume_dist() OVER (ORDER BY monetary))::INT           AS m_score
     FROM base
 )
 SELECT
