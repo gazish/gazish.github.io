@@ -343,7 +343,7 @@ main { display: block; }
 .skill-groups { display: grid; gap: 1rem; }
 @media (min-width: 52em) { .skill-groups { grid-template-columns: repeat(2, 1fr); } }
 .skill-group { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.25rem; }
-.skill-group h3 { font-size: 1.05rem; }
+.skill-group h2, .skill-group h3 { font-size: 1.05rem; letter-spacing: -0.01em; }
 .skill-list { list-style: none; margin: 0; padding: 0; }
 .skill-list li { display: grid; grid-template-columns: 1fr auto; gap: 0.25rem 0.75rem; align-items: start; padding: 0.7rem 0; border-top: 1px solid var(--line); margin: 0; }
 .skill-list li:first-child { border-top: 0; padding-top: 0.2rem; }
