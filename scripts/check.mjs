@@ -31,7 +31,7 @@ for (const f of files) {
   const text = readFileSync(f, 'utf8');
   const lines = text.split('\n');
   lines.forEach((line, i) => {
-    if (/[—–]/.test(line)) errors.push(`${rel(f)}:${i + 1}: em or en dash`);
+    if (/[\u2014\u2013]/.test(line)) errors.push(`${rel(f)}:${i + 1}: em or en dash`);
     if (rel(f) === 'scripts/check.mjs') return;
     const lower = line.toLowerCase();
     for (const b of BANNED) {

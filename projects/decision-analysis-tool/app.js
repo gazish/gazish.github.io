@@ -515,7 +515,7 @@ function renderMc() {
   const host2 = $('fig-intervals');
   const sh2 = figureShell(host2, { id: 'intervals', title: 'Rank intervals', subtitle: (showExact
     ? `Thin line: exact best- and worst-case rank from the table values alone, with the weights fixed (every score can move by up to ±${halfWidth.toFixed(1)} points). `
-    : '') + 'Thick bar: middle 90% of the simulated ranks. Dot: current rank.' });
+    : '') + 'Thick bar: middle 90% of the simulated ranks' + (showExact && mc.kappa !== 0 ? ', which can go past the line because it also varies the weights' : '') + '. Dot: current rank.' });
   sh2.legend.replaceChildren(
     ...(showExact ? [h('span', { class: 'lg-item' }, h('span', { class: 'k-line c-ink', 'aria-hidden': 'true' }), 'Exact range, table values only (weights fixed)')] : []),
     h('span', { class: 'lg-item' }, h('span', { class: 'k-box c-accent', 'aria-hidden': 'true' }), 'Simulated, 5th to 95th percentile'),
@@ -524,7 +524,7 @@ function renderMc() {
   sh2.chart.appendChild(plot);
   mount(sh2.chart, (W) => {
     plot.replaceChildren();
-    const labelW = Math.min(190, W * 0.42), rowH = 32, top = 20;
+    const labelW = Math.min(190, W * 0.42), rowH = 38, top = 20;
     const H = top + n * rowH + 2;
     const x = (k) => labelW + 18 + ((k - 1) / Math.max(1, n - 1)) * (W - labelW - 32);
     const s = svg('svg', { width: W, height: H, class: 'chart-svg', 'aria-hidden': 'true' }, plot);
@@ -536,8 +536,10 @@ function renderMc() {
       const y = top + row * rowH + rowH / 2;
       svg('text', { x: labelW, y: y + 4, 'text-anchor': 'end', class: 'bar-label' }, s).textContent = truncate(S.alternatives[i], Math.floor(labelW / 6.6));
       if (showExact) {
-        svg('line', { x1: x(exact[i].best), x2: x(exact[i].worst), y1: y, y2: y, class: 'range-line' }, s);
-        [exact[i].best, exact[i].worst].forEach((k) => svg('line', { x1: x(k), x2: x(k), y1: y - 9, y2: y + 9, class: 'range-line' }, s));
+        // drawn just below the simulated bar so a bar never hides it
+        const ey = y + 10;
+        svg('line', { x1: x(exact[i].best), x2: x(exact[i].worst), y1: ey, y2: ey, class: 'range-line' }, s);
+        [exact[i].best, exact[i].worst].forEach((k) => svg('line', { x1: x(k), x2: x(k), y1: ey - 4, y2: ey + 4, class: 'range-line' }, s));
       }
       svg('rect', { x: x(r.p05[i]) - 6, y: y - 6, width: x(r.p95[i]) - x(r.p05[i]) + 12, height: 12, rx: 6, class: 'iv-bar' }, s);
       svg('circle', { cx: x(m.rk[i]), cy: y, r: 5, class: 'cur-dot' }, s);

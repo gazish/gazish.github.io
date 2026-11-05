@@ -154,7 +154,7 @@ test('exact rank intervals match a full enumeration of the table corners', () =>
   }
   // no uncertainty: the interval collapses to the nominal rank
   const s0 = [0.7, 0.4, 0.55];
-  exactRankIntervals(s0, [0.5, 0.5], [0, 0]).forEach((r, i) => { assert.equal(r.best, ranks(s0)[i]); assert.equal(r.worst, ranks(s0)[i]); });
+  exactRankIntervals(s0, [0.5, 0.5], [0, 0], [{ min: 0, max: 1 }, { min: 0, max: 1 }]).forEach((r, i) => { assert.equal(r.best, ranks(s0)[i]); assert.equal(r.worst, ranks(s0)[i]); });
 });
 
 test('share links round-trip and invalid links are rejected', () => {

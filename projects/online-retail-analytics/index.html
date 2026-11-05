@@ -223,7 +223,7 @@
         </details>
 
         <h3 id="quality-title">Data cleaning</h3>
-        <p>Two rules changed the story. <strong>Voided orders:</strong> a sale cancelled by the same customer within a day (same product, quantity and price) is left out of both sales and cancellations. Without this rule, one order of 74,215 storage jars (£77k), cancelled 16 minutes later, made cancellations look as if they had risen; in fact they went from 2.0% to 1.9% of gross sales. <strong>Price outliers:</strong> a unit price above 10 times the product's median is treated as a pricing error. The largest is 60 picnic baskets at £649.50 each, credited back with a manual line. Manual lines cannot be tied to products and are excluded: counting all manual charges and credits would put growth at about 1.0%, and counting only the credits at about 3.5%. The headline 1.6% excludes both.</p>
+        <p>Two cleaning rules change the headline numbers. <strong>Voided orders:</strong> a sale cancelled by the same customer within a day (same product, quantity and price) is left out of both sales and cancellations. Without this rule, one order of 74,215 storage jars (£77k), cancelled 16 minutes later, made cancellations look as if they had risen; in fact they went from 2.0% to 1.9% of gross sales. <strong>Price outliers:</strong> a unit price above 10 times the product's median is treated as a pricing error. The largest is 60 picnic baskets at £649.50 each, credited back with a manual line. Manual lines cannot be tied to products and are excluded: counting all manual charges and credits would put growth at about 1.4%, and counting only the credits at about 3.5%. The headline 1.6% excludes both.</p>
 
         <details>
           <summary>What happened to every raw row</summary>

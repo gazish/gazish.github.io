@@ -195,8 +195,9 @@ export function weightTolerance(v, w, top) {
 // Scores depend only on the option's own values, so the best case puts
 // option i at its top and every other option at its bottom; the worst case
 // does the opposite.
-export function exactRankIntervals(scores, w, unc, sc = null) {
-  const d = w.reduce((s, wj, j) => (sc && !(sc[j].max - sc[j].min > 0) ? s : s + wj * (unc[j] || 0)), 0);
+export function exactRankIntervals(scores, w, unc, sc) {
+  if (!sc) throw new Error('exactRankIntervals needs the criterion scales (see scales())');
+  const d = w.reduce((s, wj, j) => (sc[j].max - sc[j].min > 0 ? s + wj * (unc[j] || 0) : s), 0);
   return scores.map((si, i) => {
     let better = 0, couldBeat = 0;
     scores.forEach((sk, k) => {

@@ -35,3 +35,21 @@
   }
   sync();
 })();
+
+/* CV links: until the PDF has been added to /cv/, hide the buttons that point to it,
+   so visitors never land on a 404. Once the file exists they show up on their own. */
+(function () {
+  var links = document.querySelectorAll('a[href$="Gazi_Shafayet_Hossain_CV.pdf"]');
+  if (!links.length || !window.fetch) return;
+  function hide() {
+    links.forEach(function (a) { var li = a.closest('li'); (li || a).hidden = true; });
+  }
+  var cached = null;
+  try { cached = sessionStorage.getItem('cv-ok'); } catch (e) { /* storage blocked */ }
+  if (cached === '0') { hide(); return; }
+  if (cached === '1') return;
+  fetch(links[0].getAttribute('href'), { method: 'HEAD' }).then(function (r) {
+    try { sessionStorage.setItem('cv-ok', r.ok ? '1' : '0'); } catch (e) { /* ignore */ }
+    if (!r.ok) hide();
+  }).catch(function () { /* offline: leave the links alone */ });
+})();

@@ -76,9 +76,10 @@ Other decisions:
 - **Manual lines.** Lines with the stock code M (manual) cannot be tied to a
   product, so they are excluded with the other non-merchandise lines: charges
   of GBP 261k in P1 and 77k in P2, and credits of GBP -276k and -146k (-107k
-  without the credit that reverses the excluded picnic-basket line). Counting
-  all of them would put growth at about 1.0%; counting only the credits, at
-  about 3.5%. The headline 1.6% excludes both.
+  without the credit that reverses the excluded picnic-basket line). Leaving
+  that one credit out in both cases, counting all manual lines would put growth
+  at about 1.4%, and counting only the credits at about 3.5%. The headline
+  1.6% excludes both.
 - **Price outliers.** Some of the flagged lines are probably pack prices (for
   example 145 lines of 37370 coffee mugs at about GBP 16 against a median of
   GBP 1.25). Together they are about GBP 15k, under 0.2% of sales, and do not

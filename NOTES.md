@@ -203,7 +203,8 @@ What changed after round 1:
   (log-mean split of the identified-customer effects). Findings rewritten,
   including the mix effects (order value only rose for orders without a
   customer ID; Australia and Ireland drive the international change). Manual
-  credit lines and their effect on growth (1.6% vs 3.1%) are documented.
+  credit lines and their effect on growth are documented (the round-1 figure
+  of 3.1% was superseded in rounds 2 and 3; see below).
 - **Decision tool:** fixed the direction bug (new tested `weightTolerance`)
   and the two-criteria crash; added exact best- and worst-case rank intervals
   (closed form, tested against brute force); Saaty's size-dependent CR limits;
@@ -248,9 +249,9 @@ What changed after round 2:
   the tool table uses fixed-width name inputs (full name in a tooltip), fits
   at desktop widths, and shows a scroll hint only when it overflows;
   stability-chart labels truncate; the nav only spreads out on small phones.
-- **Retail:** manual lines reported from both sides (growth about 1.0% with
+- **Retail:** manual lines reported from both sides (growth about 1.4% with
   all manual charges and credits, about 3.5% with credits only, 1.6%
-  headline); cancellation rate defined as excluding voided orders, finding 8
+  headline; 1.4% corrected from 1.0% in round 3); cancellation rate defined as excluding voided orders, finding 8
   says the UK rose; the two circular checks replaced with a value
   reconciliation and a one-to-one pairing check; pack prices noted; "gross
   sales to identified customers"; tile deltas computed from the rounded
