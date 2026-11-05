@@ -110,9 +110,14 @@ Gazi to read when picking the work up.
   "Champions" moved between 442 and 446). Prices are read as exact decimals
   and every output has a fixed sort order, so two runs give byte-identical
   files.
-- **Checks:** totals reconcile across tables and markets, every raw row is
-  accounted for, and the headline KPIs are recomputed in pandas independently
-  of the SQL. The script stops if any check fails.
+- **Voided orders and price outliers** (added after review round 1): a sale
+  cancelled by the same customer within a day is excluded from both sales and
+  cancellations, and a unit price above 10 times the product's median is
+  treated as a pricing error. Both rules and their totals are documented.
+- **Checks:** each check compares two independent computations (markets
+  against the total, months against years, duplicates counted from the raw
+  table, a pandas re-implementation of the cleaning rules and headline KPIs).
+  The script stops if any check fails.
 
 ### Decision analysis tool
 - Example data is **illustrative and labelled as such** on the page and in
@@ -125,9 +130,9 @@ Gazi to read when picking the work up.
   instead of by trial and error; a unit test checks them against brute force.
 - Monte Carlo uses Dirichlet weights around the current weights (or uniform,
   as in SMAA-2) and a fixed seed, so results do not jump around.
-- 11 unit tests (`node --test projects/decision-analysis-tool/mcda.test.mjs`),
-  including the standard 3 x 3 AHP textbook example (weights 0.637, 0.258,
-  0.105; CR 0.033).
+- 15 unit tests (`node --test projects/decision-analysis-tool/mcda.test.mjs`),
+  including a 3 x 3 AHP example worked by hand (weights 0.637, 0.258, 0.105;
+  CR 0.033) and brute-force checks of the stability and rank intervals.
 
 ### Machine readability
 - JSON-LD: `Person` (with `jobTitle`, `alumniOf`, `knowsAbout`, `sameAs` for
