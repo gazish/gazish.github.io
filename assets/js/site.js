@@ -12,7 +12,13 @@
     return media && media.matches ? 'dark' : 'light';
   }
   function sync() {
-    btn.setAttribute('aria-pressed', current() === 'dark' ? 'true' : 'false');
+    var dark = current() === 'dark';
+    btn.setAttribute('aria-pressed', dark ? 'true' : 'false');
+    // keep the browser bar colour in step with the chosen theme
+    document.querySelectorAll('meta[name="theme-color"]').forEach(function (m) {
+      m.setAttribute('content', dark ? '#131210' : '#f6f4ef');
+      if (root.getAttribute('data-theme')) m.removeAttribute('media');
+    });
   }
   btn.addEventListener('click', function () {
     var next = current() === 'dark' ? 'light' : 'dark';

@@ -51,12 +51,12 @@ scored AS (
 )
 SELECT
     *,
-    -- widely used R x F segment grid
+    -- widely used R x F segment grid; the M score is kept for analysis but not used here
     CASE
         WHEN r_score = 5 AND f_score >= 4                 THEN 'Champions'
         WHEN r_score BETWEEN 3 AND 4 AND f_score >= 4     THEN 'Loyal'
         WHEN r_score >= 4 AND f_score BETWEEN 2 AND 3     THEN 'Potential loyalists'
-        WHEN r_score = 5 AND f_score = 1                  THEN 'New'
+        WHEN r_score = 5 AND f_score = 1                  THEN 'Recent, one order'
         WHEN r_score = 4 AND f_score = 1                  THEN 'Promising'
         WHEN r_score = 3 AND f_score = 3                  THEN 'Need attention'
         WHEN r_score = 3 AND f_score <= 2                 THEN 'About to sleep'

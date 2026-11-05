@@ -10,6 +10,10 @@
 --   aov              gross_sales / orders
 --   active_customers distinct customer IDs with at least one sale invoice in the month
 --   new_customers    active customers whose first purchase in the data is this month
+--   returning        active customers who first bought in an earlier month (counted separately,
+--                    so analysis.py can check new + returning = active)
+-- Voided orders (cancelled by the same customer within a day) and price outliers are
+-- excluded from both sales and cancellations; see 02_clean.sql.
 
 CREATE OR REPLACE TABLE monthly_kpis AS
 WITH sales AS (
@@ -26,6 +30,7 @@ sales_by_month AS (
         count(DISTINCT invoice)                                                AS orders,
         count(DISTINCT customer_id)                                            AS active_customers,
         count(DISTINCT customer_id) FILTER (WHERE first_month = month)         AS new_customers,
+        count(DISTINCT customer_id) FILTER (WHERE first_month < month)         AS returning_customers,
         sum(line_value) FILTER (WHERE first_month = month)                     AS new_customer_sales,
         sum(line_value) FILTER (WHERE first_month < month)                     AS returning_customer_sales,
         sum(line_value) FILTER (WHERE customer_id IS NULL)                     AS unidentified_sales
@@ -51,7 +56,7 @@ SELECT
     round(s.gross_sales / s.orders, 2)                         AS aov,
     s.active_customers,
     s.new_customers,
-    s.active_customers - s.new_customers                       AS returning_customers,
+    s.returning_customers,
     round(coalesce(s.new_customer_sales, 0), 2)                AS new_customer_sales,
     round(coalesce(s.returning_customer_sales, 0), 2)          AS returning_customer_sales,
     round(coalesce(s.unidentified_sales, 0), 2)                AS unidentified_sales

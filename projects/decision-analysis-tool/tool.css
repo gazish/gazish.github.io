@@ -11,11 +11,15 @@
 
 /* performance table */
 .perf-wrap { margin-bottom: 0.5rem; }
-table.perf { min-width: 48rem; }
+table.perf { min-width: 56rem; }
 table.perf th, table.perf td { padding: 0.45rem 0.5rem; vertical-align: middle; }
 table.perf thead th { text-transform: none; letter-spacing: 0; font-size: 0.875rem; color: var(--ink); vertical-align: top; }
-.perf .opt-col { min-width: 13rem; }
-.perf .crit-col { min-width: 9.5rem; }
+.perf .opt-col { min-width: 16rem; }
+.perf .crit-col { min-width: 12rem; }
+@media (max-width: 40em) {
+  .perf th.opt-col { position: sticky; left: 0; z-index: 1; background: var(--surface); min-width: 10rem; box-shadow: 1px 0 0 var(--line); }
+  .perf thead th.opt-col { background: var(--surface-2); }
+}
 .perf .row-lab { font-size: 0.8125rem; color: var(--muted); font-weight: 650; text-transform: uppercase; letter-spacing: 0.04em; text-align: left; }
 .perf .meta-row td, .perf .meta-row th { border-top: 0; padding-top: 0.15rem; padding-bottom: 0.15rem; }
 .perf .opt-row-head th { background: var(--surface); border-top: 1px solid var(--line-strong); padding-top: 0.5rem; }
@@ -24,9 +28,9 @@ table.perf thead th { text-transform: none; letter-spacing: 0; font-size: 0.875r
 .crit-meta { display: grid; gap: 0.3rem; margin-top: 0.35rem; }
 .perf input[type="text"], .perf input[type="number"], .perf select, .tool select {
   font: inherit; font-size: 0.875rem; color: var(--ink); background: var(--bg);
-  border: 1px solid var(--line-strong); border-radius: 6px; padding: 0.35rem 0.45rem; min-height: 36px; width: 100%;
+  border: 1px solid var(--control); border-radius: 6px; padding: 0.35rem 0.45rem; min-height: 36px; width: 100%;
 }
-.perf .in-name { font-weight: 600; }
+.perf .in-name { font-weight: 600; field-sizing: content; min-width: 100%; }
 .perf thead .in-name { font-weight: 650; }
 .perf .in-unit { font-size: 0.8125rem; color: var(--ink-2); }
 .perf select { font-size: 0.8rem; color: var(--ink-2); }
@@ -86,7 +90,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 32px
 .chart-svg .band-fill { fill: var(--accent-mark); opacity: 0.32; }
 .chart-svg .cur-dot { fill: var(--ink); stroke: var(--surface); stroke-width: 2; }
 .chart-svg .leader { fill: none; stroke: var(--line-strong); stroke-width: 1; }
-.chart-svg .range-line { stroke: var(--de-emph); stroke-width: 2; stroke-linecap: round; }
+.chart-svg .range-line { stroke: var(--ink-2); stroke-width: 1.5; stroke-linecap: round; }
 .chart-svg .iv-bar { fill: var(--accent-mark); opacity: 0.85; }
 .band-key { background: var(--accent-mark); opacity: 0.4; }
 .k-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: var(--ink); }
@@ -104,3 +108,26 @@ details.method h3 { font-size: 1rem; margin-top: 1.25rem; }
 details.method > :last-child { margin-bottom: 1rem; }
 .refs li { font-size: 0.925rem; }
 var { font-style: italic; }
+
+.w-range { display: block; font-weight: 450; font-size: 0.8rem; color: var(--muted); }
+.scroll-hint { margin: 0 0 0.4rem; }
+@media (min-width: 64em) { .scroll-hint { display: none; } }
+
+/* two-sided AHP sliders: neutral track with a centre mark, so neither side looks "filled" */
+.pair input[type="range"] { -webkit-appearance: none; appearance: none; height: 32px; background: transparent; }
+.pair input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px; border-radius: 3px;
+  background: linear-gradient(90deg, var(--control) 0 calc(50% - 1.5px), var(--ink) calc(50% - 1.5px) calc(50% + 1.5px), var(--control) calc(50% + 1.5px));
+}
+.pair input[type="range"]::-moz-range-track {
+  height: 6px; border-radius: 3px;
+  background: linear-gradient(90deg, var(--control) 0 calc(50% - 1.5px), var(--ink) calc(50% - 1.5px) calc(50% + 1.5px), var(--control) calc(50% + 1.5px));
+}
+.pair input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none; width: 20px; height: 20px; margin-top: -7px; border-radius: 50%;
+  background: var(--accent); border: 2px solid var(--surface); box-shadow: 0 0 0 1px var(--accent);
+}
+.pair input[type="range"]::-moz-range-thumb {
+  width: 18px; height: 18px; border-radius: 50%; background: var(--accent); border: 2px solid var(--surface); box-shadow: 0 0 0 1px var(--accent);
+}
+.pair input[type="range"]:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }

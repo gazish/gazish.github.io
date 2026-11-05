@@ -116,6 +116,7 @@
         <button type="button" class="btn btn-small" id="add-crit">Add criterion</button>
         <button type="button" class="btn btn-small" id="reset">Reset example</button>
       </div>
+      <p class="meta scroll-hint">Scroll the table sideways to see every criterion.</p>
       <div class="table-wrap perf-wrap" id="perf-table"></div>
       <p class="meta">Scores use a linear value scale per criterion: the worst value in the table scores 0 and the best scores 100.</p>
     </section>
@@ -131,11 +132,11 @@
           <input type="radio" name="wmethod" id="wm-ahp" value="ahp"><label for="wm-ahp">AHP pairwise comparison</label>
         </fieldset>
         <div id="panel-direct">
-          <p class="panel-intro">Give each criterion points from 0 to 100. The weights are the points divided by their total.</p>
+          <p class="panel-intro">Give each criterion points from 0 to 100 for how much it matters to move from its worst to its best value in the table (the range is shown under each name). The weights are the points divided by their total.</p>
           <div id="direct-list" class="w-list"></div>
         </div>
         <div id="panel-ahp" hidden>
-          <p class="panel-intro">For each pair, move the slider towards the criterion that matters more, on Saaty's 1 to 9 scale. The weights are the principal eigenvector of the comparison matrix.</p>
+          <p class="panel-intro">For each pair, move the slider towards the criterion that matters more, on Saaty's 1 to 9 scale (the centre means equal). As with the points, think of the ranges in the table, not of importance in general. The weights are the principal eigenvector of the comparison matrix.</p>
           <div id="ahp-summary" class="ahp-summary"></div>
           <div id="ahp-list" class="ahp-list"></div>
         </div>
@@ -159,8 +160,8 @@
     <section class="tool-step" aria-labelledby="s4">
       <div class="step-head">
         <h2 id="s4"><span class="step-n" aria-hidden="true">4</span>Sensitivity to the weights</h2>
-        <p id="stability-summary" class="keyresult"></p>
       </div>
+      <p id="stability-summary" class="keyresult"></p>
       <div class="dash-grid cols-2">
         <figure class="fig" id="fig-stability" aria-labelledby="stability-title"></figure>
         <figure class="fig">
@@ -177,7 +178,7 @@
     <section class="tool-step" aria-labelledby="s5">
       <div class="step-head">
         <h2 id="s5"><span class="step-n" aria-hidden="true">5</span>Uncertainty: Monte Carlo simulation</h2>
-        <p>Draws 5,000 scenarios. In each, the weights and (optionally) the values in the table vary at random, and the options are ranked again. This shows how robust the ranking is overall, not one weight at a time.</p>
+        <p>Draws 5,000 scenarios. In each, the weights and (optionally) the values in the table vary at random, and the options are ranked again, so all the inputs are tested together.</p>
       </div>
       <div class="mc-controls">
         <div class="field-row">
@@ -204,7 +205,7 @@
         <dl class="facts">
           <div><dt>Type</dt><dd>Interactive tool built for this site, November 2026</dd></div>
           <div><dt>Methods</dt><dd>Weighted sum, AHP with consistency ratio, stability intervals, Monte Carlo rank acceptability</dd></div>
-          <div><dt>Tech</dt><dd>JavaScript modules and SVG, no libraries, no backend. 11 unit tests</dd></div>
+          <div><dt>Tech</dt><dd>JavaScript modules and SVG, no libraries, no backend. 15 unit tests</dd></div>
           <div><dt>Data</dt><dd>Illustrative, made up for the demo</dd></div>
           <div><dt>Code</dt><dd><a href="https://github.com/gazish/gazish.github.io/tree/main/projects/decision-analysis-tool">GitHub</a></dd></div>
         </dl>
@@ -219,20 +220,20 @@
           <li><strong>Weight</strong><span>Either direct points, or AHP: pairwise judgements on Saaty's 1 to 9 scale, weights from the principal eigenvector, and a consistency ratio with a pointer to the least consistent judgement.</span></li>
           <li><strong>Rank</strong><span>Weighted sum of the values, shown as stacked contributions so you can see why an option wins.</span></li>
           <li><strong>Test one weight at a time</strong><span>For each criterion, the exact weight range in which the top option stays first, found by solving the linear score equations rather than by trial and error.</span></li>
-          <li><strong>Test everything at once</strong><span>A Monte Carlo simulation that varies all weights (Dirichlet distribution) and the table values, then reports how often each option gets each rank and its rank interval.</span></li>
+          <li><strong>Test everything at once</strong><span>A Monte Carlo simulation that varies all weights (Dirichlet distribution) and the table values, then reports how often each option gets each rank. Next to it, exact best- and worst-case rank intervals for the value uncertainty.</span></li>
         </ol>
         <p>My MSc thesis used related ideas (weighted criteria, stakeholder weights, uncertainty ratings and best- and worst-case rank intervals) for local climate hazards. This tool is a separate, general demo: it does not reproduce the thesis model or its results. <a href="/projects/thesis-climate-hazard-mcda/">Read about the thesis</a>.</p>
 
         <h2 id="tools">Tools</h2>
-        <p>Plain JavaScript modules and SVG, with no chart or maths library. The maths sits in one module (<code>mcda.js</code>) with no browser code, covered by 11 unit tests run with Node's built-in test runner. One test checks the AHP weights, λmax and consistency ratio against the standard 3 x 3 textbook example. Another checks the stability intervals against a brute-force search.</p>
+        <p>Plain JavaScript modules and SVG, with no chart or maths library. The maths sits in one module (<code>mcda.js</code>) with no browser code, covered by 15 unit tests run with Node's built-in test runner. The tests check the AHP weights, λmax and consistency ratio on a 3 x 3 example worked by hand, and compare the stability intervals and the exact rank intervals with brute-force searches.</p>
 
-        <h2 id="result">Result</h2>
-        <p>With the example data and the default weights, stormwater retention ponds rank first with 63.8 points, 8 ahead of green roofs. The ranking is most sensitive to the weight on flood risk reduction: lowering it from 30% to about 22% puts street trees and pocket parks first. In the Monte Carlo run with moderate weight changes and uncertain values, the ponds come first in about 70% of scenarios. Those are statements a decision maker can check against their own priorities, which a bare ranking does not allow.</p>
+        <h2 id="result">Result (example output, illustrative data)</h2>
+        <p>With the example data and the default weights, stormwater retention ponds rank first with 63.8 points, 8.0 points ahead of green roofs. The most sensitive weight is flood risk reduction: lowering it from 30% to 21.8% puts street trees and pocket parks first. In the Monte Carlo run with moderate weight changes and uncertain values, the ponds come first in 71% of scenarios.</p>
 
         <h2 id="next">What I would do next</h2>
         <ul>
-          <li>Uncertainty ratings per cell rather than per criterion, as in my thesis.</li>
-          <li>Swing weighting as a third method, since weights in an additive model depend on the ranges in the table.</li>
+          <li>Uncertainty ratings for individual cells, not only per criterion.</li>
+          <li>A full swing-weighting procedure as a third method, since weights in an additive model depend on the ranges in the table.</li>
           <li>Several stakeholders: collect AHP judgements from each and combine them with the geometric mean, or show the spread between them.</li>
           <li>Non-linear value functions for criteria where the first improvements matter most.</li>
         </ul>
@@ -240,24 +241,33 @@
         <details class="method">
           <summary>Method notes: formulas, assumptions and limitations</summary>
           <h3>Additive value model</h3>
-          <p>The overall value of option <var>a</var> is <code>V(a) = Σ<sub>j</sub> w<sub>j</sub> v<sub>j</sub>(x<sub>aj</sub>)</code> with <code>w<sub>j</sub> ≥ 0</code> and <code>Σ w<sub>j</sub> = 1</code>. Each <code>v<sub>j</sub></code> is linear on a local scale: 0 for the worst value in the table and 1 for the best. The model assumes the criteria are preferentially independent. Because the scales are local, the weights are trade-offs between the ranges in the table: if an option is added that widens a range, the weights should be reviewed.</p>
+          <p>The overall value of option <var>a</var> is <code>V(a) = Σ<sub>j</sub> w<sub>j</sub> v<sub>j</sub>(x<sub>aj</sub>)</code> with <code>w<sub>j</sub> ≥ 0</code> and <code>Σ w<sub>j</sub> = 1</code>. Each <code>v<sub>j</sub></code> is linear on a local scale: 0 for the worst value in the table and 1 for the best. The model assumes the criteria are mutually preferentially independent (Keeney and Raiffa, 1976). Because the scales are local, the weights are scaling constants for the ranges in the table, not measures of importance in general (Keeney, 2002). This applies to both the direct points and AHP here, which is why the tool shows each criterion's range next to its slider. If an option is added that widens a range, the weights should be reviewed.</p>
           <h3>AHP weights and consistency</h3>
-          <p>Judgements <code>a<sub>ij</sub></code> on Saaty's scale form a reciprocal matrix (<code>a<sub>ji</sub> = 1 / a<sub>ij</sub></code>). The weights are its principal right eigenvector, found by power iteration. Consistency: <code>CI = (λ<sub>max</sub> − n) / (n − 1)</code> and <code>CR = CI / RI</code>, with Saaty's random index RI = 0.58, 0.90, 1.12, 1.24 and 1.32 for n = 3 to 7. CR of 0.10 or less is the usual threshold. The least consistent judgement is the one with the largest <code>|ln(a<sub>ij</sub> w<sub>j</sub> / w<sub>i</sub>)|</code>; the suggested replacement is the geometric mean of the indirect comparisons <code>a<sub>ik</sub> a<sub>kj</sub></code>. AHP is used here only to elicit criterion weights. One known criticism applies: AHP asks about importance in general, while additive value weights depend on ranges, which is why swing weighting is on the list above.</p>
+          <p>Judgements <code>a<sub>ij</sub></code> on Saaty's scale form a reciprocal matrix (<code>a<sub>ji</sub> = 1 / a<sub>ij</sub></code>). The weights are its principal right eigenvector, found by power iteration. Consistency: <code>CI = (λ<sub>max</sub> − n) / (n − 1)</code> and <code>CR = CI / RI</code>, with Saaty's random index RI = 0.58, 0.90, 1.12, 1.24 and 1.32 for n = 3 to 7. The tool uses Saaty's size-dependent limits: CR of 0.05 or less for n = 3, 0.08 for n = 4 and 0.10 for n of 5 or more (Saaty, 1994). The least consistent judgement is the one with the largest <code>|ln(a<sub>ij</sub> w<sub>j</sub> / w<sub>i</sub>)|</code> (Saaty, 2003). As a replacement the tool suggests the geometric mean of the indirect comparisons <code>a<sub>ik</sub> a<sub>kj</sub></code>, rather than Saaty's <code>w<sub>i</sub> / w<sub>j</sub></code>, so the suggestion is not pulled towards the judgement it replaces. It only offers a change when CR is above the limit. AHP is used here only to elicit criterion weights, not to compare options.</p>
           <h3>One-at-a-time sensitivity</h3>
-          <p>The weight of criterion <var>j</var> is set to <var>t</var> and the others are rescaled in proportion: <code>w<sub>k</sub>(t) = w<sub>k</sub> (1 − t) / (1 − w<sub>j</sub>)</code>. Every score is then linear in <var>t</var>, so the interval in which the top option stays first is found exactly by solving one linear inequality per competing option.</p>
+          <p>The weight of criterion <var>j</var> is set to <var>t</var> and the others are rescaled in proportion: <code>w<sub>k</sub>(t) = w<sub>k</sub> (1 − t) / (1 − w<sub>j</sub>)</code>. Every score is then linear in <var>t</var>, so the interval in which the top option stays first is found exactly by solving one linear inequality per competing option (compare Triantaphyllou and Sánchez, 1997).</p>
           <h3>Monte Carlo rank analysis</h3>
-          <p>Weights are drawn from a Dirichlet distribution with parameters <code>κ w</code>, so their mean is the current weights and their spread shrinks as κ grows (κ = 200, 50 or 10). "Any weights at all" draws uniformly from all possible weight vectors, as in SMAA-2 when no preference information is available. Table values move uniformly by up to ±5%, ±15% or ±30% of the criterion's range in the table. The tool reports rank acceptability (the share of scenarios in which an option takes each rank) and rank intervals. It uses 5,000 draws with a fixed random seed, so results are reproducible.</p>
+          <p>Weights are drawn from a Dirichlet distribution with parameters <code>κ w</code>, so their mean is the current weights and the standard deviation of each weight is <code>√(w<sub>j</sub>(1 − w<sub>j</sub>) / (κ + 1))</code>: for a 30% weight, about 3, 6 and 14 percentage points for κ = 200, 50 and 10. "Any weights at all" draws uniformly from all possible weight vectors, as in SMAA when no preference information is available (Lahdelma, Hokkanen and Salminen, 1998; Lahdelma and Salminen, 2001). Table values move uniformly by up to ±5%, ±15% or ±30% of the criterion's range in the table. Perturbed values are scored on the fixed scale of the original table, so they can fall slightly below 0 or above 1. The tool reports rank acceptability (the share of scenarios in which an option takes each rank) and the 5th to 95th percentile of each option's rank, with the 95% simulation error on the headline share. It uses 5,000 draws with a fixed random seed, so results are reproducible.</p>
+          <h3>Exact best- and worst-case rank intervals</h3>
+          <p>With the weights fixed, each option's score depends only on its own values, and each value can move by at most <code>u<sub>j</sub></code> on its 0 to 1 scale. So every score lies in <code>[S<sub>i</sub> − d, S<sub>i</sub> + d]</code> with <code>d = Σ<sub>j</sub> w<sub>j</sub> u<sub>j</sub></code>. The best case puts option <var>i</var> at the top of its range and every other option at the bottom; the worst case does the opposite. These intervals are exact, unlike the extremes of a simulation, which shrink when fewer draws are used.</p>
           <h3>Limitations</h3>
           <ul>
             <li>Linear value functions and independent, uniform perturbations. Real uncertainties are often correlated.</li>
+            <li>The exact rank intervals cover the value uncertainty at the current weights; the weight uncertainty is covered only by the simulation.</li>
             <li>Local scales: results can change when options are added or removed.</li>
             <li>A weighted sum lets a strong score on one criterion make up for a weak one. If some criteria are must-haves, screen options first.</li>
           </ul>
           <h3>References</h3>
           <ul class="refs">
-            <li>Saaty, T. L. (1980). <cite>The Analytic Hierarchy Process</cite>. McGraw-Hill.</li>
             <li>Belton, V., and Stewart, T. J. (2002). <cite>Multiple Criteria Decision Analysis: An Integrated Approach</cite>. Kluwer.</li>
+            <li>Keeney, R. L. (2002). Common mistakes in making value trade-offs. <cite>Operations Research</cite>, 50(6), 935 to 945.</li>
+            <li>Keeney, R. L., and Raiffa, H. (1976). <cite>Decisions with Multiple Objectives: Preferences and Value Tradeoffs</cite>. Wiley.</li>
+            <li>Lahdelma, R., Hokkanen, J., and Salminen, P. (1998). SMAA: Stochastic multiobjective acceptability analysis. <cite>European Journal of Operational Research</cite>, 106(1), 137 to 143.</li>
             <li>Lahdelma, R., and Salminen, P. (2001). SMAA-2: Stochastic multicriteria acceptability analysis for group decision making. <cite>Operations Research</cite>, 49(3), 444 to 454.</li>
+            <li>Saaty, T. L. (1980). <cite>The Analytic Hierarchy Process</cite>. McGraw-Hill.</li>
+            <li>Saaty, T. L. (1994). <cite>Fundamentals of Decision Making and Priority Theory with the Analytic Hierarchy Process</cite>. RWS Publications.</li>
+            <li>Saaty, T. L. (2003). Decision-making with the AHP: Why is the principal eigenvector necessary. <cite>European Journal of Operational Research</cite>, 145(1), 85 to 91.</li>
+            <li>Triantaphyllou, E., and Sánchez, A. (1997). A sensitivity analysis approach for some deterministic multi-criteria decision-making methods. <cite>Decision Sciences</cite>, 28(1), 151 to 194.</li>
           </ul>
         </details>
       </div>
@@ -279,7 +289,6 @@
         <li><a href="https://www.linkedin.com/in/gazishafayet" rel="me">LinkedIn</a></li>
         <li><a href="https://github.com/gazish" rel="me">GitHub</a></li>
         <li><a href="/cv/Gazi_Shafayet_Hossain_CV.pdf">CV (PDF)</a></li>
-        <li><a href="/llms.txt">llms.txt</a></li>
       </ul>
       <p class="meta">Plain HTML, CSS and JavaScript. <a href="https://github.com/gazish/gazish.github.io">Source on GitHub</a>.</p>
     </div>

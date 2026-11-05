@@ -63,9 +63,9 @@ SELECT
     s.period,
     CASE s.period WHEN 'P1' THEN 'Dec 2009 to Nov 2010' ELSE 'Dec 2010 to Nov 2011' END AS period_label,
     round(s.gross_sales, 2)                                              AS gross_sales,
-    round(c.cancelled_value, 2)                                          AS cancelled_value,
-    round(s.gross_sales - c.cancelled_value, 2)                          AS net_sales,
-    round(c.cancelled_value / s.gross_sales, 4)                          AS cancellation_rate,
+    round(coalesce(c.cancelled_value, 0), 2)                             AS cancelled_value,
+    round(s.gross_sales - coalesce(c.cancelled_value, 0), 2)             AS net_sales,
+    round(coalesce(c.cancelled_value, 0) / s.gross_sales, 4)             AS cancellation_rate,
     s.orders,
     round(s.gross_sales / s.orders, 2)                                   AS aov,
     s.active_customers,
@@ -73,7 +73,7 @@ SELECT
     round(t.retained_customers / t.p1_customers, 4)                      AS retained_from_p1,
     round(s.unidentified_sales / s.gross_sales, 4)                       AS unidentified_share
 FROM sales AS s
-JOIN cancels AS c USING (market, period)
+LEFT JOIN cancels AS c USING (market, period)
 JOIN repeat_rates AS r USING (market, period)
 LEFT JOIN retention AS t USING (market, period)
 ORDER BY market, period;

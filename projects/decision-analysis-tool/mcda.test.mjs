@@ -3,8 +3,10 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   normalizeWeights, scales, valueMatrix, weightedSum, ranks, pairwiseMatrix, ahp, worstJudgement,
-  nearestSaaty, sweep, stabilityInterval, mulberry32, dirichlet, simulate,
+  nearestSaaty, sweep, stabilityInterval, mulberry32, dirichlet, simulate, crThreshold,
+  weightTolerance, exactRankIntervals, RANDOM_INDEX,
 } from './mcda.js';
+import { encodeState, decodeState } from './share.js';
 
 const close = (a, b, tol = 1e-3) => assert.ok(Math.abs(a - b) <= tol, `${a} is not within ${tol} of ${b}`);
 
@@ -29,7 +31,7 @@ test('weighted sum and competition ranks', () => {
   assert.deepEqual(ranks([0.5, 0.5, 0.2]), [1, 1, 3]);
 });
 
-test('AHP reproduces the textbook 3 x 3 example', () => {
+test('AHP on a standard 3 x 3 example (weights checked by hand)', () => {
   const A = [[1, 3, 5], [1 / 3, 1, 3], [1 / 5, 1 / 3, 1]];
   const r = ahp(A);
   close(r.weights[0], 0.637); close(r.weights[1], 0.258); close(r.weights[2], 0.105);
@@ -96,4 +98,56 @@ test('simulation is reproducible for a given seed', () => {
   const criteria = [{ dir: 'max' }, { dir: 'min' }, { dir: 'max' }];
   const o = { matrix, criteria, weights: [0.4, 0.4, 0.2], kappa: 20, scoreUncertainty: [0.1, 0.1, 0.1], samples: 500, seed: 3 };
   assert.deepEqual(simulate(o).acceptability, simulate(o).acceptability);
+});
+
+test('random index and CR thresholds follow Saaty', () => {
+  const w = [0.4, 0.3, 0.2, 0.1, 0.05, 0.03, 0.02];
+  for (const n of [4, 5, 6, 7]) {
+    const A = pairwiseMatrix(n, (i, j) => (i === 0 && j === n - 1 ? 2 : w[i] / w[j]));
+    assert.equal(ahp(A).ri, RANDOM_INDEX[n]);
+  }
+  assert.deepEqual([3, 4, 5, 7].map(crThreshold), [0.05, 0.08, 0.1, 0.1]);
+});
+
+test('weight tolerance reports the right direction and the new top option', () => {
+  // two criteria, option 0 wins on criterion 0, option 1 on criterion 1
+  const v = [[1, 0], [0, 1]];
+  const t = weightTolerance(v, [0.9, 0.1], 0);
+  assert.equal(t.newTop, 1);
+  close(t.by, 0.4, 1e-9);
+  // lowering criterion 0 to 50% or raising criterion 1 to 50% are both a 40-point change
+  assert.ok((t.j === 0 && t.dir === 'down') || (t.j === 1 && t.dir === 'up'));
+  // a dominant option cannot be overtaken by any single weight change
+  assert.equal(weightTolerance([[1, 1], [0, 0]], [0.5, 0.5], 0), null);
+});
+
+test('exact rank intervals match brute force over the corner cases', () => {
+  const matrix = [[10, 1, 4], [20, 3, 2], [30, 2, 1], [15, 2.5, 3]];
+  const criteria = [{ dir: 'max' }, { dir: 'min' }, { dir: 'max' }];
+  const w = [0.5, 0.3, 0.2], unc = [0.1, 0.2, 0.05];
+  const sc = scales(matrix, criteria);
+  const v = valueMatrix(matrix, criteria, sc);
+  const s = weightedSum(v, w);
+  const iv = exactRankIntervals(s, w, unc);
+  const d = w.reduce((t, x, j) => t + x * unc[j], 0);
+  // brute force: option i at +d or -d, the others at the opposite extreme
+  s.forEach((si, i) => {
+    const bestRank = ranks(s.map((sk, k) => (k === i ? si + d : sk - d)))[i];
+    const worstRank = ranks(s.map((sk, k) => (k === i ? si - d : sk + d)))[i];
+    assert.equal(iv[i].best, bestRank);
+    assert.equal(iv[i].worst, worstRank);
+  });
+  // no uncertainty: the interval collapses to the nominal rank
+  exactRankIntervals(s, w, [0, 0, 0]).forEach((r, i) => { assert.equal(r.best, ranks(s)[i]); assert.equal(r.worst, ranks(s)[i]); });
+});
+
+test('share links round-trip and invalid links are rejected', () => {
+  const S = {
+    alternatives: ['A', 'B'], method: 'ahp', points: [90, 10], pairs: { 'c1|c2': -3 },
+    criteria: [{ id: 'c1', name: 'Cost', unit: 'SEK', dir: 'min', unc: 0.15 }, { id: 'c2', name: 'Benefit', unit: '', dir: 'max', unc: 0 }],
+    matrix: [[1, 0], [0, 1]],
+  };
+  assert.deepEqual(decodeState(encodeState(S)), S);
+  assert.equal(decodeState('not-a-link'), null);
+  assert.equal(decodeState(encodeState({ ...S, matrix: [[1, 'x'], [0, 1]] })), null);
 });

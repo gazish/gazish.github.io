@@ -37,21 +37,21 @@
   "@context": "https://schema.org",
   "@graph": [
     {
-      "@type": "ScholarlyArticle",
+      "@type": ["ScholarlyArticle", "Thesis"],
       "@id": "https://gazish.github.io/projects/thesis-climate-hazard-mcda/#thesis",
       "name": "Multi-Criteria Threat Evaluation for Local Climate Hazards",
       "headline": "Multi-Criteria Threat Evaluation for Local Climate Hazards",
       "genre": "Master's thesis",
       "description": "A reusable multi-criteria decision analysis (MCDA) decision-support template that helps municipalities prioritise local climate hazards using weighted criteria, rubric-based scoring, survey-elicited stakeholder priorities, uncertainty ratings and sensitivity analysis with best- and worst-case rank intervals. Demonstrated on municipality cases in the Baltic Sea Region: Tampere, Tartu and Malmö.",
       "url": "https://su.diva-portal.org/smash/record.jsf?pid=diva2%3A2075902",
-      "sameAs": "https://su.diva-portal.org/smash/record.jsf?pid=diva2%3A2075902",
       "mainEntityOfPage": "https://gazish.github.io/projects/thesis-climate-hazard-mcda/",
       "author": [
-        { "@id": "https://gazish.github.io/#person" },
+        { "@type": "Person", "@id": "https://gazish.github.io/#person", "name": "Gazi Shafayet Hossain" },
         { "@type": "Person", "name": "Vladimir Blaskov" }
       ],
+      "inSupportOf": "MSc in Data Science, Statistics and Decision Analysis",
       "sourceOrganization": { "@type": "CollegeOrUniversity", "name": "Stockholm University", "sameAs": "https://www.su.se/" },
-      "publisher": { "@type": "Organization", "name": "DiVA (Digitala Vetenskapliga Arkivet)", "url": "https://su.diva-portal.org/" },
+      "publisher": { "@type": "CollegeOrUniversity", "name": "Stockholm University", "sameAs": "https://www.su.se/" },
       "about": ["Multi-criteria decision analysis", "Climate change adaptation", "Climate hazards", "Municipal decision support", "Sensitivity analysis"],
       "keywords": ["MCDA", "climate hazards", "risk prioritisation", "stakeholder elicitation", "uncertainty", "rank intervals", "Baltic Sea Region"],
       "spatialCoverage": [
@@ -124,7 +124,7 @@
 
       <div class="case-body">
         <h2 id="problem">Problem</h2>
-        <p>A municipality faces several local climate hazards at once and cannot address all of them at the same time. Deciding which to prioritise means comparing very different threats on several criteria, and the people involved do not weigh those criteria the same way. On top of that, many of the inputs are uncertain. A ranking that hides these choices is hard to trust and hard to reuse in another municipality.</p>
+        <p>A municipality faces several local climate hazards at once and cannot address all of them at the same time. Deciding which to prioritise means comparing very different threats on several criteria, and the people involved do not weigh those criteria the same way. Many of the inputs are also uncertain. A one-off ranking that hides these choices is difficult to defend or to repeat elsewhere.</p>
 
         <h2 id="approach">Approach</h2>
         <p>We built a multi-criteria decision analysis (MCDA) template that a municipality can fill in with its own hazards and stakeholders. It has five parts:</p>
@@ -132,29 +132,31 @@
           <li><strong>Weighted criteria</strong><span>A set of criteria for judging the threat from each hazard, each with a weight.</span></li>
           <li><strong>Rubric-based scoring</strong><span>Each hazard is scored against written rubric levels for each criterion, which makes the scores easier to compare and to explain.</span></li>
           <li><strong>Stakeholder priorities from a survey</strong><span>The weights reflect stakeholder priorities collected with a survey.</span></li>
-          <li><strong>Uncertainty ratings</strong><span>Each score carries a rating of how uncertain it is.</span></li>
-          <li><strong>Sensitivity analysis</strong><span>Best- and worst-case rank intervals for each hazard show which positions in the ranking are stable and which depend on uncertain scores.</span></li>
+          <li><strong>Uncertainty ratings</strong><span>The template includes uncertainty ratings for its inputs.</span></li>
+          <li><strong>Sensitivity analysis</strong><span>Best- and worst-case rank intervals show how stable each hazard's position in the ranking is.</span></li>
         </ol>
         <p>We demonstrated the template on municipality cases in the Baltic Sea Region: Tampere, Tartu and Malmö.</p>
 
-        <h2 id="tools">Methods and tools</h2>
+        <h2 id="tools">Methods</h2>
+        <p>The template follows the usual stages of an MCDA process: structuring the problem, evaluating the options and testing how robust the result is (Belton and Stewart, 2002). Each part answers one of the difficulties above:</p>
         <ul>
-          <li>Multi-criteria decision analysis with weighted criteria</li>
-          <li>Rubric-based scoring</li>
-          <li>Survey design and elicitation of stakeholder priorities</li>
-          <li>Uncertainty ratings and sensitivity analysis with best- and worst-case rank intervals</li>
+          <li>Threats that are hard to compare: criteria with written rubric scales.</li>
+          <li>Stakeholders who weigh the criteria differently: priorities elicited with a survey.</li>
+          <li>Uncertain inputs: uncertainty ratings, and best- and worst-case rank intervals in the sensitivity analysis.</li>
         </ul>
+        <p class="meta">Belton, V., and Stewart, T. J. (2002). <cite>Multiple Criteria Decision Analysis: An Integrated Approach</cite>. Kluwer.</p>
 
         <h2 id="result">Result</h2>
-        <p class="keyresult">A reusable template that turns a municipality's hazards, its stakeholders' priorities and its own scores into a ranked list, with a rank interval for each hazard that shows how robust its position is.</p>
-        <p>We demonstrated the template on the three municipality cases. The full method, the cases and the results are in the thesis on <a href="https://su.diva-portal.org/smash/record.jsf?pid=diva2%3A2075902">DiVA</a>.</p>
+        <p class="keyresult">A reusable procedure rather than a one-off ranking: it turns a municipality's hazards, its stakeholders' priorities and its own scores into a ranked list, with a rank interval for each hazard.</p>
+        <p>The cases from Tampere, Tartu and Malmö, and their results, are in the full thesis on <a href="https://su.diva-portal.org/smash/record.jsf?pid=diva2%3A2075902">DiVA</a>.</p>
+        <p class="meta">Cite as: Hossain, G. S., and Blaskov, V. <cite>Multi-Criteria Threat Evaluation for Local Climate Hazards</cite>. MSc thesis, Stockholm University. Available in DiVA.</p>
 
         <h2 id="next">What I would do next</h2>
         <ul>
           <li>Apply the template in more municipalities and compare how stakeholder priorities differ between them.</li>
           <li>Repeat the stakeholder survey over time to see whether priorities change.</li>
           <li>Check whether the ranking holds under other aggregation methods, as a further robustness test.</li>
-          <li>Turn the template into a simple web tool that a municipality can use without an analyst. The <a href="/projects/decision-analysis-tool/">decision analysis tool</a> on this site is a first, general step in that direction.</li>
+          <li>Turn the template into a simple web tool that a municipality can use with less analyst support. The <a href="/projects/decision-analysis-tool/">decision analysis tool</a> on this site shares some general building blocks (weights, sensitivity analysis, rank intervals), but not the template's rubric scoring or survey.</li>
         </ul>
       </div>
     </div>
@@ -175,7 +177,6 @@
         <li><a href="https://www.linkedin.com/in/gazishafayet" rel="me">LinkedIn</a></li>
         <li><a href="https://github.com/gazish" rel="me">GitHub</a></li>
         <li><a href="/cv/Gazi_Shafayet_Hossain_CV.pdf">CV (PDF)</a></li>
-        <li><a href="/llms.txt">llms.txt</a></li>
       </ul>
       <p class="meta">Plain HTML, CSS and JavaScript. <a href="https://github.com/gazish/gazish.github.io">Source on GitHub</a>.</p>
     </div>

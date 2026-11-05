@@ -52,9 +52,9 @@ function renderKpis() {
   const tiles = [
     { label: 'Net sales', v: fmt.gbpCompact(p2.net_sales), d: p2.net_sales / p1.net_sales - 1, kind: 'pct', good: 'up', spark: series((r) => r.net_sales) },
     { label: 'Orders', v: fmt.int(p2.orders), d: p2.orders / p1.orders - 1, kind: 'pct', good: 'up', spark: series((r) => r.orders) },
-    { label: 'Average order value', v: fmt.gbp(p2.aov), d: p2.aov / p1.aov - 1, kind: 'pct', good: 'up', spark: series((r) => r.aov) },
+    { label: 'Average order value (gross)', v: fmt.gbp(p2.aov), d: p2.aov / p1.aov - 1, kind: 'pct', good: 'up', spark: series((r) => r.aov) },
     { label: 'Active customers', v: fmt.int(p2.active_customers), d: p2.active_customers / p1.active_customers - 1, kind: 'pct', good: 'up', spark: series((r) => r.active_customers) },
-    { label: 'Repeat purchase rate', v: fmt.pct(p2.repeat_rate), d: p2.repeat_rate - p1.repeat_rate, kind: 'pts', good: 'up', note: '2+ orders in the year' },
+    { label: 'Repeat purchase rate', v: fmt.pct(p2.repeat_rate), d: p2.repeat_rate - p1.repeat_rate, kind: 'pts', good: 'up', note: 'customers with 2+ orders in the year' },
     { label: 'Retained from previous year', v: fmt.pct(p2.retained_from_p1), note: 'of P1 customers ordered again in P2' },
     { label: 'Cancellation rate', v: fmt.pct(p2.cancellation_rate), d: p2.cancellation_rate - p1.cancellation_rate, kind: 'pts', good: 'down', spark: series((r) => r.cancelled_value / r.gross_sales) },
     { label: 'Sales without customer ID', v: fmt.pct(p2.unidentified_share), d: p2.unidentified_share - p1.unidentified_share, kind: 'pts', good: 'down', spark: series((r) => r.unidentified_sales / r.gross_sales) },
@@ -131,26 +131,26 @@ const shiftYear = (ym, k) => (+ym.slice(0, 4) + k) + ym.slice(4);
 /* ---------- revenue bridge ---------- */
 function renderBridge() {
   const host = document.getElementById('fig-bridge');
-  const sh = figureShell(host, { id: 'bridge', title: 'Where the change came from', subtitle: 'Change in sales to identified customers, P2 vs P1. The three factors multiply to the total.' });
   const b = D.bridge.find((r) => r.market === market);
+  const sh = figureShell(host, { id: 'bridge', title: 'Where the change came from', subtitle: `From ${fmt.gbpCompact(b.P1.net_sales)} to ${fmt.gbpCompact(b.P2.net_sales)} net sales, P1 to P2. The steps add up to the total.` });
   const rows = [
-    { label: 'Active customers', value: b.change.customers, note: `${fmt.int(b.P1.customers)} → ${fmt.int(b.P2.customers)}` },
-    { label: 'Orders per customer', value: b.change.orders_per_customer, note: `${b.P1.orders_per_customer.toFixed(2)} → ${b.P2.orders_per_customer.toFixed(2)}` },
-    { label: 'Average order value', value: b.change.aov, note: `£${b.P1.aov.toFixed(0)} → £${b.P2.aov.toFixed(0)}` },
-    { label: 'Sales, identified', value: b.change.gross_sales, cls: 'c-ink', note: `${fmt.gbpCompact(b.P1.gross_sales)} → ${fmt.gbpCompact(b.P2.gross_sales)}` },
+    ...b.steps.map((st) => ({ label: st.label, value: st.value, note: st.detail.replace(/GBP /g, '£'), cls: 'c-accent' })),
+    { label: 'Net sales change', value: b.net_change, note: `${fmt.gbp(b.P1.net_sales)} to ${fmt.gbp(b.P2.net_sales)}`, cls: 'c-ink' },
   ];
-  const lim = Math.max(0.03, ...rows.map((r) => Math.abs(r.value))) * 1.1;
-  hBarChart(sh.chart, {
-    rows: rows.map((r) => ({ ...r, cls: r.cls || 'c-accent' })),
-    format: (v) => fmt.signedPct(v), min: -lim, max: lim, labelWidth: 150, valueWidth: 60, rowHeight: 34,
-    ariaLabel: 'Percent change in active customers, orders per customer, average order value and identified sales. A table is available.',
-  });
-  sh.table.replaceChildren(dataTable('Revenue bridge, identified customers', [
-    { label: 'Factor', key: 'label' },
-    { label: 'P1 to P2', get: (r) => r.note },
-    { label: 'Change', num: true, get: (r) => fmt.signedPct(r.value) },
-  ], rows));
+  const lim = Math.max(...rows.map((r) => Math.abs(r.value))) * 1.05;
   sh.legend.hidden = true;
+  hBarChart(sh.chart, {
+    rows, format: (v) => (v > 0 ? '+' : '') + fmt.gbpCompact(v), min: -lim, max: lim, labelWidth: 170, valueWidth: 64, rowHeight: 32,
+    ariaLabel: 'Revenue bridge from P1 to P2 net sales: change from active customers, orders per customer, order value, sales without customer ID and cancellations. A table is available.',
+  });
+  sh.table.replaceChildren(dataTable('Revenue bridge, P1 to P2 net sales', [
+    { label: 'Step', key: 'label' },
+    { label: 'P1 to P2', get: (r) => r.note },
+    { label: 'Effect', num: true, get: (r) => (r.value > 0 ? '+' : '') + fmt.gbp(r.value) },
+  ], rows));
+  let note = host.querySelector('.fig-note');
+  if (!note) { note = h('p', { class: 'fig-note' }); host.appendChild(note); }
+  note.textContent = 'Identified sales are split into customers, orders per customer and order value with the log-mean (LMDI) method, so the three effects add up exactly.';
 }
 
 /* ---------- sales by customer type (P2) ---------- */
@@ -159,9 +159,9 @@ function renderCustomerTypes() {
   const sh = figureShell(host, { id: 'types', title: 'Sales by customer type', subtitle: 'Gross sales per month, Dec 2010 to Nov 2011. New = first purchase in the data.' });
   const rows = monthly().slice(12, 24);
   const series = [
-    { name: 'Returning customers', cls: 'c-s1', values: rows.map((r) => r.returning_customer_sales) },
-    { name: 'New customers', cls: 'c-s2', values: rows.map((r) => r.new_customer_sales) },
-    { name: 'No customer ID', cls: 'c-context', values: rows.map((r) => r.unidentified_sales) },
+    { name: 'Returning customers', cls: 'c-context', values: rows.map((r) => r.returning_customer_sales) },
+    { name: 'New customers', cls: 'c-ink', values: rows.map((r) => r.new_customer_sales) },
+    { name: 'No customer ID', cls: 'c-accent', values: rows.map((r) => r.unidentified_sales) },
   ];
   legend(sh.legend, series);
   stackedColumns(sh.chart, {
@@ -188,7 +188,8 @@ function renderCohorts() {
   const values = c.retention.map((r) => r.slice(1));
   sh.legend.replaceChildren(
     h('span', { class: 'lg-item' }, h('span', { class: 'heat-scale', 'aria-hidden': 'true' }), '0% to 50%+ of the cohort'),
-    h('span', { class: 'lg-item', text: '* Dec 2009 includes customers who bought before the data starts' }));
+    h('span', { class: 'lg-item', text: '* Dec 2009 includes customers who bought before the data starts' }),
+    market === 'International' ? h('span', { class: 'lg-item', text: 'International cohorts are small (often under 30 customers), so single cells move a lot' }) : null);
   heatmap(sh.chart, {
     rowLabels, colLabels: Array.from({ length: 12 }, (_, i) => '+' + (i + 1)),
     values, max: 0.5, format: (v) => fmt.pct(v), cellLabel: (v) => Math.round(v * 100) + '', labelWidth: 62, cellHeight: 21,
@@ -220,19 +221,19 @@ function renderRfm() {
     h('span', { class: 'ibar-track', 'aria-hidden': 'true' }, h('span', { class: 'ibar-fill ' + cls, style: `width:${(v / maxShare * 100).toFixed(1)}%` })),
     h('span', { class: 'ibar-val', text: fmt.pct(v) }));
   const t = h('table', { class: 'rfm-table' },
-    h('caption', { text: 'RFM segments, customers active Dec 2010 to Nov 2011, sorted by net sales' }),
+    h('caption', { text: 'RFM segments, identified customers active Dec 2010 to Nov 2011, sorted by net sales' }),
     h('thead', {}, h('tr', {},
       h('th', { scope: 'col', text: 'Segment' }),
-      h('th', { scope: 'col', class: 'n', text: 'Customers' }),
-      h('th', { scope: 'col', text: 'Share of customers' }),
       h('th', { scope: 'col', text: 'Share of net sales' }),
+      h('th', { scope: 'col', text: 'Share of customers' }),
+      h('th', { scope: 'col', class: 'n', text: 'Customers' }),
       h('th', { scope: 'col', class: 'n', text: 'Median days since last order' }),
       h('th', { scope: 'col', class: 'n', text: 'Median orders' }))),
     h('tbody', {}, rows.map((r) => h('tr', {},
       h('th', { scope: 'row', text: r.segment }),
-      h('td', { class: 'n', text: fmt.int(r.customers) }),
-      h('td', {}, bar(r.share_of_customers, 'c-context')),
       h('td', {}, bar(r.share_of_net_sales, 'c-accent')),
+      h('td', {}, bar(r.share_of_customers, 'c-context')),
+      h('td', { class: 'n', text: fmt.int(r.customers) }),
       h('td', { class: 'n', text: fmt.int(r.median_recency_days) }),
       h('td', { class: 'n', text: String(r.median_orders) })))));
   host.querySelector('.fig-body').replaceChildren(h('div', { class: 'table-wrap', tabindex: '0', role: 'region', 'aria-label': 'RFM segments table' }, t));
@@ -240,7 +241,7 @@ function renderRfm() {
 
 function renderConcentration() {
   const host = document.getElementById('fig-conc');
-  const sh = figureShell(host, { id: 'conc', title: 'Customer concentration', subtitle: `Cumulative share of net sales from the largest customers, Dec 2010 to Nov 2011 (${fmt.int(D.concentration.customers)} customers).` });
+  const sh = figureShell(host, { id: 'conc', title: 'Customer concentration', level: 4, subtitle: `Cumulative share of net sales from the largest identified customers, Dec 2010 to Nov 2011 (${fmt.int(D.concentration.customers)} customers).` });
   const curve = D.concentration.curve;
   legend(sh.legend, [{ name: 'Actual', cls: 'c-accent', line: true }, { name: 'If every customer bought the same', cls: 'c-context', line: true }]);
   lineChart(sh.chart, {
@@ -251,9 +252,9 @@ function renderConcentration() {
     ],
     yFormat: (v) => fmt.pct(v), yTick: (v) => Math.round(v * 100) + '%', yMin: 0, height: 240, xTickEvery: 20,
     tipTitle: (i) => `Top ${i}% of customers`,
-    ariaLabel: `Concentration curve. The top 10% of customers brought ${fmt.pct(D.concentration.top10)} of net sales and the top 1% brought ${fmt.pct(D.concentration.top1)}. A table is available.`,
+    ariaLabel: `Concentration curve. The top 10% of identified customers brought ${fmt.pct(D.concentration.top10)} of their net sales and the top 1% brought ${fmt.pct(D.concentration.top1)}. A table is available.`,
   });
-  sh.table.replaceChildren(dataTable('Share of net sales from the top customers', [
+  sh.table.replaceChildren(dataTable('Share of identified net sales from the top customers', [
     { label: 'Top share of customers', get: (r) => r + '%' },
     { label: 'Share of net sales', num: true, get: (r) => fmt.pct(curve[r]) },
   ], [1, 5, 10, 20, 30, 50, 80]));
@@ -261,13 +262,13 @@ function renderConcentration() {
 
 function renderCountries() {
   const host = document.getElementById('fig-countries');
-  const sh = figureShell(host, { id: 'countries', title: 'International markets', subtitle: 'Net sales by country outside the UK, Dec 2010 to Nov 2011. Hover for growth vs the year before.' });
+  const sh = figureShell(host, { id: 'countries', title: 'International markets', level: 4, subtitle: 'Net sales by country outside the UK, Dec 2010 to Nov 2011, with the number of customers. Growth vs the year before is in the table.' });
   const rows = D.countries.filter((r) => r.country !== 'United Kingdom').slice(0, 10);
   const name = (c) => (c === 'EIRE' ? 'Ireland (EIRE)' : c);
   sh.legend.hidden = true;
   hBarChart(sh.chart, {
-    rows: rows.map((r) => ({ label: name(r.country), value: r.net_sales_p2, cls: 'c-accent', note: `${fmt.signedPct(r.growth)} vs P1, ${fmt.int(r.customers_p2)} customers` })),
-    format: fmt.gbpCompact, labelWidth: 120, valueWidth: 56, rowHeight: 28, valueName: 'net sales',
+    rows: rows.map((r) => ({ label: `${name(r.country)} (${fmt.int(r.customers_p2)})`, value: r.net_sales_p2, cls: 'c-accent', note: `${fmt.signedPct(r.growth)} vs P1, ${fmt.int(r.customers_p2)} customers` })),
+    format: fmt.gbpCompact, labelWidth: 150, valueWidth: 56, rowHeight: 28, valueName: 'net sales',
     ariaLabel: 'Net sales by international country. A table is available.',
   });
   sh.table.replaceChildren(dataTable('Net sales by country (outside the UK)', [
@@ -295,20 +296,22 @@ function renderQuality() {
   const host = document.getElementById('tbl-quality');
   const q = Object.fromEntries(D.data_quality.map((r) => [r.step, r]));
   const rows = [
-    ['Raw invoice lines', q.raw_rows.row_count, null, 'Loaded'],
-    ['Exact duplicate lines', q.exact_duplicates_removed.row_count, null, 'Removed (mostly a 9-day overlap between the two source sheets)'],
-    ['Merchandise sales', q.sale.row_count, q.sale.line_value, 'Kept: basis of sales KPIs'],
-    ['Cancellations', q.cancellation.row_count, q.cancellation.line_value, 'Subtracted to get net sales'],
-    ['Postage, fees, discounts, vouchers, tests', q.non_merchandise.row_count, q.non_merchandise.line_value, 'Excluded'],
-    ['Stock write-offs', q.stock_adjustment.row_count, q.stock_adjustment.line_value, 'Excluded'],
-    ['Zero price lines', q.zero_price.row_count, q.zero_price.line_value, 'Excluded'],
-    ['Bad-debt and manual adjustments', q.accounting_adjustment.row_count, q.accounting_adjustment.line_value, 'Excluded'],
+    ['Raw invoice lines', q.raw_rows, 'Loaded'],
+    ['Exact duplicate lines', q.exact_duplicates_removed, 'Removed (mostly a 9-day overlap between the two source sheets)'],
+    ['Merchandise sales', q.sale, 'Kept: basis of sales KPIs'],
+    ['Cancellations', q.cancellation, 'Subtracted to get net sales'],
+    ['Voided orders (sale and cancellation)', q.voided, 'Excluded from both'],
+    ['Price outliers', q.price_outlier, 'Excluded'],
+    ['Postage, fees, discounts, vouchers, tests', q.non_merchandise, 'Excluded'],
+    ['Stock write-offs', q.stock_adjustment, 'Excluded'],
+    ['Zero price lines', q.zero_price, 'Excluded'],
+    ['Bad-debt and manual adjustments', q.accounting_adjustment, 'Excluded'],
   ];
   host.replaceChildren(dataTable('What happened to every raw row (whole file, Dec 2009 to Dec 2011)', [
     { label: 'Line type', get: (r) => r[0] },
-    { label: 'Rows', num: true, get: (r) => fmt.int(r[1]) },
-    { label: 'Value (GBP)', num: true, get: (r) => (r[2] == null ? '' : fmt.gbp(r[2])) },
-    { label: 'Treatment', get: (r) => r[3] },
+    { label: 'Rows', num: true, get: (r) => fmt.int(r[1].row_count) },
+    { label: 'Value', num: true, get: (r) => (r[1].line_value == null ? '' : fmt.gbp(r[1].line_value)) },
+    { label: 'Treatment', get: (r) => r[2] },
   ], rows));
 }
 

@@ -120,19 +120,19 @@
 
       <div class="case-body">
         <h2 id="findings">Key findings</h2>
-        <p class="keyresult">Net sales were flat (+1.9%) between the two 12-month periods, and sales to identified customers fell 1.3%. The growth that did happen came from international markets and from sales with no customer ID.</p>
+        <p class="keyresult">Net sales grew 1.6% between the two 12-month periods. By market, all of the growth was outside the UK. By customer, sales to identified customers fell 2.6%, so the rise is in sales with no customer ID.</p>
         <ul>
-          <li><strong>UK flat, international up.</strong> UK net sales changed by -0.1%; international net sales grew 14.1% and reached 15.5% of the total.</li>
-          <li><strong>Fewer, larger orders.</strong> Orders fell 4.0% while average order value rose 6.8%, from £476 to £508.</li>
-          <li><strong>A measurement gap is growing.</strong> Sales without a customer ID rose from 11.3% to 14.6% of gross sales, so customer KPIs cover less of the business than a year earlier.</li>
-          <li><strong>Sales are concentrated.</strong> The top 10% of customers brought 60.0% of net sales. 371 "At risk" customers (median four orders, 116 days since the last one) are a ready-made reactivation list worth £555k a year.</li>
+          <li><strong>UK flat, international up.</strong> UK net sales fell 0.4%; international net sales grew 14.1% to 15.6% of the total. A few wholesale customers drive this: Australia (9 customers) added £108k, Ireland (3 customers) fell £91k.</li>
+          <li><strong>Larger orders only where there is no customer ID.</strong> Average order value rose 5.7%, but for identified customers it barely moved (£456 to £459). Orders without an ID went from £685 to £1,055.</li>
+          <li><strong>A measurement gap is growing.</strong> Sales without a customer ID rose from 11.3% to 14.8% of gross sales, so customer KPIs cover less of the business than a year earlier.</li>
+          <li><strong>Sales are concentrated.</strong> The top 10% of identified customers brought 59.9% of their net sales. 360 "At risk" customers (median four orders, 118 days since the last one) spent £491k in the last 12 months, which makes them the obvious group for a reactivation test.</li>
         </ul>
         <p class="meta">P1 = Dec 2009 to Nov 2010, P2 = Dec 2010 to Nov 2011. December 2011 has only nine days of data and is left out.</p>
       </div>
     </div>
   </div>
 
-  <section class="section container" aria-labelledby="dashboard-title" id="dashboard-section">
+  <div class="container"><section class="section" aria-labelledby="dashboard-title" id="dashboard-section">
     <div class="section-head">
       <h2 id="dashboard-title">Dashboard</h2>
       <p>The market filter applies to the tiles and the four charts below it. Every chart has a table view. On a chart, use the arrow keys to move between values.</p>
@@ -173,33 +173,33 @@
       <h3 class="dash-subhead">All markets, Dec 2010 to Nov 2011 <span class="meta">(not affected by the market filter)</span></h3>
       <div class="dash-grid cols-2">
         <figure class="fig span-2" id="fig-rfm" aria-labelledby="rfm-title">
-          <div class="fig-head"><div><h3 class="fig-title" id="rfm-title">Customer segments (RFM)</h3><p class="fig-sub">Recency, frequency and monetary scores from 1 to 5, grouped into the usual segments. Grey bars: share of customers. Orange bars: share of net sales.</p></div></div>
+          <div class="fig-head"><div><h4 class="fig-title" id="rfm-title">Customer segments (RFM)</h4><p class="fig-sub">Identified customers only. Segments come from the recency and frequency scores (1 to 5) on the usual grid. Orange bars: share of their net sales. Grey bars: share of customers.</p></div></div>
           <div class="fig-body"></div>
         </figure>
         <figure class="fig" id="fig-conc" aria-labelledby="conc-title"></figure>
         <figure class="fig" id="fig-countries" aria-labelledby="countries-title"></figure>
         <figure class="fig span-2" aria-labelledby="products-title">
-          <div class="fig-head"><div><h3 class="fig-title" id="products-title">Top products</h3><p class="fig-sub">Cancelled = share of the product's gross sales that was cancelled.</p></div></div>
+          <div class="fig-head"><div><h4 class="fig-title" id="products-title">Top products</h4><p class="fig-sub">Cancelled = share of the product's gross sales that was cancelled.</p></div></div>
           <div id="tbl-products"></div>
         </figure>
       </div>
     </div>
-  </section>
+  </section></div>
 
   <div class="container">
     <div class="case-layout">
       <div class="case-body">
         <h2 id="problem">Problem</h2>
-        <p>The question I set myself: if I joined this retailer as an analyst, what would management need to see each month, and can the raw export support it? The file is a typical operational export. It has duplicate lines, cancellations mixed in with sales, postage and bank fees recorded as products, accounting adjustments, and no customer ID on almost a quarter of the lines.</p>
+        <p>The question I set myself: if I joined this retailer as an analyst, what would management need to see each month, and can the raw export support it? The file is a typical operational export. It has duplicate lines, cancellations mixed in with sales, postage and bank fees recorded as products, accounting adjustments, and no customer ID on 22.6% of the sales lines (13.3% of sales value).</p>
 
         <h2 id="approach">Approach</h2>
         <ol class="flow">
           <li><strong>Load and profile</strong><span>Loaded the CSV into DuckDB with explicit types and profiled every column: date range, invoice prefixes, stock codes that are not products, missing IDs.</span></li>
-          <li><strong>Clean with explicit rules</strong><span>Removed exact duplicates and gave every line a type (sale, cancellation, fee, write-off, adjustment). Nothing is silently dropped: the table below accounts for every raw row.</span></li>
+          <li><strong>Clean with explicit rules</strong><span>Removed exact duplicates and gave every line a type: sale, cancellation, voided order, price outlier, fee, write-off or adjustment. Nothing is silently dropped: the table below accounts for every raw row.</span></li>
           <li><strong>Define the KPIs before computing them</strong><span>Net sales, orders, average order value, active customers, repeat rate, retention, cancellation rate and the share of sales without a customer ID, each with a written definition.</span></li>
           <li><strong>Build the metrics in SQL</strong><span>Monthly and 12-month KPIs by market with grouping sets, acquisition cohorts, RFM scores with window functions, and country and product summaries.</span></li>
-          <li><strong>Check the numbers</strong><span>The Python script reconciles totals across tables and markets, then recomputes the headline KPIs in pandas, independently of the SQL, and stops if anything disagrees.</span></li>
-          <li><strong>Present</strong><span>Exported compact aggregates (38 KB of JSON) for this dashboard, with a table view for every chart.</span></li>
+          <li><strong>Check the numbers</strong><span>The Python script compares numbers computed in different ways (markets against the total, months against years, duplicates counted from the raw table), recomputes the headline KPIs in pandas independently of the SQL, and stops if anything disagrees.</span></li>
+          <li><strong>Present</strong><span>Exported compact aggregates (about 40 KB of JSON) for this dashboard, with a table view for every chart.</span></li>
         </ol>
 
         <details>
@@ -230,12 +230,14 @@
             <tbody>
               <tr><th scope="row">Raw invoice lines</th><td class="n">1,067,371</td><td>Loaded</td></tr>
               <tr><th scope="row">Exact duplicate lines</th><td class="n">34,335</td><td>Removed</td></tr>
-              <tr><th scope="row">Merchandise sales</th><td class="n">1,003,357</td><td>Kept</td></tr>
-              <tr><th scope="row">Cancellations</th><td class="n">17,915</td><td>Subtracted to get net sales</td></tr>
+              <tr><th scope="row">Merchandise sales</th><td class="n">1,001,296</td><td>Kept</td></tr>
+              <tr><th scope="row">Cancellations</th><td class="n">16,598</td><td>Subtracted to get net sales</td></tr>
+              <tr><th scope="row">Voided orders</th><td class="n">2,634</td><td>Excluded from sales and cancellations</td></tr>
             </tbody>
           </table></div>
         </div>
         <p>Most duplicates (22,844 rows) come from 1 to 9 December 2010, which appears in both yearly sheets of the source workbook. The rest (11,491 rows, 0.3% of sales value) are identical lines on the same invoice within the same minute, which I also treat as duplicates.</p>
+        <p>Two rules changed the story. <strong>Voided orders:</strong> a sale cancelled by the same customer within a day (same product, quantity and price) is left out of both sales and cancellations. Without this rule, one order of 74,215 storage jars (£77k), cancelled 16 minutes later, made cancellations look as if they had risen; in fact they went from 2.0% to 1.9% of gross sales. <strong>Price outliers:</strong> a unit price above 10 times the product's median is treated as a pricing error. The largest is 60 picnic baskets at £649.50 each, credited back with a manual line. Manual credit lines (−£276k in P1, −£146k in P2) cannot be tied to products and are excluded; counting them would raise growth from 1.6% to 3.1%.</p>
 
         <h2 id="tools">Tools</h2>
         <ul>
@@ -245,12 +247,12 @@
         </ul>
 
         <h2 id="result">Result</h2>
-        <p>A pipeline that turns the raw file into a small set of defined, reconciled KPIs in a few seconds, and a dashboard that answers three questions: is the business growing, where is the change coming from, and which customers matter most. The full list of findings and the KPI definitions are in the <a href="https://github.com/gazish/gazish.github.io/blob/main/projects/online-retail-analytics/README.md">project README</a>.</p>
+        <p>A pipeline that turns the raw file into a small set of defined, checked KPIs in a few seconds, and a dashboard that answers three questions: is the business growing, where is the change coming from, and which customers matter most. The full list of findings and the KPI definitions are in the <a href="https://github.com/gazish/gazish.github.io/blob/main/projects/online-retail-analytics/README.md">project README</a>.</p>
 
         <h2 id="next">What I would do next</h2>
         <ul>
-          <li>Find out why almost a quarter of lines have no customer ID, and whether those sales can be matched to accounts. Until then, customer KPIs understate the business.</li>
-          <li>Add cost data so the dashboard can show gross margin, not only sales.</li>
+          <li>Find out why so many lines have no customer ID, and whether those sales can be matched to accounts. Until then, customer KPIs understate the business.</li>
+          <li>Add cost data so the dashboard can show gross margin.</li>
           <li>Map stock codes to product categories and add category KPIs.</li>
           <li>Test a reactivation offer on the "At risk" segment against a holdout group, and measure the difference in orders.</li>
           <li>Schedule the pipeline and turn the checks into automated data tests.</li>
@@ -275,7 +277,6 @@
         <li><a href="https://www.linkedin.com/in/gazishafayet" rel="me">LinkedIn</a></li>
         <li><a href="https://github.com/gazish" rel="me">GitHub</a></li>
         <li><a href="/cv/Gazi_Shafayet_Hossain_CV.pdf">CV (PDF)</a></li>
-        <li><a href="/llms.txt">llms.txt</a></li>
       </ul>
       <p class="meta">Plain HTML, CSS and JavaScript. <a href="https://github.com/gazish/gazish.github.io">Source on GitHub</a>.</p>
     </div>

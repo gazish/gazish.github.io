@@ -117,7 +117,6 @@ function footer() {
         <li><a href="${LINKS.linkedin}" rel="me">LinkedIn</a></li>
         <li><a href="${LINKS.github}" rel="me">GitHub</a></li>
         <li><a href="${LINKS.cv}">CV (PDF)</a></li>
-        <li><a href="/llms.txt">llms.txt</a></li>
       </ul>
       <p class="meta">Plain HTML, CSS and JavaScript. <a href="https://github.com/gazish/gazish.github.io">Source on GitHub</a>.</p>
     </div>

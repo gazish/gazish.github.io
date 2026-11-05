@@ -30,12 +30,12 @@ const nf0 = new Intl.NumberFormat('en-GB', { maximumFractionDigits: 0 });
 const nf1 = new Intl.NumberFormat('en-GB', { maximumFractionDigits: 1, minimumFractionDigits: 1 });
 export const fmt = {
   int: (v) => nf0.format(v),
-  gbp: (v) => '£' + nf0.format(v),
+  gbp: (v) => (v < 0 ? '−' : '') + '£' + nf0.format(Math.abs(v)),
   gbpCompact(v) {
-    const a = Math.abs(v);
-    if (a >= 1e6) return (v < 0 ? '-' : '') + '£' + (a / 1e6).toFixed(a >= 1e7 ? 1 : 2) + 'M';
-    if (a >= 1e3) return (v < 0 ? '-' : '') + '£' + (a / 1e3).toFixed(a >= 1e5 ? 0 : 1) + 'k';
-    return (v < 0 ? '-' : '') + '£' + a.toFixed(0);
+    const a = Math.abs(v), sign = v < 0 ? '−' : '';
+    if (a >= 1e6) return sign + '£' + (a / 1e6).toFixed(a >= 1e7 ? 1 : 2) + 'M';
+    if (a >= 1e3) return sign + '£' + (a / 1e3).toFixed(a >= 1e5 ? 0 : 1) + 'k';
+    return sign + '£' + a.toFixed(0);
   },
   compact(v) {
     const a = Math.abs(v);
@@ -89,9 +89,12 @@ export function mount(container, draw) {
 export function tooltip(host) {
   host.classList.add('chart-host');
   const tip = h('div', { class: 'chart-tip', 'aria-hidden': 'true' });
-  host.appendChild(tip);
+  // the visual tooltip is hidden from screen readers; this live region reads the same values out
+  const live = h('div', { class: 'visually-hidden', 'aria-live': 'polite' });
+  host.append(tip, live);
   return {
     show(x, y, title, rows) {
+      live.textContent = [title, ...rows.map((r) => (r.label ? r.label + ': ' : '') + r.value)].filter(Boolean).join('. ');
       tip.replaceChildren();
       if (title) tip.appendChild(h('div', { class: 'tip-title', text: title }));
       for (const r of rows) {
@@ -328,7 +331,7 @@ export function heatmap(container, opts) {
   const draw = (W) => {
     plot.replaceChildren();
     const R = opts.rowLabels.length, C = opts.colLabels.length;
-    const labelW = opts.labelWidth || 64;
+    const labelW = Math.min(opts.labelWidth || 64, W * 0.38);
     const cw = Math.max(18, (W - labelW - 4) / C);
     const ch = opts.cellHeight || 22;
     const top = 22;
@@ -340,15 +343,17 @@ export function heatmap(container, opts) {
     });
     const cells = [];
     opts.rowLabels.forEach((rl, i) => {
-      svg('text', { x: labelW - 8, y: top + ch * i + ch / 2 + 4, 'text-anchor': 'end', class: 'tick' }, s).textContent = rl;
+      const maxChars = Math.max(4, Math.floor((labelW - 8) / 6));
+      svg('text', { x: labelW - 8, y: top + ch * i + ch / 2 + 4, 'text-anchor': 'end', class: 'tick' }, s).textContent = rl.length > maxChars ? rl.slice(0, maxChars - 1) + '…' : rl;
       cells[i] = [];
       opts.values[i].forEach((v, j) => {
         if (v == null) return;
         const a = Math.max(0.06, Math.min(1, v / opts.max));
-        const r = svg('rect', { x: labelW + cw * j + 1, y: top + ch * i + 1, width: cw - 2, height: ch - 2, rx: 3, class: 'heat-cell', style: `fill-opacity:${a.toFixed(3)}` }, s);
+        // --heat-max caps the darkest cell per theme so the text on it keeps enough contrast
+        const r = svg('rect', { x: labelW + cw * j + 1, y: top + ch * i + 1, width: cw - 2, height: ch - 2, rx: 3, class: 'heat-cell', style: `fill-opacity:calc(var(--heat-max) * ${a.toFixed(3)})` }, s);
         cells[i][j] = r;
         if (showText && (opts.textFor ? opts.textFor(i, j) : true)) {
-          const t = svg('text', { x: labelW + cw * j + cw / 2, y: top + ch * i + ch / 2 + 4, 'text-anchor': 'middle', class: 'heat-text' + (a > 0.55 ? ' on-dark' : '') }, s);
+          const t = svg('text', { x: labelW + cw * j + cw / 2, y: top + ch * i + ch / 2 + 4, 'text-anchor': 'middle', class: 'heat-text' }, s);
           t.textContent = opts.cellLabel ? opts.cellLabel(v) : opts.format(v);
         }
         r.addEventListener('pointermove', () => show(i, j));
@@ -405,13 +410,13 @@ export function dataTable(caption, columns, rows) {
 
 // A figure with a title, the chart, a legend slot and a "Show table" toggle.
 // Re-rendering into the same host reuses the shell, so an open table stays open.
-export function figureShell(host, { title, subtitle, id }) {
+export function figureShell(host, { title, subtitle, id, level = 3 }) {
   let sh = host._shell;
   if (!sh) {
     host.replaceChildren();
     const tableId = id + '-table';
     const btn = h('button', { type: 'button', class: 'btn btn-small table-toggle', 'aria-expanded': 'false', 'aria-controls': tableId, text: 'Show table' });
-    const titleEl = h('h3', { class: 'fig-title', id: id + '-title' });
+    const titleEl = h('h' + level, { class: 'fig-title', id: id + '-title' });
     const subEl = h('p', { class: 'fig-sub' });
     const head = h('div', { class: 'fig-head' }, h('div', {}, titleEl, subEl), btn);
     const legendEl = h('div', { class: 'fig-legend' });

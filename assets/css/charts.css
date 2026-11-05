@@ -20,7 +20,6 @@
 .chart-svg .heat-cell { fill: var(--accent-mark); stroke: none; }
 .chart-svg .heat-cell.hover { stroke: var(--ink); stroke-width: 1.5; }
 .chart-svg .heat-text { font-size: 10.5px; fill: var(--ink); pointer-events: none; }
-.chart-svg .heat-text.on-dark { fill: #fff; }
 .chart-svg .ann { font-size: 12px; fill: var(--ink-2); }
 .chart-svg .ann-strong { font-size: 12.5px; fill: var(--ink); font-weight: 650; }
 .chart-svg .ref-line { stroke: var(--ink-2); stroke-width: 1; }
@@ -37,6 +36,7 @@
 .c-s5 { stroke: var(--s5); fill: var(--s5); }
 .c-s6 { stroke: var(--s6); fill: var(--s6); }
 .c-s7 { stroke: var(--s7); fill: var(--s7); }
+.c-s8 { stroke: var(--s8); fill: var(--s8); }
 .line.c-accent, .line.c-context, .line.c-ink, .line[class*="c-s"] { fill: none; }
 .bar.c-accent, .bar.c-context, .bar.c-ink, .bar[class*="c-s"], .dot { stroke: none; }
 .dot { stroke: var(--surface) !important; }
@@ -72,6 +72,7 @@
 .k-box.c-s5, .k-line.c-s5 { background: var(--s5); border-color: var(--s5); }
 .k-box.c-s6, .k-line.c-s6 { background: var(--s6); border-color: var(--s6); }
 .k-box.c-s7, .k-line.c-s7 { background: var(--s7); border-color: var(--s7); }
+.k-box.c-s8, .k-line.c-s8 { background: var(--s8); border-color: var(--s8); }
 .k-line[class*="c-s"] { background: transparent; }
 
 /* figure cards */
@@ -80,7 +81,11 @@
   padding: 1rem 1rem 0.75rem; margin: 0; min-width: 0;
 }
 @media (min-width: 40em) { .fig { padding: 1.25rem 1.25rem 1rem; } }
-.fig-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.6rem; }
+.fig-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; column-gap: 0.75rem; margin-bottom: 0.6rem; }
+.fig-head > div { display: contents; }
+.fig-head .fig-title { grid-column: 1; grid-row: 1; align-self: center; }
+.fig-head .table-toggle { grid-column: 2; grid-row: 1; }
+.fig-head .fig-sub { grid-column: 1 / -1; margin-top: 0.2rem; }
 .fig-title { font-size: 1.02rem; margin: 0 0 0.15rem; letter-spacing: -0.01em; }
 .fig-sub { font-size: 0.85rem; color: var(--ink-2); margin: 0; }
 .fig-chart { min-height: 40px; }
@@ -90,7 +95,7 @@
 .table-toggle { flex: none; }
 
 /* segmented control (radio group styled as buttons) */
-.seg { display: inline-flex; flex-wrap: nowrap; overflow-x: auto; max-width: 100%; gap: 0; border: 1px solid var(--line-strong); border-radius: 999px; padding: 3px; background: var(--surface); margin: 0; }
+.seg { display: inline-flex; flex-wrap: nowrap; overflow-x: auto; max-width: 100%; min-inline-size: 0; gap: 0; border: 1px solid var(--control); border-radius: 999px; padding: 3px; background: var(--surface); margin: 0; }
 .seg legend { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 .seg input { position: absolute; opacity: 0; width: 1px; height: 1px; }
 .seg label { display: inline-flex; align-items: center; white-space: nowrap; min-height: 36px; padding: 0 0.85rem; border-radius: 999px; cursor: pointer; font-size: 0.9rem; font-weight: 600; color: var(--ink-2); }
@@ -132,7 +137,7 @@
 .ibar-fill.c-context { background: var(--de-emph); }
 .ibar-val { flex: none; width: 3.2rem; text-align: right; font-size: 0.875rem; }
 .rfm-table td, .rfm-table th { vertical-align: middle; }
-.heat-scale { display: inline-block; width: 84px; height: 10px; border-radius: 3px; background: linear-gradient(90deg, rgba(226, 88, 31, 0.06), var(--accent-mark)); }
+.heat-scale { display: inline-block; width: 84px; height: 10px; border-radius: 3px; background: linear-gradient(90deg, rgba(226, 88, 31, 0.06), rgba(226, 88, 31, var(--heat-max))); }
 .dash-subhead { font-size: 1.15rem; margin: 2.5rem 0 1rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }
 .dash-subhead .meta { font-weight: 450; font-size: 0.9rem; }
 @media (max-width: 30em) {

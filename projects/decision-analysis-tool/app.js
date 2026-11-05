@@ -1,5 +1,6 @@
 // Decision analysis tool: interface. The maths lives in mcda.js.
 import * as M from './mcda.js';
+import { encodeState, decodeState, LIMITS } from './share.js';
 import { h, svg, fmt, mount, tooltip, hBarPath, heatmap, dataTable, figureShell, legend } from '/assets/js/charts.js';
 
 /* ---------- example (illustrative, made-up numbers) ---------- */
@@ -39,14 +40,16 @@ const UNC = [
 ];
 const KAPPA = [
   { v: 0, label: 'Fixed at the current weights' },
-  { v: 200, label: 'Small changes around the current weights' },
-  { v: 50, label: 'Moderate changes around the current weights' },
-  { v: 10, label: 'Large changes around the current weights' },
+  { v: 200, label: 'Small changes (a 30% weight varies by about ±3 points)' },
+  { v: 50, label: 'Moderate changes (a 30% weight varies by about ±6 points)' },
+  { v: 10, label: 'Large changes (a 30% weight varies by about ±14 points)' },
   { v: 'uniform', label: 'Any weights at all (no preference information)' },
 ];
 const VERBAL = { 2: 'slightly', 3: 'moderately', 4: 'moderately to strongly', 5: 'strongly', 6: 'strongly to very strongly', 7: 'very strongly', 8: 'very to extremely', 9: 'extremely' };
-const MAX_ALTS = 8, MAX_CRIT = 7;
-const CLS = (j) => 'c-s' + (j + 1);
+const MAX_ALTS = LIMITS.maxAlts, MAX_CRIT = LIMITS.maxCrit;
+// categorical slots without orange, which is the site's accent colour (validated for colour blindness)
+const SLOTS = [1, 3, 4, 5, 6, 7, 8];
+const CLS = (j) => 'c-s' + SLOTS[j];
 
 let S = clone(EXAMPLE);
 let sensCrit = 2;
@@ -168,7 +171,8 @@ function renderWeights() {
     const id = 'pt-' + c.id;
     const out = h('output', { for: id, class: 'w-out', id: id + '-out', text: fmt.pct(w[j], 0) });
     return h('div', { class: 'w-row' },
-      h('label', { for: id, class: 'w-label' }, h('span', { class: 'k-box ' + CLS(j), 'aria-hidden': 'true' }), c.name),
+      h('label', { for: id, class: 'w-label' }, h('span', { class: 'k-box ' + CLS(j), 'aria-hidden': 'true' }),
+        h('span', {}, c.name, h('span', { class: 'w-range', text: rangeText(j) }))),
       h('input', { type: 'range', id, min: 0, max: 100, step: 1, value: S.points[j], 'aria-describedby': id + '-out',
         oninput: (e) => { S.points[j] = +e.target.value; refreshDirectOutputs(); update(); } }),
       out);
@@ -180,6 +184,14 @@ function renderWeights() {
   $('ahp-list').replaceChildren(...rows);
   renderAhpSummary();
 }
+function rangeText(j) {
+  const col = S.matrix.map((r) => r[j]);
+  const c = S.criteria[j];
+  const lo = Math.min(...col), hi = Math.max(...col);
+  const [worst, best] = c.dir === 'min' ? [hi, lo] : [lo, hi];
+  return `from ${fmtNum(worst)} to ${fmtNum(best)}${c.unit && !/to/.test(c.unit) ? ' ' + c.unit : ''}`;
+}
+const fmtNum = (x) => (Math.abs(x) >= 100 ? Math.round(x) : +x.toFixed(2)).toLocaleString('en-GB');
 function refreshDirectOutputs() {
   const w = M.normalizeWeights(S.points);
   S.criteria.forEach((c, j) => { const o = $('pt-' + c.id + '-out'); if (o) o.textContent = fmt.pct(w[j], 0); });
@@ -213,26 +225,33 @@ function pairRow(i, j) {
 }
 function renderAhpSummary() {
   const r = ahpResult();
-  const ok = r.cr <= 0.1;
   const n = S.criteria.length;
+  const limit = M.crThreshold(n);
+  const ok = r.cr <= limit;
   const host = $('ahp-summary');
   const items = [
     h('div', { class: 'cr ' + (ok ? 'cr-ok' : 'cr-bad') },
       h('span', { class: 'cr-label', text: 'Consistency ratio' }),
       h('strong', { class: 'cr-value', text: n > 2 ? r.cr.toFixed(3) : 'n/a' }),
-      h('span', { class: 'cr-verdict' }, h('span', { 'aria-hidden': 'true', text: ok ? '✓ ' : '! ' }), n > 2 ? (ok ? 'Acceptable (0.10 or less)' : 'Above 0.10: revisit some judgements') : 'Needs 3 or more criteria')),
+      h('span', { class: 'cr-verdict' }, h('span', { 'aria-hidden': 'true', text: ok ? '✓ ' : '! ' }),
+        n > 2 ? (ok ? `Acceptable (${limit.toFixed(2)} or less for n = ${n})` : `Above ${limit.toFixed(2)}: revisit some judgements`) : 'Needs 3 or more criteria')),
     h('p', { class: 'meta', text: `λmax = ${r.lambdaMax.toFixed(3)}, CI = ${r.ci.toFixed(3)}, RI = ${n > 2 ? r.ri.toFixed(2) : '0'} for n = ${n}.` }),
   ];
-  const flagKey = r.worst && r.worst.deviation > 0.15 ? pairKey(r.worst.i, r.worst.j) : null;
+  const flagKey = !ok && r.worst ? pairKey(r.worst.i, r.worst.j) : null;
   document.querySelectorAll('#ahp-list .pair').forEach((el) => el.classList.toggle('flag', el.dataset.key === flagKey));
-  if (flagKey) {
+  if (r.worst && n > 2) {
     const { i, j, suggested } = r.worst;
     const key = pairKey(i, j);
     const sp = ratioToPos(suggested);
-    items.push(h('div', { class: 'hint' },
-      h('p', {}, h('strong', { text: 'Least consistent judgement: ' }), `${S.criteria[i].name} vs ${S.criteria[j].name}. `,
-        `Your other judgements imply about ${suggested >= 1 ? suggested : '1/' + Math.round(1 / suggested)} here: "${pairText(i, j, sp)}".`),
-      sp !== (S.pairs[key] ?? 0) ? h('button', { type: 'button', class: 'btn btn-small', onclick: () => { S.pairs[key] = sp; renderWeights(); update(); } }, 'Use the suggested judgement') : null));
+    const frac = suggested >= 1 ? String(suggested) : '1/' + Math.round(1 / suggested);
+    if (!ok) {
+      items.push(h('div', { class: 'hint' },
+        h('p', {}, h('strong', { text: 'Least consistent judgement: ' }), `${S.criteria[i].name} vs ${S.criteria[j].name}. `,
+          `Your other judgements imply about ${frac} here: "${pairText(i, j, sp)}".`),
+        sp !== (S.pairs[key] ?? 0) ? h('button', { type: 'button', class: 'btn btn-small', onclick: () => { S.pairs[key] = sp; renderWeights(); update(); } }, 'Use the suggested judgement') : null));
+    } else {
+      items.push(h('p', { class: 'meta', text: `Least consistent judgement: ${S.criteria[i].name} vs ${S.criteria[j].name}. No change is needed at this consistency ratio.` }));
+    }
   }
   items.push(h('div', { class: 'table-wrap' }, h('table', {},
     h('caption', { text: 'Weights derived from the pairwise comparisons (principal eigenvector)' }),
@@ -290,9 +309,8 @@ function renderResults() {
         });
         p.addEventListener('pointerleave', () => tip.hide());
       });
-      svg('text', { x: W - valW + 4, y: y0 + labelH + 4 + barH - 3, class: 'bar-value' + (r === 0 ? ' strong' : '') }, s).textContent = (m.scores[i] * 100).toFixed(1);
+      svg('text', { x: x(m.scores[i]) + 6, y: y0 + labelH + 4 + barH - 3, class: 'bar-value' + (r === 0 ? ' strong' : '') }, s).textContent = (m.scores[i] * 100).toFixed(1);
     });
-    svg('line', { x1: 0.5, x2: 0.5, y1: labelH, y2: H, class: 'axis-line' }, s);
   });
   sh.table.replaceChildren(dataTable('Scores and contributions (points out of 100)', [
     { label: 'Rank', get: (i) => String(m.rk[i]) },
@@ -304,7 +322,7 @@ function renderResults() {
   // plain-language summary + live region
   const a = m.order[0], b = m.order[1];
   const gap = (m.scores[a] - m.scores[b]) * 100;
-  const text = `${S.alternatives[a]} ranks first with ${(m.scores[a] * 100).toFixed(1)} points, ${gap.toFixed(1)} ahead of ${S.alternatives[b]}.`;
+  const text = `${S.alternatives[a]} ranks first with ${(m.scores[a] * 100).toFixed(1)} points, ${gap.toFixed(1)} points ahead of ${S.alternatives[b]}.`;
   $('rank-summary').textContent = text;
   clearTimeout(renderResults.t);
   renderResults.t = setTimeout(() => { $('live').textContent = text; }, 800);
@@ -316,8 +334,8 @@ function renderSensitivity() {
   const m = model();
   const ivs = S.criteria.map((_, j) => M.stabilityInterval(m.v, m.w, j, m.top));
   // tolerance: smallest weight change (percentage points) that changes the winner
-  const tol = ivs.map((iv, j) => Math.min(iv.lo > 0 ? m.w[j] - iv.lo : Infinity, iv.hi < 1 ? iv.hi - m.w[j] : Infinity));
-  const crit = tol.indexOf(Math.min(...tol));
+  const tolerance = M.weightTolerance(m.v, m.w, m.top);
+  const crit = tolerance ? tolerance.j : -1;
   const host = $('fig-stability');
   const sh = figureShell(host, { id: 'stability', title: 'How far can each weight move?', subtitle: `Range of each criterion's weight in which ${S.alternatives[m.top]} stays first. The other weights keep their proportions.` });
   sh.legend.replaceChildren(
@@ -360,11 +378,9 @@ function renderSensitivity() {
     { label: 'Takes over below', get: (j) => (ivs[j].below != null ? S.alternatives[ivs[j].below] : 'none') },
     { label: 'Takes over above', get: (j) => (ivs[j].above != null ? S.alternatives[ivs[j].above] : 'none') },
   ], S.criteria.map((_, j) => j)));
-  const iv = ivs[crit];
-  const dir = (m.w[crit] - iv.lo) <= (iv.hi - m.w[crit]) && iv.lo > 0 ? 'down' : 'up';
-  const who = dir === 'down' ? iv.below : iv.above;
-  $('stability-summary').textContent = Number.isFinite(tol[crit])
-    ? `Most sensitive weight: ${S.criteria[crit].name}. Moving it ${dir} by ${(tol[crit] * 100).toFixed(1)} percentage points (from ${fmt.pct(m.w[crit])} to ${fmt.pct(dir === 'down' ? iv.lo : iv.hi)}) makes ${S.alternatives[who]} the top option.`
+  const t = M.weightTolerance(m.v, m.w, m.top);
+  $('stability-summary').textContent = t
+    ? `Most sensitive weight: ${S.criteria[t.j].name}. Moving it ${t.dir} by ${(t.by * 100).toFixed(1)} percentage points (from ${fmt.pct(t.from)} to ${fmt.pct(t.to)}) makes ${S.alternatives[t.newTop]} the top option.`
     : `${S.alternatives[m.top]} stays first whatever single weight you change.`;
 
   // sweep chart
@@ -380,7 +396,8 @@ function renderSweep(m, iv) {
   const j = sensCrit;
   const host = $('fig-sweep');
   const sh = figureShell(host, { id: 'sweep', title: `Scores as the weight of ${S.criteria[j].name} changes`, subtitle: 'Each line is one option. The shaded band is where the current top option stays first.' });
-  legend(sh.legend, [{ name: 'Currently first: ' + S.alternatives[m.top], cls: 'c-accent', line: true }, { name: 'Other options (labelled at the right)', cls: 'c-context', line: true }]);
+  const narrowSweep = sh.chart.clientWidth > 0 && sh.chart.clientWidth < 480;
+  legend(sh.legend, [{ name: 'Currently first: ' + S.alternatives[m.top], cls: 'c-accent', line: true }, { name: narrowSweep ? 'Other options (see the tooltip or table)' : 'Other options (labelled at the right)', cls: 'c-context', line: true }]);
   const sw = M.sweep(m.v, m.w, j, 101);
   const tip = tooltip(sh.chart);
   const plot = h('div', { class: 'chart-plot', tabindex: '0', role: 'img', 'aria-label': `Line chart of each option's score as the weight of ${S.criteria[j].name} goes from 0 to 100%. Use arrow keys to read values. A table is available.` });
@@ -388,7 +405,8 @@ function renderSweep(m, iv) {
   let cur = Math.round(m.w[j] * 100);
   mount(sh.chart, (W) => {
     plot.replaceChildren();
-    const labW = Math.max(96, Math.min(190, W * 0.3));
+    const narrow = W < 480;
+    const labW = narrow ? 0 : Math.min(190, W * 0.3);
     const mg = { t: 12, r: labW + 12, b: 30, l: 40 };
     const H = 280;
     const x = (t) => mg.l + t * (W - mg.l - mg.r);
@@ -408,7 +426,7 @@ function renderSweep(m, iv) {
       svg('path', { d, class: 'line ' + (i === m.top ? 'c-accent' : 'c-context') }, s);
     });
     // direct labels at the right end, spread apart with leader lines
-    {
+    if (!narrow) {
       const ends = sw.scores.map((row, i) => ({ i, y: y(row[row.length - 1]) })).sort((a, b) => a.y - b.y);
       const gap = 15;
       let prev = -Infinity;
@@ -481,12 +499,14 @@ function renderMc() {
     ...Array.from({ length: n }, (_, k) => ({ label: ordinal(k + 1), num: true, get: (i) => fmt.pct(r.acceptability[i][k]) })),
   ], order));
 
-  // rank intervals
+  // rank intervals: exact best/worst case for the value uncertainty at the current weights,
+  // and the simulated 5th to 95th percentile range
+  const exact = M.exactRankIntervals(m.scores, m.w, mc.scores ? S.criteria.map((c) => c.unc) : S.criteria.map(() => 0));
   const host2 = $('fig-intervals');
-  const sh2 = figureShell(host2, { id: 'intervals', title: 'Rank intervals', subtitle: 'Best to worst rank seen in the scenarios (thin line), the middle 90% (thick bar) and the current rank (dot).' });
+  const sh2 = figureShell(host2, { id: 'intervals', title: 'Rank intervals', subtitle: 'Thin line: exact best- and worst-case rank when the table values move within their uncertainty (current weights). Thick bar: middle 90% of the simulated ranks. Dot: current rank.' });
   sh2.legend.replaceChildren(
-    h('span', { class: 'lg-item' }, h('span', { class: 'k-line c-context', 'aria-hidden': 'true' }), 'Best to worst'),
-    h('span', { class: 'lg-item' }, h('span', { class: 'k-box c-accent', 'aria-hidden': 'true' }), '5th to 95th percentile'),
+    h('span', { class: 'lg-item' }, h('span', { class: 'k-line c-ink', 'aria-hidden': 'true' }), 'Best to worst case (exact)'),
+    h('span', { class: 'lg-item' }, h('span', { class: 'k-box c-accent', 'aria-hidden': 'true' }), 'Simulated, 5th to 95th percentile'),
     h('span', { class: 'lg-item' }, h('span', { class: 'k-dot', 'aria-hidden': 'true' }), 'Current rank'));
   const plot = h('div', { class: 'chart-plot', role: 'img', 'aria-label': 'Rank interval for each option. A table is available.' });
   sh2.chart.appendChild(plot);
@@ -503,7 +523,8 @@ function renderMc() {
     order.forEach((i, row) => {
       const y = top + row * rowH + rowH / 2;
       svg('text', { x: labelW, y: y + 4, 'text-anchor': 'end', class: 'bar-label' }, s).textContent = truncate(S.alternatives[i], Math.floor(labelW / 6.6));
-      svg('line', { x1: x(r.best[i]), x2: x(r.worst[i]), y1: y, y2: y, class: 'range-line' }, s);
+      svg('line', { x1: x(exact[i].best), x2: x(exact[i].worst), y1: y, y2: y, class: 'range-line' }, s);
+      [exact[i].best, exact[i].worst].forEach((k) => svg('line', { x1: x(k), x2: x(k), y1: y - 9, y2: y + 9, class: 'range-line' }, s));
       svg('rect', { x: x(r.p05[i]) - 6, y: y - 6, width: x(r.p95[i]) - x(r.p05[i]) + 12, height: 12, rx: 6, class: 'iv-bar' }, s);
       svg('circle', { cx: x(m.rk[i]), cy: y, r: 5, class: 'cur-dot' }, s);
     });
@@ -511,19 +532,22 @@ function renderMc() {
   sh2.table.replaceChildren(dataTable('Rank intervals', [
     { label: 'Option', get: (i) => S.alternatives[i] },
     { label: 'Current rank', num: true, get: (i) => String(m.rk[i]) },
-    { label: 'Best', num: true, get: (i) => String(r.best[i]) },
-    { label: '5th pct', num: true, get: (i) => String(r.p05[i]) },
+    { label: 'Best case (exact)', num: true, get: (i) => String(exact[i].best) },
+    { label: 'Worst case (exact)', num: true, get: (i) => String(exact[i].worst) },
+    { label: 'Simulated 5th pct', num: true, get: (i) => String(r.p05[i]) },
     { label: 'Median', num: true, get: (i) => String(r.median[i]) },
-    { label: '95th pct', num: true, get: (i) => String(r.p95[i]) },
-    { label: 'Worst', num: true, get: (i) => String(r.worst[i]) },
+    { label: 'Simulated 95th pct', num: true, get: (i) => String(r.p95[i]) },
   ], order));
 
   const top = m.top;
   const p1 = r.acceptability[top][0];
   const firstMost = r.acceptability.map((a) => a[0]).indexOf(Math.max(...r.acceptability.map((a) => a[0])));
-  let txt = `${S.alternatives[top]} is first in ${fmt.pct(p1, 0)} of scenarios`;
+  const moe = 1.96 * Math.sqrt(p1 * (1 - p1) / r.samples); // Monte Carlo error, 95%
+  let txt = `${S.alternatives[top]} is first in ${fmt.pct(p1, 0)} of scenarios` + (moe >= 0.0005 ? ` (±${(moe * 100).toFixed(1)} points simulation error)` : '');
   if (firstMost !== top) txt += `, but ${S.alternatives[firstMost]} is first more often (${fmt.pct(r.acceptability[firstMost][0], 0)})`;
-  txt += `. Its rank stays between ${ordinal(r.p05[top])} and ${ordinal(r.p95[top])} in 90% of them.`;
+  txt += r.p05[top] === r.p95[top]
+    ? `. It is ${ordinal(r.p05[top])} in at least 90% of them.`
+    : `. Its rank stays between ${ordinal(r.p05[top])} and ${ordinal(r.p95[top])} in 90% of them.`;
   $('mc-summary').textContent = txt;
   lastMc = r;
 }
@@ -540,37 +564,17 @@ function exportCsv() {
   lines.push(['Criterion', 'Unit', 'Direction', 'Weight', 'Value uncertainty (share of range)'].map(csvCell).join(','));
   S.criteria.forEach((c, j) => lines.push([c.name, c.unit, c.dir === 'max' ? 'higher is better' : 'lower is better', m.w[j].toFixed(4), c.unc].map(csvCell).join(',')));
   lines.push('');
-  const mcHead = lastMc ? ['P(first)', 'Best rank', 'Worst rank', 'Rank 5th pct', 'Rank 95th pct'] : [];
+  const mcHead = lastMc ? ['P(first)', 'Rank 5th pct (simulated)', 'Rank 95th pct (simulated)'] : [];
   lines.push(['Rank', 'Option', 'Score (0-100)', ...S.criteria.map((c) => c.name + ' (raw)'), ...mcHead].map(csvCell).join(','));
   m.order.forEach((i) => lines.push([m.rk[i], S.alternatives[i], (m.scores[i] * 100).toFixed(2), ...S.matrix[i],
-    ...(lastMc ? [lastMc.acceptability[i][0].toFixed(4), lastMc.best[i], lastMc.worst[i], lastMc.p05[i], lastMc.p95[i]] : [])].map(csvCell).join(',')));
+    ...(lastMc ? [lastMc.acceptability[i][0].toFixed(4), lastMc.p05[i], lastMc.p95[i]] : [])].map(csvCell).join(',')));
   const blob = new Blob([lines.join('\n') + '\n'], { type: 'text/csv' });
   const a = h('a', { href: URL.createObjectURL(blob), download: 'decision-analysis-results.csv' });
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
-function encodeState() {
-  const json = JSON.stringify({ a: S.alternatives, c: S.criteria, x: S.matrix, p: S.points, q: S.pairs, m: S.method });
-  return btoa(unescape(encodeURIComponent(json))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-}
-function decodeState(str) {
-  try {
-    const json = decodeURIComponent(escape(atob(str.replace(/-/g, '+').replace(/_/g, '/'))));
-    const o = JSON.parse(json);
-    const nA = o.a.length, nC = o.c.length;
-    if (nA < 2 || nA > MAX_ALTS || nC < 2 || nC > MAX_CRIT) return null;
-    if (o.x.length !== nA || o.x.some((r) => r.length !== nC || r.some((v) => !Number.isFinite(v)))) return null;
-    return {
-      alternatives: o.a.map((s) => String(s).slice(0, 80)),
-      criteria: o.c.map((c, j) => ({ id: String(c.id || 'c' + (j + 1)).slice(0, 12), name: String(c.name).slice(0, 60), unit: String(c.unit || '').slice(0, 20), dir: c.dir === 'min' ? 'min' : 'max', unc: [0, 0.05, 0.15, 0.3].includes(c.unc) ? c.unc : 0.15 })),
-      matrix: o.x, points: o.p.slice(0, nC).map((v) => Math.max(0, Math.min(100, +v || 0))),
-      pairs: Object.fromEntries(Object.entries(o.q || {}).map(([k, v]) => [k, Math.max(-8, Math.min(8, Math.round(+v || 0)))])),
-      method: o.m === 'ahp' ? 'ahp' : 'direct',
-    };
-  } catch { return null; }
-}
 async function shareLink() {
-  const url = location.origin + location.pathname + '#s=' + encodeState();
+  const url = location.origin + location.pathname + '#s=' + encodeState(S);
   history.replaceState(null, '', url);
   const status = $('share-status');
   try { await navigator.clipboard.writeText(url); status.textContent = 'Link copied. It contains the whole table and your weights.'; }
@@ -587,6 +591,7 @@ function init() {
     if (st) {
       S = st;
       nextId = 1 + Math.max(0, ...S.criteria.map((c) => parseInt(c.id.slice(1), 10) || 0));
+      sensCrit = Math.min(sensCrit, S.criteria.length - 1);
     }
   }
   $('add-alt').addEventListener('click', addAlternative);

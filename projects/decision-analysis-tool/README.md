@@ -17,8 +17,10 @@ no backend.
    (none, ±5%, ±15% or ±30% of the criterion's range in the table).
 2. **Weights.** Direct points, or AHP: pairwise judgements on Saaty's 1 to 9
    scale, weights from the principal eigenvector, consistency ratio
-   `CR = CI / RI`, and a pointer to the least consistent judgement with a
-   suggested replacement (the geometric mean of the indirect comparisons).
+   `CR = CI / RI` with Saaty's limits (0.05 for 3 criteria, 0.08 for 4, 0.10
+   for 5 or more), and, when CR is too high, the least consistent judgement
+   with a suggested replacement (the geometric mean of the indirect
+   comparisons).
 3. **Ranking.** Weighted sum of linear value scores (worst value in the table
    = 0, best = 1), shown as stacked contributions per criterion.
 4. **Sensitivity.** For each criterion, the exact weight interval in which the
@@ -27,7 +29,9 @@ no backend.
 5. **Monte Carlo.** 5,000 scenarios with Dirichlet-distributed weights around
    the current weights (or uniform over all weights, as in SMAA-2) and,
    optionally, uniform perturbations of the table values. Reports rank
-   acceptability and rank intervals. Fixed seed, so results are reproducible.
+   acceptability and the 5th to 95th percentile of each rank, next to exact
+   best- and worst-case rank intervals for the value uncertainty. Fixed seed,
+   so results are reproducible.
 
 You can download the results as CSV, or copy a link that stores the whole
 analysis in the URL.
@@ -37,7 +41,8 @@ analysis in the URL.
 | File | Contents |
 |---|---|
 | `mcda.js` | The maths: value functions, weighted sum, AHP, consistency, stability intervals, Dirichlet sampling, simulation. No browser code |
-| `mcda.test.mjs` | 11 unit tests, including the standard 3 x 3 AHP textbook example and a brute-force check of the stability intervals |
+| `mcda.test.mjs` | 15 unit tests, including a 3 x 3 AHP example worked by hand and brute-force checks of the stability intervals and exact rank intervals |
+| `share.js` | Encodes and validates the shareable links |
 | `app.js` | The interface |
 | `index.html`, `tool.css` | Page and styles. Shared chart helpers are in `/assets/js/charts.js` |
 
@@ -51,7 +56,7 @@ Node 20 or later. No packages to install.
 
 ## Assumptions and limitations
 
-- Additive model: assumes preferential independence between criteria, and
+- Additive model: assumes mutual preferential independence between criteria, and
   lets a strong score on one criterion compensate for a weak one.
 - Local linear scales: weights are trade-offs over the ranges in the table,
   so adding an option that widens a range should prompt a review of weights.

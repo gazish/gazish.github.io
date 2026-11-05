@@ -45,7 +45,7 @@
         "itemListElement": [
           { "@type": "ListItem", "position": 1, "url": "https://gazish.github.io/projects/online-retail-analytics/", "name": "Online retail sales: SQL, Python and a KPI dashboard" },
           { "@type": "ListItem", "position": 2, "url": "https://gazish.github.io/projects/eastern-bank-card-reporting/", "name": "Card portfolio analysis and monthly reporting at Eastern Bank" },
-          { "@type": "ListItem", "position": 3, "url": "https://gazish.github.io/projects/esn-looker-studio-dashboards/", "name": "From a manual monthly report to self-service Looker Studio dashboards" },
+          { "@type": "ListItem", "position": 3, "url": "https://gazish.github.io/projects/esn-looker-studio-dashboards/", "name": "From a manual monthly report to Looker Studio dashboards" },
           { "@type": "ListItem", "position": 4, "url": "https://gazish.github.io/projects/thesis-climate-hazard-mcda/", "name": "Multi-Criteria Threat Evaluation for Local Climate Hazards (MSc thesis)" },
           { "@type": "ListItem", "position": 5, "url": "https://gazish.github.io/projects/decision-analysis-tool/", "name": "Decision analysis tool: weighted sum, AHP and sensitivity" }
         ]
@@ -93,13 +93,13 @@
     <header class="page-head">
       <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li aria-current="page">Projects</li></ol></nav>
       <h1>Projects</h1>
-      <p class="lede">Two case studies from my jobs, my MSc thesis, and two projects I built for this site. Each page covers the problem, the approach, the tools, the result and what I would do next.</p>
+      <p class="lede">Two case studies from work and volunteering, my MSc thesis, and two projects I built for this site.</p>
     </header>
 
     <section class="section" aria-labelledby="work">
       <div class="section-head">
-        <h2 id="work">From my jobs</h2>
-        <p>Real work. The employers' data stays private, so these pages describe the work without it.</p>
+        <h2 id="work">From work and volunteering</h2>
+        <p>The data belongs to the organisations and stays private, so these pages describe the work without it.</p>
       </div>
       <ul class="cards">
         <li>
@@ -107,7 +107,7 @@
             <p class="kicker"><span class="badge plain">Work</span><span>Eastern Bank PLC, Jul 2023 to Aug 2024</span></p>
             <h3><a href="/projects/eastern-bank-card-reporting/">Card portfolio analysis and monthly reporting</a></h3>
             <p>SQL analysis of transaction and revenue data for about 25k corporate and co-brand card accounts (150k+ transactions a month), and monthly revenue and portfolio reports in Excel for senior management.</p>
-            <p class="result">Flagged the regions where co-brand usage was concentrated for acquisition. Active co-brand users grew 12% over the period.</p>
+            <p class="result">Found where co-brand usage was concentrated by region and flagged those regions for acquisition.</p>
             <ul class="tags" aria-label="Tools"><li>SQL</li><li>Excel</li><li>Power Query</li><li>PivotTables</li></ul>
           </article>
         </li>
@@ -115,7 +115,7 @@
           <article class="card">
             <p class="kicker"><span class="badge plain">Volunteer work</span><span>Erasmus Student Network, May 2025 to Apr 2026</span></p>
             <h3><a href="/projects/esn-looker-studio-dashboards/">From a manual monthly report to Looker Studio dashboards</a></h3>
-            <p>Cleaned and consolidated data from several sources and built three self-service dashboards covering about 5,000 to 6,000 activities a month.</p>
+            <p>Cleaned and consolidated data from several sources and built three dashboards covering about 5,000 to 6,000 activities a month.</p>
             <p class="result">Available to 519 local sections in 45 countries, with documented logic and data definitions for handover.</p>
             <ul class="tags" aria-label="Tools"><li>Looker Studio</li><li>Data cleaning</li><li>Documentation</li></ul>
           </article>
@@ -123,6 +123,23 @@
       </ul>
     </section>
 
+    <section class="section" aria-labelledby="portfolio">
+      <div class="section-head">
+        <h2 id="portfolio">End-to-end analytics</h2>
+        <p>A full project on real public data, with the code on GitHub.</p>
+      </div>
+      <ul class="cards">
+        <li class="wide">
+          <article class="card feature">
+            <p class="kicker"><span class="badge badge-accent">Interactive dashboard</span><span>UCI Online Retail II, real public data</span></p>
+            <h3><a href="/projects/online-retail-analytics/">Online retail sales: SQL, Python and a KPI dashboard</a></h3>
+            <p>1.07 million invoice lines from a UK online retailer, cleaned in SQL with every raw row accounted for, defined KPIs, cohort retention, RFM segments and a revenue bridge, checked in pandas and shown in an interactive dashboard.</p>
+            <p class="result">Net sales grew 1.6%, all of it outside the UK; sales to identified customers fell 2.6% while sales with no customer ID rose.</p>
+            <ul class="tags" aria-label="Tools"><li>SQL</li><li>DuckDB</li><li>Python</li><li>pandas</li><li>KPI design</li><li>Cohorts</li><li>RFM</li></ul>
+          </article>
+        </li>
+      </ul>
+    </section>
     <section class="section" aria-labelledby="research">
       <div class="section-head">
         <h2 id="research">Decision analysis</h2>
@@ -143,30 +160,13 @@
             <p class="kicker"><span class="badge badge-accent">Interactive tool</span><span>Illustrative data</span></p>
             <h3><a href="/projects/decision-analysis-tool/">Decision analysis tool: weighted sum, AHP and sensitivity</a></h3>
             <p>Compare options in the browser, derive weights from pairwise comparisons with a consistency ratio, and see exactly how far each weight can move before the top option changes.</p>
-            <p class="result">Monte Carlo rank acceptability and rank intervals, CSV export and shareable links. 11 unit tests on the maths.</p>
-            <ul class="tags" aria-label="Methods"><li>MCDA</li><li>AHP</li><li>Monte Carlo</li><li>JavaScript</li></ul>
+            <p class="result">Exact best- and worst-case rank intervals, Monte Carlo rank acceptability, CSV export and shareable links. 15 unit tests on the maths.</p>
+            <ul class="tags" aria-label="Methods"><li>MCDA</li><li>AHP</li><li>Sensitivity analysis</li><li>Monte Carlo</li></ul>
           </article>
         </li>
       </ul>
     </section>
 
-    <section class="section" aria-labelledby="portfolio">
-      <div class="section-head">
-        <h2 id="portfolio">End-to-end analytics</h2>
-        <p>A full project on real public data, with the code on GitHub.</p>
-      </div>
-      <ul class="cards">
-        <li class="wide">
-          <article class="card feature">
-            <p class="kicker"><span class="badge badge-accent">Interactive dashboard</span><span>UCI Online Retail II, real public data</span></p>
-            <h3><a href="/projects/online-retail-analytics/">Online retail sales: SQL, Python and a KPI dashboard</a></h3>
-            <p>1.07 million invoice lines from a UK online retailer, cleaned in SQL with every raw row accounted for, defined KPIs, cohort retention, RFM segments and a revenue bridge, checked in pandas and shown in an interactive dashboard.</p>
-            <p class="result">Net sales were flat (+1.9%) and sales to identified customers fell 1.3%; growth came from international markets and from sales with no customer ID.</p>
-            <ul class="tags" aria-label="Tools"><li>SQL</li><li>DuckDB</li><li>Python</li><li>pandas</li><li>KPI design</li><li>Cohorts</li><li>RFM</li></ul>
-          </article>
-        </li>
-      </ul>
-    </section>
   </div>
 </main>
 
@@ -184,7 +184,6 @@
         <li><a href="https://www.linkedin.com/in/gazishafayet" rel="me">LinkedIn</a></li>
         <li><a href="https://github.com/gazish" rel="me">GitHub</a></li>
         <li><a href="/cv/Gazi_Shafayet_Hossain_CV.pdf">CV (PDF)</a></li>
-        <li><a href="/llms.txt">llms.txt</a></li>
       </ul>
       <p class="meta">Plain HTML, CSS and JavaScript. <a href="https://github.com/gazish/gazish.github.io">Source on GitHub</a>.</p>
     </div>

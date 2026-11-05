@@ -45,6 +45,12 @@ export function ranks(scores, eps = 1e-12) {
 /* ---------- AHP ---------- */
 // Saaty's random consistency index, indexed by matrix size n.
 export const RANDOM_INDEX = [0, 0, 0, 0.58, 0.9, 1.12, 1.24, 1.32, 1.41, 1.45, 1.49];
+
+// Acceptable consistency ratio by matrix size (Saaty, 1994): 0.05 for n = 3,
+// 0.08 for n = 4 and 0.10 for n >= 5.
+export function crThreshold(n) {
+  return n <= 3 ? 0.05 : n === 4 ? 0.08 : 0.1;
+}
 export const SAATY = [1 / 9, 1 / 8, 1 / 7, 1 / 6, 1 / 5, 1 / 4, 1 / 3, 1 / 2, 1, 2, 3, 4, 5, 6, 7, 8, 9];
 
 // Build the reciprocal matrix from upper-triangle judgements a[i][j], i < j.
@@ -81,7 +87,7 @@ export function ahp(A) {
 }
 
 // Which judgement disagrees most with the derived weights?
-// e_ij = a_ij * w_j / w_i is 1 for a perfectly consistent judgement.
+// e_ij = a_ij * w_j / w_i is 1 for a perfectly consistent judgement (Saaty, 2003).
 // The suggested replacement is what the other judgements imply for that pair:
 // the geometric mean of the indirect comparisons a_ik * a_kj over all k.
 export function worstJudgement(A, w) {
@@ -161,6 +167,43 @@ export function stabilityInterval(v, w, j, top) {
     above: hi < 1 ? overtaker(Math.min(1, hi + 1e-6)) : null,
     crossings: crossings.sort((p, q) => p.t - q.t),
   };
+}
+
+// Smallest single-weight change that changes the top option.
+// Returns { j, dir: 'up' | 'down', from, to, by, newTop } or null if no single weight can do it.
+export function weightTolerance(v, w, top) {
+  let best = null;
+  w.forEach((wj, j) => {
+    const iv = stabilityInterval(v, w, j, top);
+    const options = [];
+    if (iv.lo > 0 && iv.below != null) options.push({ dir: 'down', to: iv.lo, newTop: iv.below });
+    if (iv.hi < 1 && iv.above != null) options.push({ dir: 'up', to: iv.hi, newTop: iv.above });
+    for (const o of options) {
+      const by = Math.abs(o.to - wj);
+      if (!best || by < best.by) best = { j, dir: o.dir, from: wj, to: o.to, by, newTop: o.newTop };
+    }
+  });
+  return best;
+}
+
+/* ---------- exact best- and worst-case rank intervals ---------- */
+// With the weights fixed and every table value allowed to move by up to
+// +/- u_j times its criterion's range, an option's score lies in
+// [S_i - d, S_i + d] with d = sum_j w_j u_j (each value moves by at most u_j
+// on the 0 to 1 scale, and scores depend only on the option's own values).
+// Best case: option i at its top, every other option at its bottom; worst
+// case the other way round.
+export function exactRankIntervals(scores, w, unc) {
+  const d = w.reduce((s, wj, j) => s + wj * (unc[j] || 0), 0);
+  return scores.map((si, i) => {
+    let better = 0, couldBeat = 0;
+    scores.forEach((sk, k) => {
+      if (k === i) return;
+      if (sk - d > si + d + 1e-12) better++;       // ahead even in i's best case
+      if (sk + d > si - d + 1e-12) couldBeat++;    // ahead in i's worst case
+    });
+    return { best: 1 + better, worst: 1 + couldBeat, halfWidth: d };
+  });
 }
 
 /* ---------- Monte Carlo (SMAA-style rank analysis) ---------- */

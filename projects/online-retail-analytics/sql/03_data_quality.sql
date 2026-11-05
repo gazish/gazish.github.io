@@ -2,14 +2,21 @@
 -- What happened to every raw row: duplicates removed, then one bucket per line type.
 
 CREATE OR REPLACE TABLE data_quality AS
-WITH totals AS (
-    SELECT
-        (SELECT count(*) FROM raw_lines) AS raw_rows,
-        (SELECT count(*) FROM lines)     AS deduped_rows
+WITH dup AS (
+    -- counted directly from the raw table, independently of the deduplicated one
+    SELECT sum(n - 1) AS duplicate_rows, sum((n - 1) * quantity * unit_price) AS duplicate_value
+    FROM (
+        SELECT invoice, stock_code, description, quantity, invoice_ts, unit_price, customer_id, country,
+               count(*) AS n
+        FROM raw_lines
+        GROUP BY ALL
+    )
+    WHERE n > 1
 )
-SELECT 'raw_rows' AS step, raw_rows AS row_count, NULL::DOUBLE AS line_value FROM totals
+SELECT 'raw_rows' AS step, (SELECT count(*) FROM raw_lines) AS row_count,
+       (SELECT round(sum(quantity * unit_price), 2) FROM raw_lines) AS line_value
 UNION ALL
-SELECT 'exact_duplicates_removed', raw_rows - deduped_rows, NULL FROM totals
+SELECT 'exact_duplicates_removed', duplicate_rows, round(duplicate_value, 2) FROM dup
 UNION ALL
 SELECT line_type, count(*), round(sum(line_value), 2)
 FROM lines
