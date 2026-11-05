@@ -150,7 +150,7 @@ function renderBridge() {
   ], rows));
   let note = host.querySelector('.fig-note');
   if (!note) { note = h('p', { class: 'fig-note' }); host.appendChild(note); }
-  note.textContent = 'Identified sales are split into customers, orders per customer and order value with the log-mean (LMDI) method, so the three effects add up exactly.';
+  note.textContent = 'Customers, orders per customer and order value cover identified customers. Their sales are split between the three with the log-mean (LMDI) method, so the effects add up exactly.';
 }
 
 /* ---------- sales by customer type (P2) ---------- */

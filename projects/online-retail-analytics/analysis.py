@@ -181,13 +181,13 @@ def revenue_bridge(con) -> list[dict]:
         g1, g2 = a["identified_sales"], b["identified_sales"]
         lm = (g2 - g1) / (math.log(g2) - math.log(g1)) if g1 != g2 else g1
         steps = [
-            {"key": "customers", "label": "Active customers", "value": lm * math.log(b["customers"] / a["customers"]),
+            {"key": "customers", "label": "Customers", "value": lm * math.log(b["customers"] / a["customers"]),
              "detail": f"{a['customers']:,} to {b['customers']:,}"},
             {"key": "frequency", "label": "Orders per customer", "value": lm * math.log(b["orders_per_customer"] / a["orders_per_customer"]),
              "detail": f"{a['orders_per_customer']:.2f} to {b['orders_per_customer']:.2f}"},
-            {"key": "aov", "label": "Order value, identified", "value": lm * math.log(b["aov"] / a["aov"]),
+            {"key": "aov", "label": "Order value", "value": lm * math.log(b["aov"] / a["aov"]),
              "detail": f"GBP {a['aov']:.0f} to {b['aov']:.0f}"},
-            {"key": "unidentified", "label": "Sales without customer ID", "value": b["unidentified_sales"] - a["unidentified_sales"],
+            {"key": "unidentified", "label": "Sales without ID", "value": b["unidentified_sales"] - a["unidentified_sales"],
              "detail": f"GBP {a['unidentified_sales'] / 1e3:,.0f}k to {b['unidentified_sales'] / 1e3:,.0f}k"},
             {"key": "cancellations", "label": "Cancellations", "value": -(b["cancelled_value"] - a["cancelled_value"]),
              "detail": f"GBP {a['cancelled_value'] / 1e3:,.0f}k to {b['cancelled_value'] / 1e3:,.0f}k"},

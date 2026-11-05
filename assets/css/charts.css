@@ -142,5 +142,5 @@
 .dash-subhead .meta { font-weight: 450; font-size: 0.9rem; }
 @media (max-width: 30em) {
   .seg label { padding: 0 0.6rem; font-size: 0.85rem; }
-  .metric-switch .seg label { padding: 0 0.5rem; font-size: 0.8rem; }
+  .metric-switch .seg label { padding: 0 0.42rem; font-size: 0.78rem; }
 }

@@ -234,7 +234,8 @@ export function hBarChart(container, opts) {
     opts.rows.forEach((r, i) => {
       const yy = i * rowH + 4;
       const lab = svg('text', { x: labelW, y: yy + rowH / 2 + 2, 'text-anchor': 'end', class: 'bar-label' }, s);
-      lab.textContent = r.label;
+      const maxChars = Math.floor(labelW / 6.6);
+      lab.textContent = r.label.length > maxChars ? r.label.slice(0, maxChars - 1) + '…' : r.label;
       const p = svg('path', { d: hBarPath(x(0), x(r.value), yy + (rowH - bar) / 2, bar), class: 'bar ' + (r.cls || 'fill-accent') }, s);
       // with negative values, all value labels sit in a column on the right so they never hit the row labels
       const right = lo < 0;

@@ -33,8 +33,15 @@ Gazi to read when picking the work up.
    can say more.
 10. **Python and R.** The skills page says "coursework" without naming the
     course or programme. Name them if you like.
-11. **Retail README wording.** It says the UCI site "was not reachable from my
-    build environment", which is true of this build. Rephrase if you prefer.
+11. **Retail dashboard in a BI tool.** Two reviewers suggested rebuilding the
+    retail KPIs in Looker Studio or Power BI and linking it, so a BI recruiter
+    can see work in the tool itself. The CSVs in
+    `projects/online-retail-analytics/data/` are ready to load.
+12. **NOTES.md is public.** It is in the repository, which the site links to,
+    and it says the two portfolio projects were built in this session. Delete
+    or move it once you have read it if you do not want that visible.
+13. **CV first.** Once the PDF is in place, consider making "Download CV" the
+    main button in the hero (a recruiter suggestion).
 
 ## Decisions
 
@@ -160,4 +167,55 @@ no violations after making the scrollable tables keyboard-focusable.
 
 ## Review rounds
 
-(Filled in below as the reviews run.)
+Five reviewers, each a separate subagent that saw only the owner's brief and
+the site (not my build reasoning). Each scored the site out of 10 and listed
+fixes.
+
+### Round 1
+
+| Reviewer | Score | Main points |
+|---|---|---|
+| Stockholm tech recruiter | 7 | No work permit or availability; the only outcome number (12%) and the course-trained tools were missing from the home page; the "3 municipality cases" stat was filler; "worth GBP 555k a year" overstated; RFM and concentration shares were of identified customers, not of all net sales; projects page put the retail dashboard last |
+| Head of Data | 7 | Would interview. Found real data errors: one voided GBP 77k order created the whole "cancellations rose" finding; a mispriced GBP 39k picnic-basket line counted as a sale; three reconciliation checks could not fail by construction; real 0% cohort cells shown as blank; one inner join that should be a left join; "New" RFM segment misnamed |
+| PhD supervisor (decision analysis) | 7 | Maths verified (all numbers reproduced). Bugs: the "most sensitive weight" sentence could state the wrong direction; a shared link with two criteria crashed the sweep chart. Sampled rank extremes are not best/worst cases; the range-dependence of weights applies to direct points too; consistency hint shown when CR was fine; thesis page repeated itself and some wording went past the brief |
+| Front-end designer | 7.5 | Chart values not announced to screen readers; heatmap text and some marks below contrast minimums; categorical orange equal to the accent; nav wrapped at 360 px; metric switch clipped; timeline dots off the line; tool table cut names; negative money shown as "GBP-716,463" |
+| Skeptical editor | 7 | 12% shown as a result (implied causation); "a year" overstated; thesis wording not in the brief ("survey design", per-score uncertainty); NOTES.md public in the repo; padded case studies; repeated "not only X" pattern; "self-service" not in the brief |
+
+What changed after round 1:
+
+- **Retail data:** new `voided` and `price_outlier` line types (with a pandas
+  re-implementation that finds the same 2,634 voided lines). Net sales growth
+  is now 1.6%, not 1.9%, and cancellations fell slightly (2.0% to 1.9%)
+  instead of rising. Reconciliation checks rewritten so each compares two
+  independent computations. Cohort heatmap shows real zeros. Inner join fixed.
+  The revenue bridge is now in GBP and ties P1 net sales to P2 net sales
+  (log-mean split of the identified-customer effects). Findings rewritten,
+  including the mix effects (order value only rose for orders without a
+  customer ID; Australia and Ireland drive the international change). Manual
+  credit lines and their effect on growth (1.6% vs 3.1%) are documented.
+- **Decision tool:** fixed the direction bug (new tested `weightTolerance`)
+  and the two-criteria crash; added exact best- and worst-case rank intervals
+  (closed form, tested against brute force); Saaty's size-dependent CR limits;
+  the "use the suggested judgement" button only appears above the limit;
+  ranges shown next to the weight sliders; method notes now cover range
+  dependence (Keeney 2002), the Dirichlet spread, extrapolation, Monte Carlo
+  error and more references; share links moved to `share.js` with tests.
+  15 tests now.
+- **Design and accessibility:** live region for chart values, heatmap cell
+  opacity capped per theme so text keeps contrast, stronger grey for context
+  marks and form-control borders, criterion colours without orange (validated
+  for colour blindness), nav fits one row at 360 px, metric switch and tool
+  table fixed, timeline dots aligned, case-page facts box readable, proper
+  minus signs, theme-color follows the toggle, neutral two-sided AHP sliders.
+- **Copy:** 12% moved to "context" with an explicit note that it is not
+  claimed as a result; "spent GBP 491k in P2" instead of "worth GBP 555k a
+  year"; identified-customer labels; thesis wording kept to the brief, plus a
+  "Methods" section that maps each problem to a component; case studies
+  trimmed; "From work and volunteering"; "What I would change"; repeated
+  phrases cut; home stats now 150k+, 519 and 120+.
+- **Not changed, and why:** work permit and availability (not in the brief;
+  listed above for you to add); thesis year, abstract findings and
+  software (DiVA is not reachable from the build environment and a web search
+  found nothing; listed above); NOTES.md stays in the repository because you
+  asked for it, but see item 12 above; a Looker Studio or Power BI version of
+  the retail dashboard needs your own accounts.
