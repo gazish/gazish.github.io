@@ -1,0 +1,5 @@
+# Everyone, including search engines and AI tools, is welcome to read this site.
+User-agent: *
+Allow: /
+
+Sitemap: https://gazish.github.io/sitemap.xml
