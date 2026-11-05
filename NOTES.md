@@ -164,26 +164,30 @@ Gazi to read when picking the work up.
 ## Lighthouse
 
 Lighthouse 12.8.2, headless Chromium, local static server (no compression,
-so GitHub Pages should be at least as fast). Scores are Performance /
-Accessibility / Best practices / SEO.
+so GitHub Pages should be at least as fast). Final run after all review
+rounds. Scores are Performance / Accessibility / Best practices / SEO.
 
 | Page | Mobile | Desktop |
 |---|---|---|
-| Home | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
-| Projects | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
-| Online retail analytics (dashboard) | 99 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
-| Decision analysis tool | 98 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
-| Thesis | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
-| Eastern Bank | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
-| ESN | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
-| Experience | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
-| Skills | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
-| About | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
-| Contact | 100 / 100 / 100 / 100 | 100 / 100 / 100 / 100 |
+| Home | 100 / 100 / 96 / 100 | 100 / 100 / 96 / 100 |
+| Projects | 100 / 100 / 96 / 100 | 100 / 100 / 96 / 100 |
+| Online retail analytics (dashboard) | 99 / 100 / 96 / 100 | 100 / 100 / 96 / 100 |
+| Decision analysis tool | 97 / 100 / 96 / 100 | 100 / 100 / 96 / 100 |
+| Thesis | 100 / 100 / 96 / 100 | 100 / 100 / 96 / 100 |
+| Eastern Bank | 100 / 100 / 96 / 100 | 100 / 100 / 96 / 100 |
+| ESN | 100 / 100 / 96 / 100 | 100 / 100 / 96 / 100 |
+| Experience | 100 / 100 / 96 / 100 | 100 / 100 / 96 / 100 |
+| Skills | 100 / 100 / 96 / 100 | 100 / 100 / 96 / 100 |
+| About | 100 / 100 / 96 / 100 | 100 / 100 / 96 / 100 |
+| Contact | 100 / 100 / 96 / 100 | 99 / 100 / 96 / 100 |
 
-Also ran axe-core (WCAG 2.1 AA and best practices) on all 12 pages in light
-and dark mode at 390 px and 1280 px, with every chart's table view open:
-no violations after making the scrollable tables keyboard-focusable.
+Best practices is 96 rather than 100 only because the CV file does not exist
+yet: the small check that hides the CV buttons logs a 404 in the console.
+It goes back to 100 once `cv/Gazi_Shafayet_Hossain_CV.pdf` is added.
+
+axe-core (WCAG 2.1 AA and best practices) reports no violations on any of the
+12 pages, in light and dark mode, at 390 px and 1280 px, with every chart's
+table view open.
 
 ## Review rounds
 
@@ -276,4 +280,31 @@ What changed after round 2:
   context line everywhere; thesis page without the "cite as" line or the
   framework attribution, with the problem-to-component mapping folded into
   Approach; home timeline in date order; ESN and Eastern Bank pages trimmed.
+
+### Round 3
+
+| Reviewer | Score | Main points |
+|---|---|---|
+| Stockholm tech recruiter | 9 | Passes the 30-second test. Remaining items are yours: how the two built projects were made, the CV, work permit and availability, the thesis year |
+| Head of Data | 8.5 | Every number reproduced and all checks passed byte-identically; one inconsistency: "about 1.0%" should be 1.4% with the picnic-basket credit left out on both sides; CV 404 |
+| PhD supervisor | 9 | All maths verified, including a 600-table corner enumeration for the exact intervals; nice-to-haves only |
+| Front-end designer | 9 | axe clean on all 12 pages in both themes, no overflow at any width; polish only |
+| Skeptical editor | 9 | Nothing beyond the brief; CV file is the launch blocker; small wording items |
+
+Changes after round 3: the manual-line figure corrected to 1.4%; CV buttons
+hidden while the PDF is missing (they appear automatically once you add it);
+`exactRankIntervals` now requires the scales; exact intervals drawn below the
+simulated bars; shorter names in the tool's example data so headers fit;
+"gross sales (before cancellations)"; dark-mode chart neutral adjusted;
+small thesis, Eastern Bank and retail wording fixes.
+
+### Round 4 (Head of Data only)
+
+| Reviewer | Score | Main points |
+|---|---|---|
+| Head of Data | 9 | 1.4% and 3.5% match their recomputation; no wrong numbers anywhere; CV links hidden with no 404 for visitors; would interview |
+
+Final scores: recruiter 9, Head of Data 9, PhD supervisor 9, designer 9,
+skeptical editor 9. Every reviewer's remaining "nice to have" items that need
+facts from you are in the list at the top of this file.
 

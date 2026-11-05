@@ -36,6 +36,7 @@
   --de-emph: #8f897d;        /* 3.4:1 on surface */
   --control: #8a8478;        /* form control borders, 3:1 or more */
   --heat-max: 1;
+  --ink-mark: #4b473f;       /* dark neutral for chart marks */
   --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100;
   --s5: #e87ba4; --s6: #008300; --s7: #6250d6; --s8: #e34948;
 
@@ -71,6 +72,7 @@
     --de-emph: #7a756b;
     --control: #75706a;
     --heat-max: 0.6;
+    --ink-mark: #b0aa9e;
     --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
     --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767;
   }
@@ -97,6 +99,7 @@
   --de-emph: #7a756b;
   --control: #75706a;
   --heat-max: 0.6;
+  --ink-mark: #b0aa9e;
   --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
   --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767;
 }
@@ -338,6 +341,7 @@ main { display: block; }
 .timeline .org { color: var(--ink-2); margin-bottom: 0.5rem; }
 .timeline ul { margin: 0.25rem 0 0; color: var(--ink-2); font-size: 0.975rem; list-style: disc; }
 .timeline .links { margin-top: 0.5rem; font-size: 0.925rem; }
+.timeline + p { margin-top: 1rem; }
 @media (min-width: 48em) {
   .timeline > li { display: grid; grid-template-columns: 10.5rem 1fr; gap: 1.5rem; border-left: 0; padding-left: 0; }
   .timeline > li::before { left: calc(12.5rem - 4px); }

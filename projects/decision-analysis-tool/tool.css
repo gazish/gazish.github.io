@@ -33,7 +33,9 @@ table.perf thead th { text-transform: none; letter-spacing: 0; font-size: 0.875r
 }
 .perf .in-name { font-weight: 600; min-width: 0; width: 100%; flex: 1 1 0; }
 .crit-head .k-box { flex: none; }
-.perf thead .in-name { font-weight: 650; }
+.perf thead .in-name { font-weight: 650; font-size: 0.8125rem; }
+.crit-head { gap: 0.25rem; }
+.crit-head .icon-btn { width: 24px; }
 .perf .in-unit { font-size: 0.8125rem; color: var(--ink-2); }
 .perf select { font-size: 0.8rem; color: var(--ink-2); }
 .perf .in-num { text-align: right; }

@@ -351,7 +351,9 @@ export function heatmap(container, opts) {
         if (v == null) return;
         const a = Math.max(0.06, Math.min(1, v / opts.max));
         // --heat-max caps the darkest cell per theme so the text on it keeps enough contrast
-        const r = svg('rect', { x: labelW + cw * j + 1, y: top + ch * i + 1, width: cw - 2, height: ch - 2, rx: 3, class: 'heat-cell', style: `fill-opacity:calc(var(--heat-max) * ${a.toFixed(3)})` }, s);
+        // without text in the cells (narrow screens) the full colour range is used
+        const op = showText ? `calc(var(--heat-max) * ${a.toFixed(3)})` : a.toFixed(3);
+        const r = svg('rect', { x: labelW + cw * j + 1, y: top + ch * i + 1, width: cw - 2, height: ch - 2, rx: 3, class: 'heat-cell', style: `fill-opacity:${op}` }, s);
         cells[i][j] = r;
         if (showText && (opts.textFor ? opts.textFor(i, j) : true)) {
           const t = svg('text', { x: labelW + cw * j + cw / 2, y: top + ch * i + ch / 2 + 4, 'text-anchor': 'middle', class: 'heat-text' }, s);

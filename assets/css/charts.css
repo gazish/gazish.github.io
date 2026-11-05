@@ -28,7 +28,7 @@
 /* series colour classes: line + fill variants */
 .c-accent { stroke: var(--accent-mark); fill: var(--accent-mark); }
 .c-context { stroke: var(--de-emph); fill: var(--de-emph); }
-.c-ink { stroke: var(--ink-2); fill: var(--ink-2); }
+.c-ink { stroke: var(--ink-mark); fill: var(--ink-mark); }
 .c-s1 { stroke: var(--s1); fill: var(--s1); }
 .c-s2 { stroke: var(--s2); fill: var(--s2); }
 .c-s3 { stroke: var(--s3); fill: var(--s3); }
@@ -64,7 +64,7 @@
 .k-box { display: inline-block; width: 11px; height: 11px; border-radius: 3px; }
 .k-line.c-accent { border-color: var(--accent-mark); } .k-box.c-accent { background: var(--accent-mark); }
 .k-line.c-context { border-color: var(--de-emph); } .k-box.c-context { background: var(--de-emph); }
-.k-line.c-ink { border-color: var(--ink-2); } .k-box.c-ink { background: var(--ink-2); }
+.k-line.c-ink { border-color: var(--ink-mark); } .k-box.c-ink { background: var(--ink-mark); }
 .k-box.c-s1, .k-line.c-s1 { background: var(--s1); border-color: var(--s1); }
 .k-box.c-s2, .k-line.c-s2 { background: var(--s2); border-color: var(--s2); }
 .k-box.c-s3, .k-line.c-s3 { background: var(--s3); border-color: var(--s3); }
