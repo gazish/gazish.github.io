@@ -11,15 +11,15 @@
 
 /* performance table */
 .perf-wrap { margin-bottom: 0.5rem; }
-table.perf { min-width: 56rem; }
+table.perf { min-width: 0; }
 table.perf th, table.perf td { padding: 0.45rem 0.5rem; vertical-align: middle; }
 table.perf thead th { text-transform: none; letter-spacing: 0; font-size: 0.875rem; color: var(--ink); vertical-align: top; }
-.perf .opt-col { min-width: 16rem; }
-.perf .crit-col { min-width: 12rem; }
+.perf .opt-col { min-width: 15rem; }
+.perf .crit-col { min-width: 10.5rem; }
 @media (max-width: 40em) {
   .perf th.opt-col { position: sticky; left: 0; z-index: 1; background: var(--surface); min-width: 10rem; box-shadow: 1px 0 0 var(--line); }
   .perf thead th.opt-col { background: var(--surface-2); }
-  .perf th.opt-col .in-name { field-sizing: fixed; width: 8.5rem; min-width: 0; }
+  .perf .crit-col { min-width: 9rem; }
 }
 .perf .row-lab { font-size: 0.8125rem; color: var(--muted); font-weight: 650; text-transform: uppercase; letter-spacing: 0.04em; text-align: left; }
 .perf .meta-row td, .perf .meta-row th { border-top: 0; padding-top: 0.15rem; padding-bottom: 0.15rem; }
@@ -31,7 +31,8 @@ table.perf thead th { text-transform: none; letter-spacing: 0; font-size: 0.875r
   font: inherit; font-size: 0.875rem; color: var(--ink); background: var(--bg);
   border: 1px solid var(--control); border-radius: 6px; padding: 0.35rem 0.45rem; min-height: 36px; width: 100%;
 }
-.perf .in-name { font-weight: 600; field-sizing: content; min-width: 100%; }
+.perf .in-name { font-weight: 600; min-width: 0; width: 100%; flex: 1 1 0; }
+.crit-head .k-box { flex: none; }
 .perf thead .in-name { font-weight: 650; }
 .perf .in-unit { font-size: 0.8125rem; color: var(--ink-2); }
 .perf select { font-size: 0.8rem; color: var(--ink-2); }
@@ -112,7 +113,6 @@ var { font-style: italic; }
 
 .w-range { display: block; font-weight: 450; font-size: 0.8rem; color: var(--muted); }
 .scroll-hint { margin: 0 0 0.4rem; }
-@media (min-width: 64em) { .scroll-hint { display: none; } }
 
 /* two-sided AHP sliders: neutral track with a centre mark, so neither side looks "filled" */
 .pair input[type="range"] { -webkit-appearance: none; appearance: none; height: 32px; background: transparent; }

@@ -50,7 +50,9 @@ typical_price AS (
 priced AS (
     -- a unit price more than 10 times the product's median is treated as a pricing error
     -- (example: invoice 556444, 60 picnic baskets at 649.50 instead of about 5, credited back
-    -- with a manual line)
+    -- with a manual line). Some flagged lines are probably pack prices (for example 37370
+    -- coffee mugs at about 16 against a median of 1.25); together they are about 15k, under
+    -- 0.2% of sales, and do not change any KPI.
     SELECT
         c.*,
         CASE WHEN c.base_type = 'sale' AND c.unit_price > 10 * t.median_price

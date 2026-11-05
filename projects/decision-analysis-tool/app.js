@@ -13,11 +13,11 @@ const EXAMPLE = {
     'Heat and flood early-warning system',
   ],
   criteria: [
-    { id: 'c1', name: 'Lifetime cost', unit: 'MSEK', dir: 'min', unc: 0.15 },
-    { id: 'c2', name: 'Flood risk reduction', unit: '0 to 10', dir: 'max', unc: 0.15 },
-    { id: 'c3', name: 'Heat risk reduction', unit: '0 to 10', dir: 'max', unc: 0.15 },
-    { id: 'c4', name: 'Co-benefits', unit: '0 to 10', dir: 'max', unc: 0.3 },
-    { id: 'c5', name: 'Years to full effect', unit: 'years', dir: 'min', unc: 0.15 },
+    { id: 'c1', name: 'Lifetime cost', unit: 'MSEK', dir: 'min', unc: 0.05 },
+    { id: 'c2', name: 'Flood risk reduction', unit: '0 to 10', dir: 'max', unc: 0.05 },
+    { id: 'c3', name: 'Heat risk reduction', unit: '0 to 10', dir: 'max', unc: 0.05 },
+    { id: 'c4', name: 'Co-benefits', unit: '0 to 10', dir: 'max', unc: 0.15 },
+    { id: 'c5', name: 'Years to full effect', unit: 'years', dir: 'min', unc: 0.05 },
   ],
   matrix: [
     [45, 4, 6, 7, 3],
@@ -39,16 +39,16 @@ const UNC = [
   { v: 0.3, label: 'High ±30%' },
 ];
 const KAPPA = [
-  { v: 0, label: 'Fixed at the current weights' },
-  { v: 200, label: 'Small changes (a 30% weight varies by about ±3 points)' },
-  { v: 50, label: 'Moderate changes (a 30% weight varies by about ±6 points)' },
-  { v: 10, label: 'Large changes (a 30% weight varies by about ±14 points)' },
-  { v: 'uniform', label: 'Any weights at all (no preference information)' },
+  { v: 0, label: 'Fixed at the current weights', hint: 'Only the table values vary.' },
+  { v: 200, label: 'Small changes', hint: 'Standard deviation about 3 percentage points for a 30% weight.' },
+  { v: 50, label: 'Moderate changes', hint: 'Standard deviation about 6 percentage points for a 30% weight.' },
+  { v: 10, label: 'Large changes', hint: 'Standard deviation about 14 percentage points for a 30% weight.' },
+  { v: 'uniform', label: 'Any weights at all', hint: 'Weights drawn uniformly from all possible weight vectors (no preference information).' },
 ];
 const VERBAL = { 2: 'slightly', 3: 'moderately', 4: 'moderately to strongly', 5: 'strongly', 6: 'strongly to very strongly', 7: 'very strongly', 8: 'very to extremely', 9: 'extremely' };
 const MAX_ALTS = LIMITS.maxAlts, MAX_CRIT = LIMITS.maxCrit;
 // categorical slots without orange, which is the site's accent colour (validated for colour blindness)
-const SLOTS = [1, 3, 4, 5, 6, 7, 8];
+const SLOTS = [1, 3, 4, 7, 5, 6, 8];
 const CLS = (j) => 'c-s' + SLOTS[j];
 
 let S = clone(EXAMPLE);
@@ -92,7 +92,7 @@ function renderTable() {
       S.criteria.map((c, j) => h('th', { scope: 'col', class: 'crit-col' },
         h('div', { class: 'crit-head' },
           h('span', { class: 'k-box ' + CLS(j), 'aria-hidden': 'true' }),
-          h('input', { type: 'text', value: c.name, 'aria-label': `Criterion ${j + 1} name`, class: 'in-name', oninput: (e) => { c.name = e.target.value; renderWeights(); update(); } }),
+          h('input', { type: 'text', value: c.name, title: c.name, 'aria-label': `Criterion ${j + 1} name`, class: 'in-name', oninput: (e) => { c.name = e.target.value; e.target.title = c.name; renderWeights(); update(); } }),
           rmBtn(c))))),
     h('tr', { class: 'meta-row' },
       h('th', { scope: 'row', class: 'opt-col row-lab' }, 'Unit'),
@@ -112,7 +112,7 @@ function renderTable() {
   const tbody = h('tbody', {}, S.alternatives.map((a, i) => h('tr', {},
     h('th', { scope: 'row', class: 'opt-col' },
       h('div', { class: 'opt-head' },
-        h('input', { type: 'text', value: a, 'aria-label': `Option ${i + 1} name`, class: 'in-name', oninput: (e) => { S.alternatives[i] = e.target.value; update(); } }),
+        h('input', { type: 'text', value: a, title: a, 'aria-label': `Option ${i + 1} name`, class: 'in-name', oninput: (e) => { S.alternatives[i] = e.target.value; e.target.title = e.target.value; update(); } }),
         S.alternatives.length > 2 ? h('button', { type: 'button', class: 'icon-btn', 'aria-label': `Remove option ${a}`, title: 'Remove option', onclick: () => removeAlternative(i) }, '×') : null)),
     S.criteria.map((c, j) => h('td', {},
       h('input', {
@@ -125,9 +125,16 @@ function renderTable() {
         },
       }))))));
   host.replaceChildren(h('table', { class: 'perf' }, h('caption', { class: 'visually-hidden', text: 'Performance of each option on each criterion. All cells are editable.' }), thead, tbody));
+  updateScrollHint();
   $('add-alt').disabled = S.alternatives.length >= MAX_ALTS;
   $('add-crit').disabled = S.criteria.length >= MAX_CRIT;
 }
+
+function updateScrollHint() {
+  const wrap = $('perf-table');
+  $('scroll-hint').hidden = !(wrap.scrollWidth > wrap.clientWidth + 1);
+}
+if ('ResizeObserver' in window) new ResizeObserver(() => updateScrollHint()).observe(document.documentElement);
 
 function addAlternative() {
   if (S.alternatives.length >= MAX_ALTS) return;
@@ -188,6 +195,7 @@ function rangeText(j) {
   const col = S.matrix.map((r) => r[j]);
   const c = S.criteria[j];
   const lo = Math.min(...col), hi = Math.max(...col);
+  if (!(hi > lo)) return 'same value for every option, so it makes no difference';
   const [worst, best] = c.dir === 'min' ? [hi, lo] : [lo, hi];
   return `from ${fmtNum(worst)} to ${fmtNum(best)}${c.unit && !/to/.test(c.unit) ? ' ' + c.unit : ''}`;
 }
@@ -197,10 +205,10 @@ function refreshDirectOutputs() {
   S.criteria.forEach((c, j) => { const o = $('pt-' + c.id + '-out'); if (o) o.textContent = fmt.pct(w[j], 0); });
 }
 function pairText(i, j, p) {
-  if (p === 0) return `${S.criteria[i].name} and ${S.criteria[j].name} are equally important`;
+  if (p === 0) return `${S.criteria[i].name} and ${S.criteria[j].name} count the same (1)`;
   const k = Math.abs(p) + 1;
   const [a, b] = p < 0 ? [i, j] : [j, i];
-  return `${S.criteria[a].name} is ${VERBAL[k]} more important than ${S.criteria[b].name} (${k})`;
+  return `${S.criteria[a].name} counts ${VERBAL[k]} more than ${S.criteria[b].name} (${k})`;
 }
 function pairRow(i, j) {
   const key = pairKey(i, j);
@@ -357,7 +365,7 @@ function renderSensitivity() {
     S.criteria.forEach((c, j) => {
       const y = top + j * rowH + rowH / 2;
       const iv = ivs[j];
-      svg('text', { x: labelW, y: y + 4, 'text-anchor': 'end', class: 'bar-label' + (j === crit ? ' strong' : '') }, s).textContent = c.name;
+      svg('text', { x: labelW, y: y + 4, 'text-anchor': 'end', class: 'bar-label' + (j === crit ? ' strong' : '') }, s).textContent = truncate(c.name, Math.floor(labelW / 6.8));
       svg('line', { x1: x(0), x2: x(1), y1: y, y2: y, class: 'track' }, s);
       if (iv.hi >= iv.lo) svg('rect', { x: x(iv.lo), y: y - 7, width: Math.max(2, x(iv.hi) - x(iv.lo)), height: 14, rx: 4, class: 'band-fill' }, s);
       svg('circle', { cx: x(m.w[j]), cy: y, r: 5, class: 'cur-dot' }, s);
@@ -378,7 +386,7 @@ function renderSensitivity() {
     { label: 'Takes over below', get: (j) => (ivs[j].below != null ? S.alternatives[ivs[j].below] : 'none') },
     { label: 'Takes over above', get: (j) => (ivs[j].above != null ? S.alternatives[ivs[j].above] : 'none') },
   ], S.criteria.map((_, j) => j)));
-  const t = M.weightTolerance(m.v, m.w, m.top);
+  const t = tolerance;
   $('stability-summary').textContent = t
     ? `Most sensitive weight: ${S.criteria[t.j].name}. Moving it ${t.dir} by ${(t.by * 100).toFixed(1)} percentage points (from ${fmt.pct(t.from)} to ${fmt.pct(t.to)}) makes ${S.alternatives[t.newTop]} the top option.`
     : `${S.alternatives[m.top]} stays first whatever single weight you change.`;
@@ -501,11 +509,15 @@ function renderMc() {
 
   // rank intervals: exact best/worst case for the value uncertainty at the current weights,
   // and the simulated 5th to 95th percentile range
-  const exact = M.exactRankIntervals(m.scores, m.w, mc.scores ? S.criteria.map((c) => c.unc) : S.criteria.map(() => 0));
+  const showExact = mc.scores && S.criteria.some((c) => c.unc > 0);
+  const exact = M.exactRankIntervals(m.scores, m.w, S.criteria.map((c) => c.unc), M.scales(S.matrix, S.criteria));
+  const halfWidth = exact.length ? exact[0].halfWidth * 100 : 0;
   const host2 = $('fig-intervals');
-  const sh2 = figureShell(host2, { id: 'intervals', title: 'Rank intervals', subtitle: 'Thin line: exact best- and worst-case rank when the table values move within their uncertainty (current weights). Thick bar: middle 90% of the simulated ranks. Dot: current rank.' });
+  const sh2 = figureShell(host2, { id: 'intervals', title: 'Rank intervals', subtitle: (showExact
+    ? `Thin line: exact best- and worst-case rank from the table values alone, with the weights fixed (every score can move by up to ±${halfWidth.toFixed(1)} points). `
+    : '') + 'Thick bar: middle 90% of the simulated ranks. Dot: current rank.' });
   sh2.legend.replaceChildren(
-    h('span', { class: 'lg-item' }, h('span', { class: 'k-line c-ink', 'aria-hidden': 'true' }), 'Best to worst case (exact)'),
+    ...(showExact ? [h('span', { class: 'lg-item' }, h('span', { class: 'k-line c-ink', 'aria-hidden': 'true' }), 'Exact range, table values only (weights fixed)')] : []),
     h('span', { class: 'lg-item' }, h('span', { class: 'k-box c-accent', 'aria-hidden': 'true' }), 'Simulated, 5th to 95th percentile'),
     h('span', { class: 'lg-item' }, h('span', { class: 'k-dot', 'aria-hidden': 'true' }), 'Current rank'));
   const plot = h('div', { class: 'chart-plot', role: 'img', 'aria-label': 'Rank interval for each option. A table is available.' });
@@ -523,8 +535,10 @@ function renderMc() {
     order.forEach((i, row) => {
       const y = top + row * rowH + rowH / 2;
       svg('text', { x: labelW, y: y + 4, 'text-anchor': 'end', class: 'bar-label' }, s).textContent = truncate(S.alternatives[i], Math.floor(labelW / 6.6));
-      svg('line', { x1: x(exact[i].best), x2: x(exact[i].worst), y1: y, y2: y, class: 'range-line' }, s);
-      [exact[i].best, exact[i].worst].forEach((k) => svg('line', { x1: x(k), x2: x(k), y1: y - 9, y2: y + 9, class: 'range-line' }, s));
+      if (showExact) {
+        svg('line', { x1: x(exact[i].best), x2: x(exact[i].worst), y1: y, y2: y, class: 'range-line' }, s);
+        [exact[i].best, exact[i].worst].forEach((k) => svg('line', { x1: x(k), x2: x(k), y1: y - 9, y2: y + 9, class: 'range-line' }, s));
+      }
       svg('rect', { x: x(r.p05[i]) - 6, y: y - 6, width: x(r.p95[i]) - x(r.p05[i]) + 12, height: 12, rx: 6, class: 'iv-bar' }, s);
       svg('circle', { cx: x(m.rk[i]), cy: y, r: 5, class: 'cur-dot' }, s);
     });
@@ -532,8 +546,9 @@ function renderMc() {
   sh2.table.replaceChildren(dataTable('Rank intervals', [
     { label: 'Option', get: (i) => S.alternatives[i] },
     { label: 'Current rank', num: true, get: (i) => String(m.rk[i]) },
-    { label: 'Best case (exact)', num: true, get: (i) => String(exact[i].best) },
-    { label: 'Worst case (exact)', num: true, get: (i) => String(exact[i].worst) },
+    ...(showExact ? [
+      { label: 'Best case (exact, values only)', num: true, get: (i) => String(exact[i].best) },
+      { label: 'Worst case (exact, values only)', num: true, get: (i) => String(exact[i].worst) }] : []),
     { label: 'Simulated 5th pct', num: true, get: (i) => String(r.p05[i]) },
     { label: 'Median', num: true, get: (i) => String(r.median[i]) },
     { label: 'Simulated 95th pct', num: true, get: (i) => String(r.p95[i]) },
@@ -543,9 +558,10 @@ function renderMc() {
   const p1 = r.acceptability[top][0];
   const firstMost = r.acceptability.map((a) => a[0]).indexOf(Math.max(...r.acceptability.map((a) => a[0])));
   const moe = 1.96 * Math.sqrt(p1 * (1 - p1) / r.samples); // Monte Carlo error, 95%
-  let txt = `${S.alternatives[top]} is first in ${fmt.pct(p1, 0)} of scenarios` + (moe >= 0.0005 ? ` (±${(moe * 100).toFixed(1)} points simulation error)` : '');
+  let txt = `${S.alternatives[top]} is first in ${fmt.pct(p1, 0)} of scenarios` + (moe >= 0.0005 ? ` (±${(moe * 100).toFixed(1)} percentage points, 95% Monte Carlo error)` : '');
   if (firstMost !== top) txt += `, but ${S.alternatives[firstMost]} is first more often (${fmt.pct(r.acceptability[firstMost][0], 0)})`;
-  txt += r.p05[top] === r.p95[top]
+  if (p1 >= 0.9995) txt += '.';
+  else txt += r.p05[top] === r.p95[top]
     ? `. It is ${ordinal(r.p05[top])} in at least 90% of them.`
     : `. Its rank stays between ${ordinal(r.p05[top])} and ${ordinal(r.p95[top])} in 90% of them.`;
   $('mc-summary').textContent = txt;
@@ -605,7 +621,9 @@ function init() {
   document.querySelectorAll('input[name="wmethod"]').forEach((r) => r.addEventListener('change', (e) => { S.method = e.target.value; renderWeights(); update(); }));
   $('sweep-crit').addEventListener('change', (e) => { sensCrit = +e.target.value; renderSensitivity(); });
   $('mc-kappa').replaceChildren(...KAPPA.map((k) => h('option', { value: String(k.v), selected: k.v === mc.kappa, text: k.label })));
-  $('mc-kappa').addEventListener('change', (e) => { const v = e.target.value; mc.kappa = v === 'uniform' ? 'uniform' : +v; scheduleMc(); });
+  const kappaHint = () => { $('mc-kappa-hint').textContent = KAPPA.find((k) => String(k.v) === String(mc.kappa)).hint; };
+  $('mc-kappa').addEventListener('change', (e) => { const v = e.target.value; mc.kappa = v === 'uniform' ? 'uniform' : +v; kappaHint(); scheduleMc(); });
+  kappaHint();
   $('mc-scores').checked = mc.scores;
   $('mc-scores').addEventListener('change', (e) => { mc.scores = e.target.checked; scheduleMc(); });
   $('export').addEventListener('click', exportCsv);

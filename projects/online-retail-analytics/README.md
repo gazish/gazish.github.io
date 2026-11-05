@@ -47,7 +47,7 @@ You can also run the SQL files one by one in the DuckDB CLI from this folder.
 | `sql/09_products_and_customers.sql` | Top products and customer-level net sales |
 | `analysis.py` | Runs the SQL, reconciles totals, re-computes the headline KPIs in pandas as a cross-check, builds the revenue bridge and concentration curve, exports `data/` |
 | `get_data.py` | Downloads the raw data (or converts the UCI workbook) |
-| `data/dashboard.json` | Aggregates used by the dashboard (38 KB) |
+| `data/dashboard.json` | Aggregates used by the dashboard (about 40 KB) |
 | `data/*.csv` | Every output table |
 | `index.html`, `dashboard.js` | The dashboard page on the website (shared chart code in `/assets/js/charts.js`) |
 
@@ -61,7 +61,7 @@ You can also run the SQL files one by one in the DuckDB CLI from this folder.
 | Cancellations (invoice starts with C) | 16,598 | -366,746 | Subtracted to get net sales, in the month of the cancellation |
 | Voided orders | 2,634 | 0 | 1,317 sales lines and the cancellations that reversed them: same customer, product, quantity and price, within one day. Excluded from both sales and cancellations, because they were never really sold |
 | Price outliers | 744 | 54,949 | Excluded. Unit price more than 10 times the product's median, for example 60 picnic baskets at GBP 649.50 each (invoice 556444), which was credited back with a manual line |
-| Postage, fees, manual lines, discounts, samples, vouchers, test items | 5,725 | 68,182 | Excluded. Not merchandise |
+| Postage, fees, manual lines, discounts, samples, vouchers, test items | 5,725 | 68,182 | Excluded. Not merchandise (see "Manual lines" below) |
 | Stock write-offs (quantity of zero or less on a normal invoice) | 3,391 | 0 | Excluded |
 | Zero price lines | 2,572 | 0 | Excluded |
 | Bad-debt and manual accounting adjustments | 76 | -140,048 | Excluded. Accounting entries, not trade |
@@ -73,10 +73,16 @@ Other decisions:
   December 2011 has only nine days of data and is left out.
 - **Missing customer ID.** 22.6% of sales lines (13.3% of sales value) have no
   customer ID. They count in sales and order KPIs but not in customer KPIs.
-- **Manual credits.** Cancellation invoices with the stock code M (manual)
-  total GBP -276k in P1 and GBP -146k in P2. They cannot be tied to a product,
-  so they are excluded with the other non-merchandise lines. Counting them as
-  cancellations would raise net sales growth from 1.6% to 3.1%.
+- **Manual lines.** Lines with the stock code M (manual) cannot be tied to a
+  product, so they are excluded with the other non-merchandise lines: charges
+  of GBP 261k in P1 and 77k in P2, and credits of GBP -276k and -146k (-107k
+  without the credit that reverses the excluded picnic-basket line). Counting
+  all of them would put growth at about 1.0%; counting only the credits, at
+  about 3.5%. The headline 1.6% excludes both.
+- **Price outliers.** Some of the flagged lines are probably pack prices (for
+  example 145 lines of 37370 coffee mugs at about GBP 16 against a median of
+  GBP 1.25). Together they are about GBP 15k, under 0.2% of sales, and do not
+  change any KPI.
 - **Markets.** United Kingdom vs International (all other countries). Thirteen
   customer IDs bought from more than one country; per-market customer counts
   treat each market separately.
@@ -95,7 +101,7 @@ Other decisions:
 | Active customers | Distinct customer IDs with at least one order in the period |
 | Repeat purchase rate | Share of active customers with two or more orders in the period |
 | Retained from previous year | Share of P1 customers who ordered again in P2 |
-| Cancellation rate | Cancelled value / gross sales |
+| Cancellation rate | Cancelled value / gross sales, both excluding orders voided by the customer within a day |
 | Sales without customer ID | Share of gross sales on lines with no customer ID |
 | Cohort retention | Share of customers first seen in month m who order in month m + k |
 | RFM segment | Recency, frequency and monetary scores (1 to 5) on P2, snapshot 1 Dec 2011. Recency and monetary are quintile scores from `cume_dist()`, so customers with equal values always get the same score. Frequency uses fixed bins (1, 2, 3 to 4, 5 to 9, 10+ orders) because 36% of customers have exactly one order and quintiles could not separate them |
@@ -108,8 +114,8 @@ Other decisions:
 - The 24 monthly totals equal the two 12-month totals
 - New and returning customers, counted separately, add up to active customers in every month
 - The sum of monthly new customers equals the number of customers whose first purchase falls in the window
-- Raw rows minus duplicates (counted from the raw table) equal the deduplicated rows, and every deduplicated row has exactly one line type
-- Voided sales and their cancellations net to zero
+- Raw rows minus duplicates (counted from the raw table) equal the deduplicated rows, and raw value minus duplicate value equals the sum of the line-type values
+- Every line has a line type, and voided sales and cancellations are matched one to one
 - No remaining sales line is priced above 20 times its product's median
 - The RFM table covers every active P2 customer
 - The voided lines, P2 net sales, orders, active customers, repeat rate and
@@ -122,14 +128,14 @@ sort order, so running the pipeline twice gives byte-identical files.
 ## Findings (P2 = Dec 2010 to Nov 2011, compared with P1)
 
 1. **Net sales grew 1.6%: GBP 9.14M to 9.29M.** The UK fell 0.4%.
-   International grew 14.1% and reached 15.6% of net sales. Small numbers of
-   wholesale customers drive it: Australia (9 customers) added GBP 108k, 60% of
-   the international increase, while Ireland (3 customers) fell GBP 91k.
+   International grew 14.1% and now makes up 15.6% of net sales. Country
+   figures swing on a few wholesale accounts: Australia (9 customers) added
+   GBP 108k, 60% of the international increase, and Ireland (3) lost GBP 91k.
 2. **Fewer, larger orders, but only without a customer ID.** Orders fell 3.9%
    and average order value rose 5.7% (GBP 474 to 501). For identified
-   customers, order value barely moved (GBP 456 to 459). Orders without a
-   customer ID went from GBP 685 to 1,055 on average.
-3. **Sales to identified customers fell 2.6%.** The revenue bridge (in GBP,
+   customers, order value barely moved (GBP 456 to 459). The average order
+   without a customer ID went from GBP 685 to 1,055.
+3. **Gross sales to identified customers fell 2.6%.** The revenue bridge (in GBP,
    P1 to P2 net sales): more active customers +105k, fewer orders per
    customer -366k, order value +49k, sales without a customer ID +351k,
    cancellations +5k, total +144k. Sales without a customer ID went from
@@ -147,10 +153,12 @@ sort order, so running the pipeline twice gives byte-identical files.
    P2, 6.2% of net sales to identified customers.
 7. **Strong seasonality.** September to November brought 37.7% of P2 net
    sales; November net sales were 2.9 times February's.
-8. **Cancellations did not rise.** They were 2.0% of gross sales in P1 and
-   1.9% in P2 (UK 1.7% to 1.9%, International 3.5% to 1.7%). Before I separated
-   voided orders, one order of 74,215 storage jars (GBP 77k) in Jan 2011,
-   cancelled 16 minutes later, made it look as if cancellations had gone up.
+8. **Cancellations were flat overall, but rose in the UK.** They were 2.0% of
+   gross sales in P1 and 1.9% in P2: the UK went from 1.7% to 1.9% and
+   International fell from 3.5% to 1.7%. The rate excludes voided orders
+   (GBP 57k in P1, 123k in P2). Before I separated those, one order of 74,215
+   storage jars (GBP 77k) in Jan 2011, cancelled 16 minutes later, made it look
+   as if cancellations had gone up overall.
 
 ## Limitations
 

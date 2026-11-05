@@ -49,15 +49,17 @@ function renderKpis() {
   const p1 = period('P1'), p2 = period('P2');
   const rows = monthly();
   const series = (f) => rows.map(f);
+  // rate changes use the rounded shares shown on the tiles, so the tile and the text agree
+  const r1 = (v) => Math.round(v * 1000) / 1000;
   const tiles = [
     { label: 'Net sales', v: fmt.gbpCompact(p2.net_sales), d: p2.net_sales / p1.net_sales - 1, kind: 'pct', good: 'up', spark: series((r) => r.net_sales) },
     { label: 'Orders', v: fmt.int(p2.orders), d: p2.orders / p1.orders - 1, kind: 'pct', good: 'up', spark: series((r) => r.orders) },
     { label: 'Average order value (gross)', v: fmt.gbp(p2.aov), d: p2.aov / p1.aov - 1, kind: 'pct', good: 'up', spark: series((r) => r.aov) },
     { label: 'Active customers', v: fmt.int(p2.active_customers), d: p2.active_customers / p1.active_customers - 1, kind: 'pct', good: 'up', spark: series((r) => r.active_customers) },
-    { label: 'Repeat purchase rate', v: fmt.pct(p2.repeat_rate), d: p2.repeat_rate - p1.repeat_rate, kind: 'pts', good: 'up', note: 'customers with 2+ orders in the year' },
+    { label: 'Repeat purchase rate', v: fmt.pct(p2.repeat_rate), d: r1(p2.repeat_rate) - r1(p1.repeat_rate), kind: 'pts', good: 'up', note: 'customers with 2+ orders in the year' },
     { label: 'Retained from previous year', v: fmt.pct(p2.retained_from_p1), note: 'of P1 customers ordered again in P2' },
-    { label: 'Cancellation rate', v: fmt.pct(p2.cancellation_rate), d: p2.cancellation_rate - p1.cancellation_rate, kind: 'pts', good: 'down', spark: series((r) => r.cancelled_value / r.gross_sales) },
-    { label: 'Sales without customer ID', v: fmt.pct(p2.unidentified_share), d: p2.unidentified_share - p1.unidentified_share, kind: 'pts', good: 'down', spark: series((r) => r.unidentified_sales / r.gross_sales) },
+    { label: 'Cancellation rate', v: fmt.pct(p2.cancellation_rate), d: r1(p2.cancellation_rate) - r1(p1.cancellation_rate), kind: 'pts', good: 'down', note: 'excludes orders voided within a day', spark: series((r) => r.cancelled_value / r.gross_sales) },
+    { label: 'Sales without customer ID', v: fmt.pct(p2.unidentified_share), d: r1(p2.unidentified_share) - r1(p1.unidentified_share), kind: 'pts', good: 'down', spark: series((r) => r.unidentified_sales / r.gross_sales) },
   ];
   const ul = document.getElementById('kpis');
   ul.replaceChildren(...tiles.map((t) => {
@@ -189,7 +191,7 @@ function renderCohorts() {
   sh.legend.replaceChildren(
     h('span', { class: 'lg-item' }, h('span', { class: 'heat-scale', 'aria-hidden': 'true' }), '0% to 50%+ of the cohort'),
     h('span', { class: 'lg-item', text: '* Dec 2009 includes customers who bought before the data starts' }),
-    market === 'International' ? h('span', { class: 'lg-item', text: 'International cohorts are small (often under 30 customers), so single cells move a lot' }) : null);
+    ...(market === 'International' ? [h('span', { class: 'lg-item', text: 'International cohorts are small (often under 30 customers), so single cells move a lot' })] : []));
   heatmap(sh.chart, {
     rowLabels, colLabels: Array.from({ length: 12 }, (_, i) => '+' + (i + 1)),
     values, max: 0.5, format: (v) => fmt.pct(v), cellLabel: (v) => Math.round(v * 100) + '', labelWidth: 62, cellHeight: 21,
@@ -264,10 +266,10 @@ function renderCountries() {
   const host = document.getElementById('fig-countries');
   const sh = figureShell(host, { id: 'countries', title: 'International markets', level: 4, subtitle: 'Net sales by country outside the UK, Dec 2010 to Nov 2011, with the number of customers. Growth vs the year before is in the table.' });
   const rows = D.countries.filter((r) => r.country !== 'United Kingdom').slice(0, 10);
-  const name = (c) => (c === 'EIRE' ? 'Ireland (EIRE)' : c);
+  const name = (c) => (c === 'EIRE' ? 'Ireland' : c);
   sh.legend.hidden = true;
   hBarChart(sh.chart, {
-    rows: rows.map((r) => ({ label: `${name(r.country)} (${fmt.int(r.customers_p2)})`, value: r.net_sales_p2, cls: 'c-accent', note: `${fmt.signedPct(r.growth)} vs P1, ${fmt.int(r.customers_p2)} customers` })),
+    rows: rows.map((r) => ({ label: `${name(r.country)}, ${fmt.int(r.customers_p2)}`, value: r.net_sales_p2, cls: 'c-accent', note: `${fmt.signedPct(r.growth)} vs P1, ${fmt.int(r.customers_p2)} customers` })),
     format: fmt.gbpCompact, labelWidth: 150, valueWidth: 56, rowHeight: 28, valueName: 'net sales',
     ariaLabel: 'Net sales by international country. A table is available.',
   });
@@ -302,7 +304,7 @@ function renderQuality() {
     ['Cancellations', q.cancellation, 'Subtracted to get net sales'],
     ['Voided orders (sale and cancellation)', q.voided, 'Excluded from both'],
     ['Price outliers', q.price_outlier, 'Excluded'],
-    ['Postage, fees, discounts, vouchers, tests', q.non_merchandise, 'Excluded'],
+    ['Postage, fees, manual lines, discounts, vouchers, tests', q.non_merchandise, 'Excluded'],
     ['Stock write-offs', q.stock_adjustment, 'Excluded'],
     ['Zero price lines', q.zero_price, 'Excluded'],
     ['Bad-debt and manual adjustments', q.accounting_adjustment, 'Excluded'],

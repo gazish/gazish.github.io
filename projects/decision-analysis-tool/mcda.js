@@ -189,12 +189,14 @@ export function weightTolerance(v, w, top) {
 /* ---------- exact best- and worst-case rank intervals ---------- */
 // With the weights fixed and every table value allowed to move by up to
 // +/- u_j times its criterion's range, an option's score lies in
-// [S_i - d, S_i + d] with d = sum_j w_j u_j (each value moves by at most u_j
-// on the 0 to 1 scale, and scores depend only on the option's own values).
-// Best case: option i at its top, every other option at its bottom; worst
-// case the other way round.
-export function exactRankIntervals(scores, w, unc) {
-  const d = w.reduce((s, wj, j) => s + wj * (unc[j] || 0), 0);
+// [S_i - d, S_i + d] with d = sum_j w_j u_j over the criteria whose range is
+// not zero (each value moves by at most u_j on the 0 to 1 scale; a criterion
+// with the same value everywhere has no scale and scores 0 for every option).
+// Scores depend only on the option's own values, so the best case puts
+// option i at its top and every other option at its bottom; the worst case
+// does the opposite.
+export function exactRankIntervals(scores, w, unc, sc = null) {
+  const d = w.reduce((s, wj, j) => (sc && !(sc[j].max - sc[j].min > 0) ? s : s + wj * (unc[j] || 0)), 0);
   return scores.map((si, i) => {
     let better = 0, couldBeat = 0;
     scores.forEach((sk, k) => {

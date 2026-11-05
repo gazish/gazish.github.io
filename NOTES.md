@@ -9,11 +9,12 @@ Gazi to read when picking the work up.
    button points there.
 2. **Switch on Pages:** Settings > Pages > Build and deployment > Source:
    **GitHub Actions**. Then merge the pull request to `main`.
-3. **Thesis year and software.** I did not have the publication year or the
-   software you used for the thesis (Excel, R, Python?), so the thesis page
-   leaves both out. Add them to the page and to the `ScholarlyArticle`
-   JSON-LD (`datePublished`) if you want. I could not open DiVA from the build
-   environment, so the page uses only the facts you gave me.
+3. **Thesis year, citation and software.** I did not have the publication year,
+   the author order on DiVA, the findings or the software you used, so the
+   thesis page leaves them out (there is no "cite as" line). Add a citation
+   in the DiVA author order, two or three sentences of findings from the
+   abstract, and the year (also as `datePublished` in the `ScholarlyArticle`
+   JSON-LD). I could not open DiVA from the build environment.
 4. **Thesis language.** The JSON-LD does not state a language. If the thesis
    is in English, you can add `"inLanguage": "en"`.
 5. **Tech Valley Networks and Shimanto Bank** have no bullet points because I
@@ -27,19 +28,24 @@ Gazi to read when picking the work up.
    is written in JavaScript and the retail project in SQL and Python. Read
    through the code before interviews so you can explain any part of it. I did
    **not** add JavaScript to your skills list, because you did not list it.
-9. **Eastern Bank result wording.** The site says regions were flagged for
-   acquisition and that "over the same period, active co-brand users grew
-   12%". It does not claim the analysis caused the growth. Change it if you
-   can say more.
+9. **Eastern Bank 12%.** The site gives "active co-brand users grew 12% over
+   the period" as context only, in its own sentence, and does not link it to
+   the regional analysis. If you can say more about your part in that
+   growth, add it in your own words.
 10. **Python and R.** The skills page says "coursework" without naming the
     course or programme. Name them if you like.
 11. **Retail dashboard in a BI tool.** Two reviewers suggested rebuilding the
     retail KPIs in Looker Studio or Power BI and linking it, so a BI recruiter
     can see work in the tool itself. The CSVs in
     `projects/online-retail-analytics/data/` are ready to load.
-12. **NOTES.md is public.** It is in the repository, which the site links to,
-    and it says the two portfolio projects were built in this session. Delete
-    or move it once you have read it if you do not want that visible.
+12. **How the two portfolio projects were made.** The retail analytics project
+    and the decision tool were built in this session, and the public commits
+    show Claude as co-author. The pages now say "made for this site" rather
+    than "I built". Decide how you want to describe your part (for example,
+    built with an AI coding assistant, with you choosing the questions and
+    checking the results) and add one honest line to those two pages. Do not
+    rewrite the commit history to hide it. NOTES.md is also public in the
+    repository; delete or move it once you have read it if you prefer.
 13. **CV first.** Once the PDF is in place, consider making "Download CV" the
     main button in the hero (a recruiter suggestion).
 
@@ -224,3 +230,40 @@ What changed after round 1:
   found nothing; listed above); NOTES.md stays in the repository because you
   asked for it, but see item 12 above; a Looker Studio or Power BI version of
   the retail dashboard needs your own accounts.
+
+### Round 2
+
+| Reviewer | Score | Main points |
+|---|---|---|
+| Stockholm tech recruiter | 8 | "null" printed in the cohort legend; public commits show AI co-authorship next to "projects I built"; home timeline out of order; tool table too wide on desktop; thesis Methods credited the thesis with a framework |
+| Head of Data | 8 | Would interview; every number reproduced. Same "null"; manual-line sensitivity shown from one side only; cancellation-rate definition did not say it excludes voided orders; two checks still true by construction; some price outliers are pack prices |
+| PhD supervisor | 8 | Exact rank intervals wrong when a criterion is constant, and the test for them was circular; exact and simulated intervals mixed on one chart; "cite as" line with an author order not in the brief |
+| Front-end designer | 8 | Tool table regression (remove buttons pushed out of cells, axe target-size), "null", stability labels overflowing at 360 px, nav spread out at 768 px |
+| Skeptical editor | 8 | "null"; 12% still joined to the regional work on Experience and llms.txt and "not ... alone" still implied partial cause; unsupported "cite as" line and framework attribution on the thesis page; small wording and repetition items |
+
+What changed after round 2:
+
+- **Bug fixes:** the "null" text; exact rank intervals now skip criteria with
+  no range, and a new test enumerates all 4,096 corners of two 4 x 3 tables;
+  the tool table uses fixed-width name inputs (full name in a tooltip), fits
+  at desktop widths, and shows a scroll hint only when it overflows;
+  stability-chart labels truncate; the nav only spreads out on small phones.
+- **Retail:** manual lines reported from both sides (growth about 1.0% with
+  all manual charges and credits, about 3.5% with credits only, 1.6%
+  headline); cancellation rate defined as excluding voided orders, finding 8
+  says the UK rose; the two circular checks replaced with a value
+  reconciliation and a one-to-one pairing check; pack prices noted; "gross
+  sales to identified customers"; tile deltas computed from the rounded
+  shares; data cleaning table moved into a collapsible section.
+- **Tool:** exact intervals drawn only when the table values vary, labelled
+  "table values only (weights fixed)", with the size of the score range in
+  the subtitle; smaller default uncertainty ratings so the example intervals
+  say something (ponds 1st to 3rd); clearer Monte Carlo error wording; AHP
+  pairs say "counts more than" (range-based) instead of "more important";
+  constant criteria are flagged under their slider; criterion colours
+  reordered to avoid two greens side by side.
+- **Copy:** "made for this site" instead of "I built"; 12% as a separate
+  context line everywhere; thesis page without the "cite as" line or the
+  framework attribution, with the problem-to-component mapping folded into
+  Approach; home timeline in date order; ESN and Eastern Bank pages trimmed.
+

@@ -1,9 +1,10 @@
-// Tests for mcda.js. Run from the repository root:  node --test projects/decision-analysis-tool/
+// Tests for mcda.js and share.js. Run from the repository root:
+//   node --test projects/decision-analysis-tool/mcda.test.mjs
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   normalizeWeights, scales, valueMatrix, weightedSum, ranks, pairwiseMatrix, ahp, worstJudgement,
-  nearestSaaty, sweep, stabilityInterval, mulberry32, dirichlet, simulate, crThreshold,
+  nearestSaaty, sweep, stabilityInterval, mulberry32, dirichlet, simulate, crThreshold, valueOf,
   weightTolerance, exactRankIntervals, RANDOM_INDEX,
 } from './mcda.js';
 import { encodeState, decodeState } from './share.js';
@@ -121,24 +122,39 @@ test('weight tolerance reports the right direction and the new top option', () =
   assert.equal(weightTolerance([[1, 1], [0, 0]], [0.5, 0.5], 0), null);
 });
 
-test('exact rank intervals match brute force over the corner cases', () => {
-  const matrix = [[10, 1, 4], [20, 3, 2], [30, 2, 1], [15, 2.5, 3]];
-  const criteria = [{ dir: 'max' }, { dir: 'min' }, { dir: 'max' }];
-  const w = [0.5, 0.3, 0.2], unc = [0.1, 0.2, 0.05];
+// Brute force: move every table cell to +u or -u times its criterion's range
+// (all 2^(options x criteria) corners), rank, and record each option's best and worst rank.
+function cornerRanks(matrix, criteria, w, unc) {
   const sc = scales(matrix, criteria);
-  const v = valueMatrix(matrix, criteria, sc);
-  const s = weightedSum(v, w);
-  const iv = exactRankIntervals(s, w, unc);
-  const d = w.reduce((t, x, j) => t + x * unc[j], 0);
-  // brute force: option i at +d or -d, the others at the opposite extreme
-  s.forEach((si, i) => {
-    const bestRank = ranks(s.map((sk, k) => (k === i ? si + d : sk - d)))[i];
-    const worstRank = ranks(s.map((sk, k) => (k === i ? si - d : sk + d)))[i];
-    assert.equal(iv[i].best, bestRank);
-    assert.equal(iv[i].worst, worstRank);
-  });
+  const n = matrix.length, m = criteria.length, cells = n * m;
+  const best = Array(n).fill(Infinity), worst = Array(n).fill(-Infinity);
+  for (let mask = 0; mask < 2 ** cells; mask++) {
+    const v = matrix.map((row, i) => row.map((x, j) => {
+      const sign = (mask >> (i * m + j)) & 1 ? 1 : -1;
+      return valueOf(x + sign * unc[j] * (sc[j].max - sc[j].min), sc[j], criteria[j].dir);
+    }));
+    ranks(weightedSum(v, w)).forEach((r, i) => { best[i] = Math.min(best[i], r); worst[i] = Math.max(worst[i], r); });
+  }
+  return { best, worst };
+}
+
+test('exact rank intervals match a full enumeration of the table corners', () => {
+  const cases = [
+    { matrix: [[10, 1, 4], [20, 3, 2], [30, 2, 1], [15, 2.5, 3]], dirs: ['max', 'min', 'max'], w: [0.5, 0.3, 0.2], unc: [0.1, 0.2, 0.05] },
+    // a criterion with the same value for every option (what "Add criterion" creates)
+    { matrix: [[10, 5, 1], [9, 5, 2], [1, 5, 9], [2, 5, 8]], dirs: ['max', 'max', 'min'], w: [0.4, 0.4, 0.2], unc: [0.05, 0.15, 0.05] },
+  ];
+  for (const c of cases) {
+    const criteria = c.dirs.map((dir) => ({ dir }));
+    const sc = scales(c.matrix, criteria);
+    const s = weightedSum(valueMatrix(c.matrix, criteria, sc), c.w);
+    const iv = exactRankIntervals(s, c.w, c.unc, sc);
+    const bf = cornerRanks(c.matrix, criteria, c.w, c.unc);
+    iv.forEach((r, i) => { assert.equal(r.best, bf.best[i]); assert.equal(r.worst, bf.worst[i]); });
+  }
   // no uncertainty: the interval collapses to the nominal rank
-  exactRankIntervals(s, w, [0, 0, 0]).forEach((r, i) => { assert.equal(r.best, ranks(s)[i]); assert.equal(r.worst, ranks(s)[i]); });
+  const s0 = [0.7, 0.4, 0.55];
+  exactRankIntervals(s0, [0.5, 0.5], [0, 0]).forEach((r, i) => { assert.equal(r.best, ranks(s0)[i]); assert.equal(r.worst, ranks(s0)[i]); });
 });
 
 test('share links round-trip and invalid links are rejected', () => {

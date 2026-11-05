@@ -120,10 +120,10 @@
 
       <div class="case-body">
         <h2 id="findings">Key findings</h2>
-        <p class="keyresult">Net sales grew 1.6% between the two 12-month periods. By market, all of the growth was outside the UK. By customer, sales to identified customers fell 2.6%, so the rise is in sales with no customer ID.</p>
+        <p class="keyresult">Net sales grew 1.6% between the two 12-month periods. By market, all of the growth was outside the UK. By customer, gross sales to identified customers fell 2.6%, so the rise is in sales with no customer ID.</p>
         <ul>
-          <li><strong>UK flat, international up.</strong> UK net sales fell 0.4%; international net sales grew 14.1% to 15.6% of the total. A few wholesale customers drive this: Australia (9 customers) added £108k, Ireland (3 customers) fell £91k.</li>
-          <li><strong>Larger orders only where there is no customer ID.</strong> Average order value rose 5.7%, but for identified customers it barely moved (£456 to £459). Orders without an ID went from £685 to £1,055.</li>
+          <li><strong>UK flat, international up.</strong> UK net sales fell 0.4%; international net sales grew 14.1% and now make up 15.6% of the total. Country figures swing on a few wholesale accounts: Australia (9 customers) added £108k and Ireland (3) lost £91k.</li>
+          <li><strong>Larger orders only where there is no customer ID.</strong> Average order value rose 5.7%, but for identified customers it barely moved (£456 to £459). The average order without an ID went from £685 to £1,055.</li>
           <li><strong>A measurement gap is growing.</strong> Sales without a customer ID rose from 11.3% to 14.8% of gross sales, so customer KPIs cover less of the business than a year earlier.</li>
           <li><strong>Sales are concentrated.</strong> The top 10% of identified customers brought 59.9% of their net sales. 360 "At risk" customers (median four orders, 118 days since the last one) spent £491k in the last 12 months, which makes them the obvious group for a reactivation test.</li>
         </ul>
@@ -222,7 +222,11 @@
           <p class="meta">From <a href="https://github.com/gazish/gazish.github.io/blob/main/projects/online-retail-analytics/sql/07_rfm_segments.sql">sql/07_rfm_segments.sql</a>.</p>
         </details>
 
-        <h3 id="quality-title">Data cleaning, row by row</h3>
+        <h3 id="quality-title">Data cleaning</h3>
+        <p>Two rules changed the story. <strong>Voided orders:</strong> a sale cancelled by the same customer within a day (same product, quantity and price) is left out of both sales and cancellations. Without this rule, one order of 74,215 storage jars (£77k), cancelled 16 minutes later, made cancellations look as if they had risen; in fact they went from 2.0% to 1.9% of gross sales. <strong>Price outliers:</strong> a unit price above 10 times the product's median is treated as a pricing error. The largest is 60 picnic baskets at £649.50 each, credited back with a manual line. Manual lines cannot be tied to products and are excluded: counting all manual charges and credits would put growth at about 1.0%, and counting only the credits at about 3.5%. The headline 1.6% excludes both.</p>
+
+        <details>
+          <summary>What happened to every raw row</summary>
         <div id="tbl-quality">
           <div class="table-wrap"><table>
             <caption>What happened to every raw row</caption>
@@ -237,7 +241,7 @@
           </table></div>
         </div>
         <p>Most duplicates (22,844 rows) come from 1 to 9 December 2010, which appears in both yearly sheets of the source workbook. The rest (11,491 rows, 0.3% of sales value) are identical lines on the same invoice within the same minute, which I also treat as duplicates.</p>
-        <p>Two rules changed the story. <strong>Voided orders:</strong> a sale cancelled by the same customer within a day (same product, quantity and price) is left out of both sales and cancellations. Without this rule, one order of 74,215 storage jars (£77k), cancelled 16 minutes later, made cancellations look as if they had risen; in fact they went from 2.0% to 1.9% of gross sales. <strong>Price outliers:</strong> a unit price above 10 times the product's median is treated as a pricing error. The largest is 60 picnic baskets at £649.50 each, credited back with a manual line. Manual credit lines (−£276k in P1, −£146k in P2) cannot be tied to products and are excluded; counting them would raise growth from 1.6% to 3.1%.</p>
+        </details>
 
         <h2 id="tools">Tools</h2>
         <ul>
@@ -247,7 +251,7 @@
         </ul>
 
         <h2 id="result">Result</h2>
-        <p>A pipeline that turns the raw file into a small set of defined, checked KPIs in a few seconds, and a dashboard that answers three questions: is the business growing, where is the change coming from, and which customers matter most. The full list of findings and the KPI definitions are in the <a href="https://github.com/gazish/gazish.github.io/blob/main/projects/online-retail-analytics/README.md">project README</a>.</p>
+        <p>A pipeline that turns the raw file into a small set of defined, checked KPIs in a few seconds, and a dashboard that shows whether the business is growing and where the change comes from. The full list of findings and the KPI definitions are in the <a href="https://github.com/gazish/gazish.github.io/blob/main/projects/online-retail-analytics/README.md">project README</a>.</p>
 
         <h2 id="next">What I would do next</h2>
         <ul>

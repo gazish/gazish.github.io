@@ -116,7 +116,7 @@
         <button type="button" class="btn btn-small" id="add-crit">Add criterion</button>
         <button type="button" class="btn btn-small" id="reset">Reset example</button>
       </div>
-      <p class="meta scroll-hint">Scroll the table sideways to see every criterion.</p>
+      <p class="meta scroll-hint" id="scroll-hint" hidden>Scroll the table sideways to see every criterion.</p>
       <div class="table-wrap perf-wrap" id="perf-table"></div>
       <p class="meta">Scores use a linear value scale per criterion: the worst value in the table scores 0 and the best scores 100.</p>
     </section>
@@ -184,6 +184,7 @@
         <div class="field-row">
           <label for="mc-kappa">How much the weights vary</label>
           <select id="mc-kappa"></select>
+          <span class="meta" id="mc-kappa-hint"></span>
         </div>
         <div class="check-row">
           <input type="checkbox" id="mc-scores">
@@ -228,7 +229,7 @@
         <p>Plain JavaScript modules and SVG, with no chart or maths library. The maths sits in one module (<code>mcda.js</code>) with no browser code, covered by 15 unit tests run with Node's built-in test runner. The tests check the AHP weights, λmax and consistency ratio on a 3 x 3 example worked by hand, and compare the stability intervals and the exact rank intervals with brute-force searches.</p>
 
         <h2 id="result">Result (example output, illustrative data)</h2>
-        <p>With the example data and the default weights, stormwater retention ponds rank first with 63.8 points, 8.0 points ahead of green roofs. The most sensitive weight is flood risk reduction: lowering it from 30% to 21.8% puts street trees and pocket parks first. In the Monte Carlo run with moderate weight changes and uncertain values, the ponds come first in 71% of scenarios.</p>
+        <p>With the example data and the default weights, stormwater retention ponds rank first with 63.8 points, 8.0 points ahead of green roofs. The most sensitive weight is flood risk reduction: lowering it from 30% to 21.8% puts street trees and pocket parks first. With the default uncertainty ratings and fixed weights, the exact best- and worst-case ranks put the ponds between 1st and 3rd. In the Monte Carlo run with moderate weight changes and uncertain values, the ponds come first in 82% of scenarios.</p>
 
         <h2 id="next">What I would do next</h2>
         <ul>
@@ -247,7 +248,7 @@
           <h3>One-at-a-time sensitivity</h3>
           <p>The weight of criterion <var>j</var> is set to <var>t</var> and the others are rescaled in proportion: <code>w<sub>k</sub>(t) = w<sub>k</sub> (1 − t) / (1 − w<sub>j</sub>)</code>. Every score is then linear in <var>t</var>, so the interval in which the top option stays first is found exactly by solving one linear inequality per competing option (compare Triantaphyllou and Sánchez, 1997).</p>
           <h3>Monte Carlo rank analysis</h3>
-          <p>Weights are drawn from a Dirichlet distribution with parameters <code>κ w</code>, so their mean is the current weights and the standard deviation of each weight is <code>√(w<sub>j</sub>(1 − w<sub>j</sub>) / (κ + 1))</code>: for a 30% weight, about 3, 6 and 14 percentage points for κ = 200, 50 and 10. "Any weights at all" draws uniformly from all possible weight vectors, as in SMAA when no preference information is available (Lahdelma, Hokkanen and Salminen, 1998; Lahdelma and Salminen, 2001). Table values move uniformly by up to ±5%, ±15% or ±30% of the criterion's range in the table. Perturbed values are scored on the fixed scale of the original table, so they can fall slightly below 0 or above 1. The tool reports rank acceptability (the share of scenarios in which an option takes each rank) and the 5th to 95th percentile of each option's rank, with the 95% simulation error on the headline share. It uses 5,000 draws with a fixed random seed, so results are reproducible.</p>
+          <p>Weights are drawn from a Dirichlet distribution with parameters <code>κ w</code>, so their mean is the current weights and the standard deviation of each weight is <code>√(w<sub>j</sub>(1 − w<sub>j</sub>) / (κ + 1))</code>: for a 30% weight, about 3, 6 and 14 percentage points for κ = 200, 50 and 10. "Any weights at all" draws uniformly from all possible weight vectors, as in SMAA when no preference information is available (Lahdelma, Hokkanen and Salminen, 1998; Lahdelma and Salminen, 2001). Table values move uniformly by up to ±5%, ±15% or ±30% of the criterion's range in the table. Perturbed values are scored on the fixed scale of the original table, so they can fall below 0 or above 1 by up to <code>u<sub>j</sub></code> (0.3 at High). The tool reports rank acceptability (the share of scenarios in which an option takes each rank) and the 5th to 95th percentile of each option's rank, with the 95% simulation error on the headline share. It uses 5,000 draws with a fixed random seed, so results are reproducible.</p>
           <h3>Exact best- and worst-case rank intervals</h3>
           <p>With the weights fixed, each option's score depends only on its own values, and each value can move by at most <code>u<sub>j</sub></code> on its 0 to 1 scale. So every score lies in <code>[S<sub>i</sub> − d, S<sub>i</sub> + d]</code> with <code>d = Σ<sub>j</sub> w<sub>j</sub> u<sub>j</sub></code>. The best case puts option <var>i</var> at the top of its range and every other option at the bottom; the worst case does the opposite. These intervals are exact, unlike the extremes of a simulation, which shrink when fewer draws are used.</p>
           <h3>Limitations</h3>

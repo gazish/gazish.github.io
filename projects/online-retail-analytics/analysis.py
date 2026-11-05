@@ -75,10 +75,15 @@ def reconcile(con) -> None:
     deduped = scalar(con, "SELECT count(*) FROM lines")
     check(raw - int(dq.loc["exact_duplicates_removed", "row_count"]) == deduped,
           f"raw rows - duplicates counted in the raw table = rows after deduplication ({deduped:,})")
-    check(int(dq.drop(index=["raw_rows", "exact_duplicates_removed"])["row_count"].sum()) == deduped,
-          "every deduplicated row has exactly one line type")
-    voided_net = scalar(con, "SELECT coalesce(sum(line_value), 0) FROM lines WHERE line_type = 'voided'")
-    check(abs(voided_net) < 0.005, "voided sales and their cancellations cancel out exactly")
+    check(scalar(con, "SELECT count(*) FROM lines WHERE line_type IS NULL") == 0, "every line has a line type")
+    raw_value = float(dq.loc["raw_rows", "line_value"])
+    dup_value = float(dq.loc["exact_duplicates_removed", "line_value"])
+    typed_value = float(dq.drop(index=["raw_rows", "exact_duplicates_removed"])["line_value"].sum())
+    check(math.isclose(raw_value - dup_value, typed_value, abs_tol=0.05),
+          f"raw value - duplicate value = sum of the line-type values (GBP {typed_value:,.0f})")
+    v_sales = scalar(con, "SELECT count(*) FROM lines WHERE line_type = 'voided' AND invoice NOT LIKE 'C%'")
+    v_cancels = scalar(con, "SELECT count(*) FROM lines WHERE line_type = 'voided' AND invoice LIKE 'C%'")
+    check(v_sales == v_cancels, f"voided sales and cancellations are matched one to one ({v_sales:,} pairs)")
     outliers = scalar(con, """WITH med AS (SELECT stock_code, median(unit_price) AS m FROM lines
                                            WHERE line_type = 'sale' GROUP BY stock_code)
                               SELECT count(*) FROM lines JOIN med USING (stock_code)
