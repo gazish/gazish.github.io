@@ -96,13 +96,12 @@ let trendShell;
 function renderTrend() {
   const host = document.getElementById('fig-trend');
   const M = METRICS[metric];
-  if (!trendShell) {
-    trendShell = figureShell(host, { id: 'trend', title: 'Monthly trend', subtitle: ' ' });
+  const first = !trendShell;
+  trendShell = figureShell(host, { id: 'trend', title: M.label + ' by month', subtitle: 'Dec 2010 to Nov 2011 against the same months a year earlier' });
+  if (first) {
     const sw = document.querySelector('.metric-switch');
     if (sw) host.querySelector('.fig-head').after(sw); // title first, then the metric switch
   }
-  host.querySelector('.fig-title').textContent = M.label + ' by month';
-  host.querySelector('.fig-sub').textContent = 'Dec 2010 to Nov 2011 against the same months a year earlier';
   const rows = monthly();
   const p1 = rows.slice(0, 12), p2 = rows.slice(12, 24);
   const labels = p2.map((r) => MONTHS[+r.month.slice(5, 7) - 1]);
@@ -151,7 +150,7 @@ function renderBridge() {
     { label: 'P1 to P2', get: (r) => r.note },
     { label: 'Change', num: true, get: (r) => fmt.signedPct(r.value) },
   ], rows));
-  sh.legend.remove();
+  sh.legend.hidden = true;
 }
 
 /* ---------- sales by customer type (P2) ---------- */
@@ -265,7 +264,7 @@ function renderCountries() {
   const sh = figureShell(host, { id: 'countries', title: 'International markets', subtitle: 'Net sales by country outside the UK, Dec 2010 to Nov 2011. Hover for growth vs the year before.' });
   const rows = D.countries.filter((r) => r.country !== 'United Kingdom').slice(0, 10);
   const name = (c) => (c === 'EIRE' ? 'Ireland (EIRE)' : c);
-  sh.legend.remove();
+  sh.legend.hidden = true;
   hBarChart(sh.chart, {
     rows: rows.map((r) => ({ label: name(r.country), value: r.net_sales_p2, cls: 'c-accent', note: `${fmt.signedPct(r.growth)} vs P1, ${fmt.int(r.customers_p2)} customers` })),
     format: fmt.gbpCompact, labelWidth: 120, valueWidth: 56, rowHeight: 28, valueName: 'net sales',

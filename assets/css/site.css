@@ -216,7 +216,7 @@ pre {
 .lede { font-size: clamp(1.125rem, 0.6vw + 1rem, 1.3rem); line-height: 1.5; color: var(--ink-2); max-width: 38rem; }
 .muted { color: var(--muted); }
 .meta { font-size: 0.9rem; color: var(--muted); }
-.num { font-variant-numeric: tabular-nums; }
+
 
 /* ---------- buttons ---------- */
 .btn-row { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 1.75rem 0 0; padding: 0; list-style: none; }
@@ -385,7 +385,7 @@ table { border-collapse: collapse; width: 100%; font-size: 0.925rem; margin: 0; 
 caption { text-align: left; font-size: 0.875rem; color: var(--muted); padding: 0.6rem 0.8rem; caption-side: top; }
 th, td { text-align: left; padding: 0.55rem 0.8rem; border-top: 1px solid var(--line); vertical-align: top; }
 thead th { border-top: 0; font-size: 0.8125rem; color: var(--muted); font-weight: 650; text-transform: uppercase; letter-spacing: 0.04em; background: var(--surface-2); }
-td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+td.n, th.n { text-align: right; white-space: nowrap; }
 
 /* details / disclosure */
 details { border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); margin: 0 0 1rem; }

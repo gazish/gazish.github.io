@@ -53,7 +53,7 @@
 .chart-tip.on { opacity: 1; transform: none; }
 .tip-title { color: var(--muted); font-weight: 600; margin-bottom: 0.25rem; }
 .tip-row { display: flex; align-items: center; gap: 0.45rem; line-height: 1.5; }
-.tip-val { font-weight: 700; font-variant-numeric: tabular-nums; }
+.tip-val { font-weight: 700; }
 .tip-lab { color: var(--ink-2); }
 .tip-key { flex: none; }
 
@@ -130,7 +130,7 @@
 .ibar-fill { display: block; height: 10px; border-radius: 0 4px 4px 0; min-width: 2px; }
 .ibar-fill.c-accent { background: var(--accent-mark); }
 .ibar-fill.c-context { background: var(--de-emph); }
-.ibar-val { flex: none; width: 3.2rem; text-align: right; font-variant-numeric: tabular-nums; font-size: 0.875rem; }
+.ibar-val { flex: none; width: 3.2rem; text-align: right; font-size: 0.875rem; }
 .rfm-table td, .rfm-table th { vertical-align: middle; }
 .heat-scale { display: inline-block; width: 84px; height: 10px; border-radius: 3px; background: linear-gradient(90deg, rgba(226, 88, 31, 0.06), var(--accent-mark)); }
 .dash-subhead { font-size: 1.15rem; margin: 2.5rem 0 1rem; padding-top: 1.5rem; border-top: 1px solid var(--line); }

@@ -79,7 +79,8 @@ export function mount(container, draw) {
     const w = Math.round(container.clientWidth);
     if (w && w !== last) { last = w; draw(w); }
   };
-  if ('ResizeObserver' in window) new ResizeObserver(run).observe(container);
+  if (container._ro) container._ro.disconnect(); // one observer per container, even after re-renders
+  if ('ResizeObserver' in window) { container._ro = new ResizeObserver(run); container._ro.observe(container); }
   run();
   return { redraw() { last = 0; run(); } };
 }
@@ -402,24 +403,34 @@ export function dataTable(caption, columns, rows) {
 }
 
 // A figure with a title, the chart, a legend slot and a "Show table" toggle.
+// Re-rendering into the same host reuses the shell, so an open table stays open.
 export function figureShell(host, { title, subtitle, id }) {
-  host.replaceChildren();
-  const tableId = id + '-table';
-  const btn = h('button', { type: 'button', class: 'btn btn-small table-toggle', 'aria-expanded': 'false', 'aria-controls': tableId, text: 'Show table' });
-  const head = h('div', { class: 'fig-head' },
-    h('div', {}, h('h3', { class: 'fig-title', id: id + '-title', text: title }), subtitle ? h('p', { class: 'fig-sub', text: subtitle }) : null),
-    btn);
-  const legend = h('div', { class: 'fig-legend' });
-  const chart = h('div', { class: 'fig-chart' });
-  const table = h('div', { class: 'fig-table', id: tableId, hidden: true });
-  btn.addEventListener('click', () => {
-    const open = table.hidden;
-    table.hidden = !open;
-    btn.setAttribute('aria-expanded', String(open));
-    btn.textContent = open ? 'Hide table' : 'Show table';
-  });
-  host.append(head, legend, chart, table);
-  return { chart, legend, table };
+  let sh = host._shell;
+  if (!sh) {
+    host.replaceChildren();
+    const tableId = id + '-table';
+    const btn = h('button', { type: 'button', class: 'btn btn-small table-toggle', 'aria-expanded': 'false', 'aria-controls': tableId, text: 'Show table' });
+    const titleEl = h('h3', { class: 'fig-title', id: id + '-title' });
+    const subEl = h('p', { class: 'fig-sub' });
+    const head = h('div', { class: 'fig-head' }, h('div', {}, titleEl, subEl), btn);
+    const legendEl = h('div', { class: 'fig-legend' });
+    const chart = h('div', { class: 'fig-chart' });
+    const table = h('div', { class: 'fig-table', id: tableId, hidden: true });
+    btn.addEventListener('click', () => {
+      const open = table.hidden;
+      table.hidden = !open;
+      btn.setAttribute('aria-expanded', String(open));
+      btn.textContent = open ? 'Hide table' : 'Show table';
+    });
+    host.append(head, legendEl, chart, table);
+    sh = host._shell = { chart, legend: legendEl, table, titleEl, subEl };
+  }
+  sh.titleEl.textContent = title;
+  sh.subEl.textContent = subtitle || '';
+  sh.subEl.hidden = !subtitle;
+  sh.chart.replaceChildren();
+  sh.legend.replaceChildren();
+  return sh;
 }
 
 export function legend(host, items) {

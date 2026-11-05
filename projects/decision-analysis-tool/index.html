@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Decision analysis tool: weighted sum, AHP and sensitivity analysis | Gazi Shafayet Hossain</title>
+<meta name="description" content="Browser-based multi-criteria decision tool: weighted sum, AHP pairwise comparisons with consistency ratio, weight stability intervals and Monte Carlo rank acceptability. Pure JavaScript.">
+<link rel="canonical" href="https://gazish.github.io/projects/decision-analysis-tool/">
+<meta name="x-og-image-alt" content="Decision analysis tool by Gazi Shafayet Hossain">
+<!-- layout:head -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+<link rel="preload" href="/assets/fonts/schibsted-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/site.css">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/img/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<meta name="theme-color" content="#f6f4ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#131210" media="(prefers-color-scheme: dark)">
+<meta name="author" content="Gazi Shafayet Hossain">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Gazi Shafayet Hossain">
+<meta property="og:locale" content="en_GB">
+<meta property="og:title" content="Decision analysis tool: weighted sum, AHP and sensitivity analysis | Gazi Shafayet Hossain">
+<meta property="og:description" content="Browser-based multi-criteria decision tool: weighted sum, AHP pairwise comparisons with consistency ratio, weight stability intervals and Monte Carlo rank acceptability. Pure JavaScript.">
+<meta property="og:url" content="https://gazish.github.io/projects/decision-analysis-tool/">
+<meta property="og:image" content="https://gazish.github.io/assets/img/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Decision analysis tool by Gazi Shafayet Hossain">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Decision analysis tool: weighted sum, AHP and sensitivity analysis | Gazi Shafayet Hossain">
+<meta name="twitter:description" content="Browser-based multi-criteria decision tool: weighted sum, AHP pairwise comparisons with consistency ratio, weight stability intervals and Monte Carlo rank acceptability. Pure JavaScript.">
+<meta name="twitter:image" content="https://gazish.github.io/assets/img/og-card.png">
+<!-- /layout:head -->
+<link rel="stylesheet" href="/assets/css/charts.css">
+<link rel="stylesheet" href="tool.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://gazish.github.io/projects/decision-analysis-tool/#app",
+      "name": "Decision analysis tool: weighted sum, AHP and sensitivity",
+      "description": "A browser-based multi-criteria decision analysis tool with a weighted sum model, AHP pairwise comparisons with consistency ratio, one-at-a-time weight sensitivity with exact stability intervals, and Monte Carlo rank acceptability analysis.",
+      "url": "https://gazish.github.io/projects/decision-analysis-tool/",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Any (web browser)",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" },
+      "author": { "@id": "https://gazish.github.io/#person" },
+      "isAccessibleForFree": true,
+      "inLanguage": "en",
+      "keywords": ["MCDA", "multi-criteria decision analysis", "AHP", "consistency ratio", "sensitivity analysis", "SMAA", "Monte Carlo"]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://gazish.github.io/" },
+        { "@type": "ListItem", "position": 2, "name": "Projects", "item": "https://gazish.github.io/projects/" },
+        { "@type": "ListItem", "position": 3, "name": "Decision analysis tool", "item": "https://gazish.github.io/projects/decision-analysis-tool/" }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<!-- layout:header -->
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="/">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="7" fill="var(--ink)"/><rect x="7" y="8" width="18" height="4.2" rx="1.6" fill="var(--accent-mark)"/><rect x="7" y="14" width="13" height="4.2" rx="1.6" fill="var(--bg)"/><rect x="7" y="20" width="8" height="4.2" rx="1.6" fill="var(--bg)"/></svg>
+      <span class="brand-name">Gazi Shafayet Hossain<span>Data and BI Analyst, Stockholm</span></span>
+    </a>
+    <nav class="site-nav" aria-label="Main">
+      <ul>
+        <li><a href="/projects/" aria-current="true">Projects</a></li>
+        <li><a href="/experience/">Experience</a></li>
+        <li><a href="/skills/">Skills</a></li>
+        <li><a href="/about/">About</a></li>
+        <li><a href="/contact/">Contact</a></li>
+      </ul>
+    </nav>
+    <button class="theme-toggle" type="button" aria-label="Dark theme" aria-pressed="false">
+      <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7Z"/></svg>
+      <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+    </button>
+  </div>
+</header>
+<!-- /layout:header -->
+
+<main id="main">
+  <div class="container">
+    <header class="page-head">
+      <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li aria-current="page">Decision analysis tool</li></ol></nav>
+      <p class="eyebrow">Interactive tool · Illustrative data</p>
+      <h1>Decision analysis tool: weighted sum, AHP and sensitivity</h1>
+      <p class="lede">Compare options on several criteria, set the weights directly or derive them from pairwise comparisons, and see how stable the ranking is when the weights and the scores change. Everything runs in your browser.</p>
+      <div class="callout">
+        <p><strong>Illustrative example data.</strong> The five climate adaptation measures and all numbers in the table are made up for this demo. They are not real municipal data and not results from my thesis. Edit the table or replace it with your own decision.</p>
+      </div>
+    </header>
+  </div>
+
+  <div id="tool" class="container tool loading">
+    <noscript><p class="callout">This tool needs JavaScript. The method is described below.</p></noscript>
+
+    <section class="tool-step" aria-labelledby="s1">
+      <div class="step-head">
+        <h2 id="s1"><span class="step-n" aria-hidden="true">1</span>Options and criteria</h2>
+        <p>Each row is an option, each column a criterion. Set whether higher or lower values are better, and how uncertain the values are. All cells are editable.</p>
+      </div>
+      <div class="toolbar">
+        <button type="button" class="btn btn-small" id="add-alt">Add option</button>
+        <button type="button" class="btn btn-small" id="add-crit">Add criterion</button>
+        <button type="button" class="btn btn-small" id="reset">Reset example</button>
+      </div>
+      <div class="table-wrap perf-wrap" id="perf-table"></div>
+      <p class="meta">Scores use a linear value scale per criterion: the worst value in the table scores 0 and the best scores 100.</p>
+    </section>
+
+    <div class="tool-grid">
+      <section class="tool-step tool-weights" aria-labelledby="s2">
+        <div class="step-head">
+          <h2 id="s2"><span class="step-n" aria-hidden="true">2</span>Weights</h2>
+        </div>
+        <fieldset class="seg method-seg">
+          <legend>Weighting method</legend>
+          <input type="radio" name="wmethod" id="wm-direct" value="direct" checked><label for="wm-direct">Direct weights</label>
+          <input type="radio" name="wmethod" id="wm-ahp" value="ahp"><label for="wm-ahp">AHP pairwise comparison</label>
+        </fieldset>
+        <div id="panel-direct">
+          <p class="panel-intro">Give each criterion points from 0 to 100. The weights are the points divided by their total.</p>
+          <div id="direct-list" class="w-list"></div>
+        </div>
+        <div id="panel-ahp" hidden>
+          <p class="panel-intro">For each pair, move the slider towards the criterion that matters more, on Saaty's 1 to 9 scale. The weights are the principal eigenvector of the comparison matrix.</p>
+          <div id="ahp-summary" class="ahp-summary"></div>
+          <div id="ahp-list" class="ahp-list"></div>
+        </div>
+      </section>
+
+      <section class="tool-step tool-results" aria-labelledby="s3">
+        <div class="step-head">
+          <h2 id="s3"><span class="step-n" aria-hidden="true">3</span>Ranking</h2>
+        </div>
+        <p class="keyresult" id="rank-summary"></p>
+        <ul class="weights-used" id="weights-used" aria-label="Weights in use"></ul>
+        <figure class="fig" id="fig-rank" aria-labelledby="rank-title"></figure>
+        <div class="toolbar">
+          <button type="button" class="btn btn-small" id="export">Download results (CSV)</button>
+          <button type="button" class="btn btn-small" id="share">Copy a link to this analysis</button>
+        </div>
+        <p class="meta" id="share-status" role="status"></p>
+      </section>
+    </div>
+
+    <section class="tool-step" aria-labelledby="s4">
+      <div class="step-head">
+        <h2 id="s4"><span class="step-n" aria-hidden="true">4</span>Sensitivity to the weights</h2>
+        <p id="stability-summary" class="keyresult"></p>
+      </div>
+      <div class="dash-grid cols-2">
+        <figure class="fig" id="fig-stability" aria-labelledby="stability-title"></figure>
+        <figure class="fig">
+          <div class="field-row">
+            <label for="sweep-crit">Criterion to vary</label>
+            <select id="sweep-crit"></select>
+          </div>
+          <div id="fig-sweep"></div>
+          <p class="fig-note" id="sweep-summary"></p>
+        </figure>
+      </div>
+    </section>
+
+    <section class="tool-step" aria-labelledby="s5">
+      <div class="step-head">
+        <h2 id="s5"><span class="step-n" aria-hidden="true">5</span>Uncertainty: Monte Carlo simulation</h2>
+        <p>Draws 5,000 scenarios. In each, the weights and (optionally) the values in the table vary at random, and the options are ranked again. This shows how robust the ranking is overall, not one weight at a time.</p>
+      </div>
+      <div class="mc-controls">
+        <div class="field-row">
+          <label for="mc-kappa">How much the weights vary</label>
+          <select id="mc-kappa"></select>
+        </div>
+        <div class="check-row">
+          <input type="checkbox" id="mc-scores">
+          <label for="mc-scores">Also vary the values in the table by each criterion's uncertainty rating</label>
+        </div>
+      </div>
+      <p class="keyresult" id="mc-summary"></p>
+      <div class="dash-grid cols-2" id="mc-out">
+        <figure class="fig" id="fig-accept" aria-labelledby="accept-title"></figure>
+        <figure class="fig" id="fig-intervals" aria-labelledby="intervals-title"></figure>
+      </div>
+    </section>
+    <div id="live" class="visually-hidden" aria-live="polite"></div>
+  </div>
+
+  <div class="container">
+    <div class="case-layout case-after">
+      <aside class="case-aside" aria-label="Project summary">
+        <dl class="facts">
+          <div><dt>Type</dt><dd>Interactive tool built for this site, November 2026</dd></div>
+          <div><dt>Methods</dt><dd>Weighted sum, AHP with consistency ratio, stability intervals, Monte Carlo rank acceptability</dd></div>
+          <div><dt>Tech</dt><dd>JavaScript modules and SVG, no libraries, no backend. 11 unit tests</dd></div>
+          <div><dt>Data</dt><dd>Illustrative, made up for the demo</dd></div>
+          <div><dt>Code</dt><dd><a href="https://github.com/gazish/gazish.github.io/tree/main/projects/decision-analysis-tool">GitHub</a></dd></div>
+        </dl>
+      </aside>
+      <div class="case-body">
+        <h2 id="problem">Problem</h2>
+        <p>Decisions like which climate adaptation measure to fund first involve criteria that pull in different directions: cost, risk reduction, side benefits, time. People also disagree on how much each criterion should count. A single ranked list hides how much the answer depends on those choices. I wanted a tool that shows the ranking and, next to it, how easily it changes.</p>
+
+        <h2 id="approach">Approach</h2>
+        <ol class="flow">
+          <li><strong>Score</strong><span>Each criterion gets a linear value scale from the worst to the best value in the table, so costs and scores in different units become comparable.</span></li>
+          <li><strong>Weight</strong><span>Either direct points, or AHP: pairwise judgements on Saaty's 1 to 9 scale, weights from the principal eigenvector, and a consistency ratio with a pointer to the least consistent judgement.</span></li>
+          <li><strong>Rank</strong><span>Weighted sum of the values, shown as stacked contributions so you can see why an option wins.</span></li>
+          <li><strong>Test one weight at a time</strong><span>For each criterion, the exact weight range in which the top option stays first, found by solving the linear score equations rather than by trial and error.</span></li>
+          <li><strong>Test everything at once</strong><span>A Monte Carlo simulation that varies all weights (Dirichlet distribution) and the table values, then reports how often each option gets each rank and its rank interval.</span></li>
+        </ol>
+        <p>My MSc thesis used related ideas (weighted criteria, stakeholder weights, uncertainty ratings and best- and worst-case rank intervals) for local climate hazards. This tool is a separate, general demo: it does not reproduce the thesis model or its results. <a href="/projects/thesis-climate-hazard-mcda/">Read about the thesis</a>.</p>
+
+        <h2 id="tools">Tools</h2>
+        <p>Plain JavaScript modules and SVG, with no chart or maths library. The maths sits in one module (<code>mcda.js</code>) with no browser code, covered by 11 unit tests run with Node's built-in test runner. One test checks the AHP weights, λmax and consistency ratio against the standard 3 x 3 textbook example. Another checks the stability intervals against a brute-force search.</p>
+
+        <h2 id="result">Result</h2>
+        <p>With the example data and the default weights, stormwater retention ponds rank first with 63.8 points, 8 ahead of green roofs. The ranking is most sensitive to the weight on flood risk reduction: lowering it from 30% to about 22% puts street trees and pocket parks first. In the Monte Carlo run with moderate weight changes and uncertain values, the ponds come first in about 70% of scenarios. Those are statements a decision maker can check against their own priorities, which a bare ranking does not allow.</p>
+
+        <h2 id="next">What I would do next</h2>
+        <ul>
+          <li>Uncertainty ratings per cell rather than per criterion, as in my thesis.</li>
+          <li>Swing weighting as a third method, since weights in an additive model depend on the ranges in the table.</li>
+          <li>Several stakeholders: collect AHP judgements from each and combine them with the geometric mean, or show the spread between them.</li>
+          <li>Non-linear value functions for criteria where the first improvements matter most.</li>
+        </ul>
+
+        <details class="method">
+          <summary>Method notes: formulas, assumptions and limitations</summary>
+          <h3>Additive value model</h3>
+          <p>The overall value of option <var>a</var> is <code>V(a) = Σ<sub>j</sub> w<sub>j</sub> v<sub>j</sub>(x<sub>aj</sub>)</code> with <code>w<sub>j</sub> ≥ 0</code> and <code>Σ w<sub>j</sub> = 1</code>. Each <code>v<sub>j</sub></code> is linear on a local scale: 0 for the worst value in the table and 1 for the best. The model assumes the criteria are preferentially independent. Because the scales are local, the weights are trade-offs between the ranges in the table: if an option is added that widens a range, the weights should be reviewed.</p>
+          <h3>AHP weights and consistency</h3>
+          <p>Judgements <code>a<sub>ij</sub></code> on Saaty's scale form a reciprocal matrix (<code>a<sub>ji</sub> = 1 / a<sub>ij</sub></code>). The weights are its principal right eigenvector, found by power iteration. Consistency: <code>CI = (λ<sub>max</sub> − n) / (n − 1)</code> and <code>CR = CI / RI</code>, with Saaty's random index RI = 0.58, 0.90, 1.12, 1.24 and 1.32 for n = 3 to 7. CR of 0.10 or less is the usual threshold. The least consistent judgement is the one with the largest <code>|ln(a<sub>ij</sub> w<sub>j</sub> / w<sub>i</sub>)|</code>; the suggested replacement is the geometric mean of the indirect comparisons <code>a<sub>ik</sub> a<sub>kj</sub></code>. AHP is used here only to elicit criterion weights. One known criticism applies: AHP asks about importance in general, while additive value weights depend on ranges, which is why swing weighting is on the list above.</p>
+          <h3>One-at-a-time sensitivity</h3>
+          <p>The weight of criterion <var>j</var> is set to <var>t</var> and the others are rescaled in proportion: <code>w<sub>k</sub>(t) = w<sub>k</sub> (1 − t) / (1 − w<sub>j</sub>)</code>. Every score is then linear in <var>t</var>, so the interval in which the top option stays first is found exactly by solving one linear inequality per competing option.</p>
+          <h3>Monte Carlo rank analysis</h3>
+          <p>Weights are drawn from a Dirichlet distribution with parameters <code>κ w</code>, so their mean is the current weights and their spread shrinks as κ grows (κ = 200, 50 or 10). "Any weights at all" draws uniformly from all possible weight vectors, as in SMAA-2 when no preference information is available. Table values move uniformly by up to ±5%, ±15% or ±30% of the criterion's range in the table. The tool reports rank acceptability (the share of scenarios in which an option takes each rank) and rank intervals. It uses 5,000 draws with a fixed random seed, so results are reproducible.</p>
+          <h3>Limitations</h3>
+          <ul>
+            <li>Linear value functions and independent, uniform perturbations. Real uncertainties are often correlated.</li>
+            <li>Local scales: results can change when options are added or removed.</li>
+            <li>A weighted sum lets a strong score on one criterion make up for a weak one. If some criteria are must-haves, screen options first.</li>
+          </ul>
+          <h3>References</h3>
+          <ul class="refs">
+            <li>Saaty, T. L. (1980). <cite>The Analytic Hierarchy Process</cite>. McGraw-Hill.</li>
+            <li>Belton, V., and Stewart, T. J. (2002). <cite>Multiple Criteria Decision Analysis: An Integrated Approach</cite>. Kluwer.</li>
+            <li>Lahdelma, R., and Salminen, P. (2001). SMAA-2: Stochastic multicriteria acceptability analysis for group decision making. <cite>Operations Research</cite>, 49(3), 444 to 454.</li>
+          </ul>
+        </details>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- layout:footer -->
+<footer class="site-footer">
+  <div class="container">
+    <div>
+      <h2>Gazi Shafayet Hossain</h2>
+      <p>Data and BI analyst in Stockholm. Open to Data Analyst and BI Analyst roles in Sweden and the EU.</p>
+    </div>
+    <div>
+      <h2 class="visually-hidden">Links</h2>
+      <ul>
+        <li><a href="mailto:hossaingazishafayet@gmail.com">Email</a></li>
+        <li><a href="https://www.linkedin.com/in/gazishafayet" rel="me">LinkedIn</a></li>
+        <li><a href="https://github.com/gazish" rel="me">GitHub</a></li>
+        <li><a href="/cv/Gazi_Shafayet_Hossain_CV.pdf">CV (PDF)</a></li>
+        <li><a href="/llms.txt">llms.txt</a></li>
+      </ul>
+      <p class="meta">Plain HTML, CSS and JavaScript. <a href="https://github.com/gazish/gazish.github.io">Source on GitHub</a>.</p>
+    </div>
+  </div>
+</footer>
+<script src="/assets/js/site.js" defer></script>
+<!-- /layout:footer -->
+<script type="module" src="app.js"></script>
+</body>
+</html>
