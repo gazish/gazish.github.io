@@ -16,7 +16,7 @@ This file is a plain summary of the website https://gazish.github.io for search 
 
 ## Education
 
-- MSc in Data Science, Statistics and Decision Analysis, Stockholm University, Sep 2024 to Jun 2026. Thesis: "Multi-Criteria Threat Evaluation for Local Climate Hazards", co-written with Vladimir Blaskov, published on DiVA: https://su.diva-portal.org/smash/record.jsf?pid=diva2%3A2075902
+- MSc in Data Science, Statistics and Decision Analysis, Stockholm University, Sep 2024 to Jun 2026. Thesis (2026, 30 credits, Department of Computer and Systems Sciences): "Multi-criteria threat evaluation for local climate hazards", co-written with Vladimir Blaskov, published open access on DiVA: https://su.diva-portal.org/smash/record.jsf?pid=diva2%3A2075902 (urn:nbn:se:su:diva-257072)
 - BSc in Computer Science and Engineering, North South University, 2014 to 2019
 
 ## Experience
@@ -38,7 +38,7 @@ This file is a plain summary of the website https://gazish.github.io for search 
 - [Online retail sales: SQL, Python and a KPI dashboard](https://gazish.github.io/projects/online-retail-analytics/): end-to-end analysis of the public UCI Online Retail II dataset (1,067,371 invoice lines, real data). SQL in DuckDB, KPI definitions, cohort retention, RFM segments, a revenue bridge, pandas cross-checks and an interactive dashboard. Code: https://github.com/gazish/gazish.github.io/tree/main/projects/online-retail-analytics
 - [Card portfolio analysis and monthly reporting at Eastern Bank](https://gazish.github.io/projects/eastern-bank-card-reporting/): work case study (SQL, Excel).
 - [Looker Studio dashboards at Erasmus Student Network](https://gazish.github.io/projects/esn-looker-studio-dashboards/): volunteer work case study (Looker Studio).
-- [MSc thesis: Multi-Criteria Threat Evaluation for Local Climate Hazards](https://gazish.github.io/projects/thesis-climate-hazard-mcda/): a reusable MCDA decision-support template for municipalities, with weighted criteria, rubric-based scoring, survey-elicited stakeholder priorities, uncertainty ratings and best- and worst-case rank intervals, demonstrated on Tampere, Tartu and Malmö.
+- [MSc thesis: Multi-Criteria Threat Evaluation for Local Climate Hazards](https://gazish.github.io/projects/thesis-climate-hazard-mcda/): a reusable spreadsheet-based MCDA template for screening-level prioritisation of local climate hazards over a 3 to 5 year horizon. Criteria: consequences, people affected, budget impact, frequency or likelihood, urgency, equity and social vulnerability, secondary consequences. Weights from a municipality survey, an ordinal 0 to 3 scoring rubric, alternative weight profiles and best- and worst-case rank intervals. Demonstrated on Tampere, Tartu and Malmö: extreme rainfall and heat waves were consistently among the highest-ranked hazards, while the top-ranked hazard differed by municipality.
 - [Decision analysis tool](https://gazish.github.io/projects/decision-analysis-tool/): browser-based MCDA tool built for this site, with weighted sum, AHP pairwise comparison with consistency ratio, weight stability intervals and Monte Carlo rank acceptability. Uses illustrative, made-up example data.
 
 ## Pages

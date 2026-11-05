@@ -9,14 +9,13 @@ Gazi to read when picking the work up.
    button points there.
 2. **Switch on Pages:** Settings > Pages > Build and deployment > Source:
    **GitHub Actions**. Then merge the pull request to `main`.
-3. **Thesis year, citation and software.** I did not have the publication year,
-   the author order on DiVA, the findings or the software you used, so the
-   thesis page leaves them out (there is no "cite as" line). Add a citation
-   in the DiVA author order, two or three sentences of findings from the
-   abstract, and the year (also as `datePublished` in the `ScholarlyArticle`
-   JSON-LD). I could not open DiVA from the build environment.
-4. **Thesis language.** The JSON-LD does not state a language. If the thesis
-   is in English, you can add `"inLanguage": "en"`.
+3. **Thesis: your own part.** The thesis page now uses the DiVA record you
+   sent (year, department, credits, criteria, method, findings, URN and a
+   citation in the DiVA author order). One thing is still missing: how the
+   work was split with Vladimir Blaskov. A line on your part would help a
+   PhD committee.
+4. **Thesis full text.** If you want, link the open-access PDF from DiVA
+   directly on the thesis page.
 5. **Tech Valley Networks and Shimanto Bank** have no bullet points because I
    had no details. One line each on what you did would help.
 6. **Work authorisation.** Swedish recruiters often ask whether you can work in

@@ -223,7 +223,7 @@
           <li><strong>Test one weight at a time</strong><span>For each criterion, the exact weight range in which the top option stays first, found by solving the linear score equations rather than by trial and error.</span></li>
           <li><strong>Test everything at once</strong><span>A Monte Carlo simulation that varies all weights (Dirichlet distribution) and the table values, then reports how often each option gets each rank. Next to it, exact best- and worst-case rank intervals for the value uncertainty.</span></li>
         </ol>
-        <p>My MSc thesis used related ideas (weighted criteria, stakeholder weights, uncertainty ratings and best- and worst-case rank intervals) for local climate hazards. This tool is a separate, general demo: it does not reproduce the thesis model or its results. <a href="/projects/thesis-climate-hazard-mcda/">Read about the thesis</a>.</p>
+        <p>My MSc thesis used related ideas for local climate hazards: weighted criteria, weights from a municipality survey, a 0 to 3 scoring rubric, alternative weight profiles and best- and worst-case rank intervals. This tool is a separate, general demo: it does not reproduce the thesis model or its results. <a href="/projects/thesis-climate-hazard-mcda/">Read about the thesis</a>.</p>
 
         <h2 id="tools">Tools</h2>
         <p>Plain JavaScript modules and SVG, with no chart or maths library. The maths sits in one module (<code>mcda.js</code>) with no browser code, covered by 15 unit tests run with Node's built-in test runner. The tests check the AHP weights, λmax and consistency ratio on a 3 x 3 example worked by hand, and compare the stability intervals and the exact rank intervals with brute-force searches.</p>
