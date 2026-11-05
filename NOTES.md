@@ -48,6 +48,15 @@ Gazi to read when picking the work up.
     repository; delete or move it once you have read it if you prefer.
 13. **CV first.** Once the PDF is in place, consider making "Download CV" the
     main button in the hero (a recruiter suggestion).
+14. **Interview preparation.** The Head of Data reviewer said these are the
+    questions they would ask about the retail project: why orders voided
+    within a day are left out of cancellations (GBP 123k of voided sales in
+    P2 against GBP 179k of remaining cancellations); why the price-outlier
+    cut-off is 10 times the median, and that it also catches about GBP 15k of
+    pack prices; what the log-mean (LMDI) split in the revenue bridge does;
+    and why the manual-line range runs from 1.4% to 3.5%. For the decision
+    tool, expect questions on AHP consistency, why weights depend on ranges,
+    and how the exact rank intervals differ from the simulated ones.
 
 ## Decisions
 
