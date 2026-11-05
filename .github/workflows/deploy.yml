@@ -1,0 +1,62 @@
+# Deploys the site to GitHub Pages on every push to main.
+# One-time setup in the repository: Settings > Pages > Build and deployment > Source: GitHub Actions.
+name: Deploy site to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v5
+
+      - name: Check content, links and structure
+        run: node scripts/check.mjs
+
+      - name: Test the decision tool maths
+        run: node --test projects/decision-analysis-tool/mcda.test.mjs
+
+      - name: Collect the files to publish
+        # Only tracked files, minus repository tooling and notes.
+        run: |
+          mkdir -p _site
+          git ls-files \
+            | grep -v -E '^(\.github/|scripts/|README\.md$|NOTES\.md$|links\.txt$|\.gitignore$)|\.test\.mjs$' \
+            | tar -cf - -T - | tar -xf - -C _site
+          echo "Files to publish: $(find _site -type f | wc -l)"
+
+      - name: Configure Pages
+        if: github.event_name != 'pull_request'
+        uses: actions/configure-pages@v6
+
+      - name: Upload artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5

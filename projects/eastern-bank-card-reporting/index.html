@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Card portfolio analysis and monthly reporting at Eastern Bank | Gazi Shafayet Hossain</title>
+<meta name="description" content="Case study: SQL analysis of transaction and revenue data for about 25k corporate and co-brand card accounts, and monthly Excel reporting for senior management at Eastern Bank PLC.">
+<link rel="canonical" href="https://gazish.github.io/projects/eastern-bank-card-reporting/">
+<meta name="x-og-image-alt" content="Card portfolio reporting case study by Gazi Shafayet Hossain">
+<!-- layout:head -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);if(sessionStorage.getItem('cv-ok')==='0')document.documentElement.classList.add('no-cv')}catch(e){}</script>
+<link rel="preload" href="/assets/fonts/schibsted-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/site.css">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/img/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<meta name="theme-color" content="#f6f4ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#131210" media="(prefers-color-scheme: dark)">
+<meta name="author" content="Gazi Shafayet Hossain">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Gazi Shafayet Hossain">
+<meta property="og:locale" content="en_GB">
+<meta property="og:title" content="Card portfolio analysis and monthly reporting at Eastern Bank | Gazi Shafayet Hossain">
+<meta property="og:description" content="Case study: SQL analysis of transaction and revenue data for about 25k corporate and co-brand card accounts, and monthly Excel reporting for senior management at Eastern Bank PLC.">
+<meta property="og:url" content="https://gazish.github.io/projects/eastern-bank-card-reporting/">
+<meta property="og:image" content="https://gazish.github.io/assets/img/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Card portfolio reporting case study by Gazi Shafayet Hossain">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Card portfolio analysis and monthly reporting at Eastern Bank | Gazi Shafayet Hossain">
+<meta name="twitter:description" content="Case study: SQL analysis of transaction and revenue data for about 25k corporate and co-brand card accounts, and monthly Excel reporting for senior management at Eastern Bank PLC.">
+<meta name="twitter:image" content="https://gazish.github.io/assets/img/og-card.png">
+<!-- /layout:head -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "headline": "Card portfolio analysis and monthly reporting at Eastern Bank",
+      "description": "SQL analysis of transaction and revenue data for about 25k corporate and co-brand card accounts (150k+ transactions a month), regional analysis of co-brand usage, and monthly revenue and portfolio reporting in Excel for senior management.",
+      "url": "https://gazish.github.io/projects/eastern-bank-card-reporting/",
+      "inLanguage": "en",
+      "author": { "@id": "https://gazish.github.io/#person" },
+      "about": { "@type": "Organization", "name": "Eastern Bank PLC" },
+      "keywords": ["SQL", "Excel", "Power Query", "PivotTables", "banking", "card portfolio", "management reporting"]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://gazish.github.io/" },
+        { "@type": "ListItem", "position": 2, "name": "Projects", "item": "https://gazish.github.io/projects/" },
+        { "@type": "ListItem", "position": 3, "name": "Eastern Bank card reporting", "item": "https://gazish.github.io/projects/eastern-bank-card-reporting/" }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<!-- layout:header -->
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="/">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="7" fill="var(--ink)"/><rect x="7" y="8" width="18" height="4.2" rx="1.6" fill="var(--accent-mark)"/><rect x="7" y="14" width="13" height="4.2" rx="1.6" fill="var(--bg)"/><rect x="7" y="20" width="8" height="4.2" rx="1.6" fill="var(--bg)"/></svg>
+      <span class="brand-name">Gazi Shafayet Hossain<span>Data and BI Analyst, Stockholm</span></span>
+    </a>
+    <nav class="site-nav" aria-label="Main">
+      <ul>
+        <li><a href="/projects/" aria-current="true">Projects</a></li>
+        <li><a href="/experience/">Experience</a></li>
+        <li><a href="/skills/">Skills</a></li>
+        <li><a href="/about/">About</a></li>
+        <li><a href="/contact/">Contact</a></li>
+      </ul>
+    </nav>
+    <button class="theme-toggle" type="button" aria-label="Dark theme" aria-pressed="false">
+      <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7Z"/></svg>
+      <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+    </button>
+  </div>
+</header>
+<!-- /layout:header -->
+
+<main id="main">
+  <div class="container">
+    <header class="page-head">
+      <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li aria-current="page">Eastern Bank card reporting</li></ol></nav>
+      <p class="eyebrow">Work · Eastern Bank PLC · Jul 2023 to Aug 2024</p>
+      <h1>Card portfolio analysis and monthly reporting</h1>
+      <p class="lede">As Junior Officer in Cards Data and Reporting, I analysed transaction and revenue data for the bank's corporate and co-brand cards with SQL, built monthly revenue and portfolio reporting for senior management, and was the data and product contact for more than 120 branches.</p>
+    </header>
+
+    <div class="case-layout">
+      <aside class="case-aside" aria-label="Role summary">
+        <dl class="facts">
+          <div><dt>Role</dt><dd>Junior Officer, Cards Data and Reporting</dd></div>
+          <div><dt>Where</dt><dd>Eastern Bank PLC, Dhaka</dd></div>
+          <div><dt>When</dt><dd>Jul 2023 to Aug 2024</dd></div>
+          <div><dt>Scale</dt><dd>About 25k card accounts, 150k+ transactions a month, 120+ branches</dd></div>
+          <div><dt>Tools</dt><dd>SQL, Excel (Power Query, PivotTables)</dd></div>
+        </dl>
+      </aside>
+
+      <div class="case-body">
+        <div class="callout"><p>The bank's data and reports are confidential, so this page describes the work without showing them.</p></div>
+
+        <h2 id="problem">Problem</h2>
+        <p>The corporate and co-brand card portfolio had about 25,000 accounts and more than 150,000 transactions a month. My job was to turn that data into analysis of where and how the cards were used, and into monthly revenue and portfolio reporting for senior management.</p>
+
+        <h2 id="approach">Approach</h2>
+        <ol class="flow">
+          <li><strong>Query the transaction and revenue data</strong><span>I wrote SQL against the transaction and revenue data to answer questions about usage and income across the card portfolio.</span></li>
+          <li><strong>Look at co-brand usage by region</strong><span>I broke co-brand card usage down by region to find where it was concentrated, and flagged those regions for acquisition.</span></li>
+          <li><strong>Build the monthly reporting</strong><span>I built monthly revenue and portfolio reports in Excel, using Power Query and PivotTables on top of SQL extracts, for senior management.</span></li>
+        </ol>
+
+        <h2 id="tools">Tools</h2>
+        <ul>
+          <li><strong>SQL</strong> for the transaction and revenue analysis and for the extracts behind the reports.</li>
+          <li><strong>Excel</strong> with Power Query to load and shape the extracts, and PivotTables for the monthly reports.</li>
+        </ul>
+
+        <h2 id="result">Result</h2>
+        <p class="keyresult">Monthly revenue and portfolio reports for senior management, and a list of regions where co-brand usage was concentrated, flagged for acquisition.</p>
+        <p>Over my time there (Jul 2023 to Aug 2024), active co-brand users grew 12%. Many things drive that number, so I give it only as context.</p>
+
+        <h2 id="next">What I would change</h2>
+        <ul>
+          <li>Connect Power Query to the database directly, so the monthly report refreshes without manual extracts.</li>
+          <li>Track activation and retention of new co-brand cardholders by region, to see whether acquisition in the flagged regions brings in active users.</li>
+        </ul>
+        <p><a href="/experience/">See all experience</a></p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- layout:footer -->
+<footer class="site-footer">
+  <div class="container">
+    <div>
+      <h2>Gazi Shafayet Hossain</h2>
+      <p>Data and BI analyst in Stockholm. Open to Data Analyst and BI Analyst roles in Sweden and the EU.</p>
+    </div>
+    <div>
+      <h2 class="visually-hidden">Links</h2>
+      <ul>
+        <li><a href="mailto:hossaingazishafayet@gmail.com">Email</a></li>
+        <li><a href="https://www.linkedin.com/in/gazishafayet" rel="me">LinkedIn</a></li>
+        <li><a href="https://github.com/gazish" rel="me">GitHub</a></li>
+        <li><a href="/cv/Gazi_Shafayet_Hossain_CV.pdf">CV (PDF)</a></li>
+      </ul>
+      <p class="meta">Plain HTML, CSS and JavaScript. <a href="https://github.com/gazish/gazish.github.io">Source on GitHub</a>.</p>
+    </div>
+  </div>
+</footer>
+<script src="/assets/js/site.js" defer></script>
+<!-- /layout:footer -->
+</body>
+</html>

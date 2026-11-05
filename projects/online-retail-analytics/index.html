@@ -1,0 +1,293 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Online retail sales analysis: SQL, Python and KPI dashboard | Gazi Shafayet Hossain</title>
+<meta name="description" content="End-to-end analysis of 1.07 million invoice lines from a UK online retailer: SQL cleaning in DuckDB, KPI definitions, cohorts, RFM segments, pandas checks and an interactive dashboard.">
+<link rel="canonical" href="https://gazish.github.io/projects/online-retail-analytics/">
+<meta name="x-og-image-alt" content="Online retail KPI dashboard by Gazi Shafayet Hossain">
+<!-- layout:head -->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);if(sessionStorage.getItem('cv-ok')==='0')document.documentElement.classList.add('no-cv')}catch(e){}</script>
+<link rel="preload" href="/assets/fonts/schibsted-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/css/site.css">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/assets/img/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png">
+<meta name="theme-color" content="#f6f4ef" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#131210" media="(prefers-color-scheme: dark)">
+<meta name="author" content="Gazi Shafayet Hossain">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Gazi Shafayet Hossain">
+<meta property="og:locale" content="en_GB">
+<meta property="og:title" content="Online retail sales analysis: SQL, Python and KPI dashboard | Gazi Shafayet Hossain">
+<meta property="og:description" content="End-to-end analysis of 1.07 million invoice lines from a UK online retailer: SQL cleaning in DuckDB, KPI definitions, cohorts, RFM segments, pandas checks and an interactive dashboard.">
+<meta property="og:url" content="https://gazish.github.io/projects/online-retail-analytics/">
+<meta property="og:image" content="https://gazish.github.io/assets/img/og-card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Online retail KPI dashboard by Gazi Shafayet Hossain">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Online retail sales analysis: SQL, Python and KPI dashboard | Gazi Shafayet Hossain">
+<meta name="twitter:description" content="End-to-end analysis of 1.07 million invoice lines from a UK online retailer: SQL cleaning in DuckDB, KPI definitions, cohorts, RFM segments, pandas checks and an interactive dashboard.">
+<meta name="twitter:image" content="https://gazish.github.io/assets/img/og-card.png">
+<!-- /layout:head -->
+<link rel="stylesheet" href="/assets/css/charts.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "@id": "https://gazish.github.io/projects/online-retail-analytics/#article",
+      "headline": "Online retail sales: SQL, Python and a KPI dashboard",
+      "description": "End-to-end analysis of the UCI Online Retail II dataset: cleaning in SQL, KPI definitions, cohort retention, RFM segmentation, a revenue bridge and an interactive dashboard.",
+      "url": "https://gazish.github.io/projects/online-retail-analytics/",
+      "datePublished": "2026-11-04",
+      "inLanguage": "en",
+      "author": { "@id": "https://gazish.github.io/#person" },
+      "keywords": ["SQL", "DuckDB", "Python", "pandas", "KPI design", "cohort analysis", "RFM segmentation", "dashboard"],
+      "isBasedOn": {
+        "@type": "Dataset",
+        "name": "Online Retail II",
+        "url": "https://archive.ics.uci.edu/dataset/502/online+retail+ii",
+        "creator": { "@type": "Person", "name": "Daqing Chen" },
+        "publisher": { "@type": "Organization", "name": "UCI Machine Learning Repository" },
+        "license": "https://creativecommons.org/licenses/by/4.0/"
+      },
+      "codeRepository": "https://github.com/gazish/gazish.github.io/tree/main/projects/online-retail-analytics"
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://gazish.github.io/" },
+        { "@type": "ListItem", "position": 2, "name": "Projects", "item": "https://gazish.github.io/projects/" },
+        { "@type": "ListItem", "position": 3, "name": "Online retail analytics", "item": "https://gazish.github.io/projects/online-retail-analytics/" }
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+<!-- layout:header -->
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="/">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false"><rect width="32" height="32" rx="7" fill="var(--ink)"/><rect x="7" y="8" width="18" height="4.2" rx="1.6" fill="var(--accent-mark)"/><rect x="7" y="14" width="13" height="4.2" rx="1.6" fill="var(--bg)"/><rect x="7" y="20" width="8" height="4.2" rx="1.6" fill="var(--bg)"/></svg>
+      <span class="brand-name">Gazi Shafayet Hossain<span>Data and BI Analyst, Stockholm</span></span>
+    </a>
+    <nav class="site-nav" aria-label="Main">
+      <ul>
+        <li><a href="/projects/" aria-current="true">Projects</a></li>
+        <li><a href="/experience/">Experience</a></li>
+        <li><a href="/skills/">Skills</a></li>
+        <li><a href="/about/">About</a></li>
+        <li><a href="/contact/">Contact</a></li>
+      </ul>
+    </nav>
+    <button class="theme-toggle" type="button" aria-label="Dark theme" aria-pressed="false">
+      <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7Z"/></svg>
+      <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"/></svg>
+    </button>
+  </div>
+</header>
+<!-- /layout:header -->
+
+<main id="main">
+  <div class="container">
+    <header class="page-head">
+      <nav class="crumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/projects/">Projects</a></li><li aria-current="page">Online retail analytics</li></ol></nav>
+      <p class="eyebrow">Portfolio project · Real public data</p>
+      <h1>Online retail sales: SQL, Python and a KPI dashboard</h1>
+      <p class="lede">Two years of invoice lines from a UK online giftware retailer, taken from a raw export to cleaned SQL tables, defined KPIs, customer cohorts and segments. Every number on this page comes from the code in the repository.</p>
+      <ul class="btn-row">
+        <li><a class="btn btn-primary" href="#dashboard-title">Go to the dashboard</a></li>
+        <li><a class="btn" href="https://github.com/gazish/gazish.github.io/tree/main/projects/online-retail-analytics">Code and SQL on GitHub</a></li>
+      </ul>
+    </header>
+
+    <div class="case-layout">
+      <aside class="case-aside" aria-label="Project summary">
+        <dl class="facts">
+          <div><dt>Data</dt><dd><a href="https://archive.ics.uci.edu/dataset/502/online+retail+ii">UCI Online Retail II</a>, CC BY 4.0. 1,067,371 invoice lines, Dec 2009 to Dec 2011</dd></div>
+          <div><dt>Tools</dt><dd>SQL (DuckDB), Python (pandas), JavaScript for the dashboard</dd></div>
+          <div><dt>Output</dt><dd>9 SQL files, a checked pipeline, CSV outputs and this dashboard</dd></div>
+          <div><dt>Built</dt><dd>November 2026, as a portfolio project</dd></div>
+        </dl>
+      </aside>
+
+      <div class="case-body">
+        <h2 id="findings">Key findings</h2>
+        <p class="keyresult">Net sales grew 1.6% between the two 12-month periods. By market, all of the growth was outside the UK. By customer, gross sales (before cancellations) to identified customers fell 2.6%, so the rise is in sales with no customer ID.</p>
+        <ul>
+          <li><strong>UK flat, international up.</strong> UK net sales fell 0.4%; international net sales grew 14.1% and now make up 15.6% of the total. Country figures swing on a few wholesale accounts: Australia (9 customers) added £108k and Ireland (3) lost £91k.</li>
+          <li><strong>Larger orders only where there is no customer ID.</strong> Average order value rose 5.7%, but for identified customers it barely moved (£456 to £459). The average order without an ID went from £685 to £1,055.</li>
+          <li><strong>A measurement gap is growing.</strong> Sales without a customer ID rose from 11.3% to 14.8% of gross sales, so customer KPIs cover less of the business than a year earlier.</li>
+          <li><strong>Sales are concentrated.</strong> The top 10% of identified customers brought 59.9% of their net sales. 360 "At risk" customers (median four orders, 118 days since the last one) spent £491k in the last 12 months, which makes them the obvious group for a reactivation test.</li>
+        </ul>
+        <p class="meta">P1 = Dec 2009 to Nov 2010, P2 = Dec 2010 to Nov 2011. December 2011 has only nine days of data and is left out.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="container"><section class="section" aria-labelledby="dashboard-title" id="dashboard-section">
+    <div class="section-head">
+      <h2 id="dashboard-title">Dashboard</h2>
+      <p>The market filter applies to the tiles and the four charts below it. Every chart has a table view. On a chart, use the arrow keys to move between values.</p>
+    </div>
+
+    <div class="filter-bar">
+      <fieldset class="seg">
+        <legend>Market</legend>
+        <input type="radio" name="market" id="mk-all" value="All" checked><label for="mk-all">All markets</label>
+        <input type="radio" name="market" id="mk-uk" value="United Kingdom"><label for="mk-uk">United Kingdom</label>
+        <input type="radio" name="market" id="mk-int" value="International"><label for="mk-int">International</label>
+      </fieldset>
+      <span class="scope">Showing <span id="scope-market">all markets</span>, Dec 2010 to Nov 2011 vs the previous 12 months</span>
+    </div>
+
+    <div id="dashboard">
+      <noscript><p class="callout">The interactive dashboard needs JavaScript. The same numbers are in the CSV files in the <a href="https://github.com/gazish/gazish.github.io/tree/main/projects/online-retail-analytics/data">data folder on GitHub</a>.</p></noscript>
+      <ul class="kpis" id="kpis" aria-label="Key performance indicators"></ul>
+
+      <div class="dash-grid cols-2">
+        <figure class="fig span-2" aria-labelledby="trend-title">
+          <div class="metric-switch">
+            <fieldset class="seg">
+              <legend>Metric</legend>
+              <input type="radio" name="metric" id="mt-sales" value="net_sales" checked><label for="mt-sales">Net sales</label>
+              <input type="radio" name="metric" id="mt-orders" value="orders"><label for="mt-orders">Orders</label>
+              <input type="radio" name="metric" id="mt-cust" value="active_customers"><label for="mt-cust">Customers</label>
+              <input type="radio" name="metric" id="mt-aov" value="aov"><label for="mt-aov">Order value</label>
+            </fieldset>
+          </div>
+          <div id="fig-trend"></div>
+        </figure>
+        <figure class="fig" id="fig-bridge" aria-labelledby="bridge-title"></figure>
+        <figure class="fig" id="fig-types" aria-labelledby="types-title"></figure>
+        <figure class="fig span-2" id="fig-cohorts" aria-labelledby="cohorts-title"></figure>
+      </div>
+
+      <h3 class="dash-subhead">All markets, Dec 2010 to Nov 2011 <span class="meta">(not affected by the market filter)</span></h3>
+      <div class="dash-grid cols-2">
+        <figure class="fig span-2" id="fig-rfm" aria-labelledby="rfm-title">
+          <div class="fig-head"><div><h4 class="fig-title" id="rfm-title">Customer segments (RFM)</h4><p class="fig-sub">Identified customers only. Segments come from the recency and frequency scores (1 to 5) on the usual grid. Orange bars: share of their net sales. Grey bars: share of customers.</p></div></div>
+          <div class="fig-body"></div>
+        </figure>
+        <figure class="fig" id="fig-conc" aria-labelledby="conc-title"></figure>
+        <figure class="fig" id="fig-countries" aria-labelledby="countries-title"></figure>
+        <figure class="fig span-2" aria-labelledby="products-title">
+          <div class="fig-head"><div><h4 class="fig-title" id="products-title">Top products</h4><p class="fig-sub">Cancelled = share of the product's gross sales that was cancelled.</p></div></div>
+          <div id="tbl-products"></div>
+        </figure>
+      </div>
+    </div>
+  </section></div>
+
+  <div class="container">
+    <div class="case-layout">
+      <div class="case-body">
+        <h2 id="problem">Problem</h2>
+        <p>The question I set myself: if I joined this retailer as an analyst, what would management need to see each month, and can the raw export support it? The file is a typical operational export. It has duplicate lines, cancellations mixed in with sales, postage and bank fees recorded as products, accounting adjustments, and no customer ID on 22.6% of the sales lines (13.3% of sales value).</p>
+
+        <h2 id="approach">Approach</h2>
+        <ol class="flow">
+          <li><strong>Load and profile</strong><span>Loaded the CSV into DuckDB with explicit types and profiled every column: date range, invoice prefixes, stock codes that are not products, missing IDs.</span></li>
+          <li><strong>Clean with explicit rules</strong><span>Removed exact duplicates and gave every line a type: sale, cancellation, voided order, price outlier, fee, write-off or adjustment. Nothing is silently dropped: the table below accounts for every raw row.</span></li>
+          <li><strong>Define the KPIs before computing them</strong><span>Net sales, orders, average order value, active customers, repeat rate, retention, cancellation rate and the share of sales without a customer ID, each with a written definition.</span></li>
+          <li><strong>Build the metrics in SQL</strong><span>Monthly and 12-month KPIs by market with grouping sets, acquisition cohorts, RFM scores with window functions, and country and product summaries.</span></li>
+          <li><strong>Check the numbers</strong><span>The Python script compares numbers computed in different ways (markets against the total, months against years, duplicates counted from the raw table), recomputes the headline KPIs in pandas independently of the SQL, and stops if anything disagrees.</span></li>
+          <li><strong>Present</strong><span>Exported compact aggregates (about 40 KB of JSON) for this dashboard, with a table view for every chart.</span></li>
+        </ol>
+
+        <details>
+          <summary>Example query: RFM scores with window functions</summary>
+<pre><code>scored AS (
+    SELECT
+        *,
+        -- quintile scores; equal values always get the same score
+        ceil(5 * cume_dist() OVER (ORDER BY recency_days DESC))::INT  AS r_score,  -- most recent = 5
+        CASE
+            WHEN frequency = 1 THEN 1
+            WHEN frequency = 2 THEN 2
+            WHEN frequency BETWEEN 3 AND 4 THEN 3
+            WHEN frequency BETWEEN 5 AND 9 THEN 4
+            ELSE 5
+        END                                                           AS f_score,  -- fixed bins: 36% have one order
+        ceil(5 * cume_dist() OVER (ORDER BY monetary))::INT          AS m_score
+    FROM base
+)</code></pre>
+          <p class="meta">From <a href="https://github.com/gazish/gazish.github.io/blob/main/projects/online-retail-analytics/sql/07_rfm_segments.sql">sql/07_rfm_segments.sql</a>.</p>
+        </details>
+
+        <h3 id="quality-title">Data cleaning</h3>
+        <p>Two cleaning rules change the headline numbers. <strong>Voided orders:</strong> a sale cancelled by the same customer within a day (same product, quantity and price) is left out of both sales and cancellations. Without this rule, one order of 74,215 storage jars (£77k), cancelled 16 minutes later, made cancellations look as if they had risen; in fact they went from 2.0% to 1.9% of gross sales. <strong>Price outliers:</strong> a unit price above 10 times the product's median is treated as a pricing error. The largest is 60 picnic baskets at £649.50 each, credited back with a manual line. Manual lines cannot be tied to products and are excluded: counting all manual charges and credits would put growth at about 1.4%, and counting only the credits at about 3.5%. The headline 1.6% excludes both.</p>
+
+        <details>
+          <summary>What happened to every raw row</summary>
+        <div id="tbl-quality">
+          <div class="table-wrap"><table>
+            <caption>What happened to every raw row</caption>
+            <thead><tr><th scope="col">Line type</th><th scope="col" class="n">Rows</th><th scope="col">Treatment</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Raw invoice lines</th><td class="n">1,067,371</td><td>Loaded</td></tr>
+              <tr><th scope="row">Exact duplicate lines</th><td class="n">34,335</td><td>Removed</td></tr>
+              <tr><th scope="row">Merchandise sales</th><td class="n">1,001,296</td><td>Kept</td></tr>
+              <tr><th scope="row">Cancellations</th><td class="n">16,598</td><td>Subtracted to get net sales</td></tr>
+              <tr><th scope="row">Voided orders</th><td class="n">2,634</td><td>Excluded from sales and cancellations</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+        <p>Most duplicates (22,844 rows) come from 1 to 9 December 2010, which appears in both yearly sheets of the source workbook. The rest (11,491 rows, 0.3% of sales value) are identical lines on the same invoice within the same minute, which I also treat as duplicates.</p>
+        </details>
+
+        <h2 id="tools">Tools</h2>
+        <ul>
+          <li><strong>SQL in DuckDB:</strong> CTEs, grouping sets, window functions (<code>cume_dist</code>), <code>arg_min</code>, filtered aggregates.</li>
+          <li><strong>Python with pandas:</strong> orchestration, reconciliation checks, an independent recomputation of the headline KPIs, the revenue bridge and the concentration curve.</li>
+          <li><strong>JavaScript and SVG:</strong> the dashboard on this page, with no chart library.</li>
+        </ul>
+
+        <h2 id="result">Result</h2>
+        <p>A pipeline that turns the raw file into a small set of defined, checked KPIs in a few seconds, and a dashboard that shows whether the business is growing and where the change comes from. The full list of findings and the KPI definitions are in the <a href="https://github.com/gazish/gazish.github.io/blob/main/projects/online-retail-analytics/README.md">project README</a>.</p>
+
+        <h2 id="next">What I would do next</h2>
+        <ul>
+          <li>Find out why so many lines have no customer ID, and whether those sales can be matched to accounts. Until then, customer KPIs understate the business.</li>
+          <li>Add cost data so the dashboard can show gross margin.</li>
+          <li>Map stock codes to product categories and add category KPIs.</li>
+          <li>Test a reactivation offer on the "At risk" segment against a holdout group, and measure the difference in orders.</li>
+          <li>Schedule the pipeline and turn the checks into automated data tests.</li>
+        </ul>
+        <p class="meta">Data: Chen, D. (2019). Online Retail II. UCI Machine Learning Repository. Licensed under <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. I added cleaning, aggregation and analysis; the underlying records are unchanged.</p>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- layout:footer -->
+<footer class="site-footer">
+  <div class="container">
+    <div>
+      <h2>Gazi Shafayet Hossain</h2>
+      <p>Data and BI analyst in Stockholm. Open to Data Analyst and BI Analyst roles in Sweden and the EU.</p>
+    </div>
+    <div>
+      <h2 class="visually-hidden">Links</h2>
+      <ul>
+        <li><a href="mailto:hossaingazishafayet@gmail.com">Email</a></li>
+        <li><a href="https://www.linkedin.com/in/gazishafayet" rel="me">LinkedIn</a></li>
+        <li><a href="https://github.com/gazish" rel="me">GitHub</a></li>
+        <li><a href="/cv/Gazi_Shafayet_Hossain_CV.pdf">CV (PDF)</a></li>
+      </ul>
+      <p class="meta">Plain HTML, CSS and JavaScript. <a href="https://github.com/gazish/gazish.github.io">Source on GitHub</a>.</p>
+    </div>
+  </div>
+</footer>
+<script src="/assets/js/site.js" defer></script>
+<!-- /layout:footer -->
+<script type="module" src="dashboard.js"></script>
+</body>
+</html>

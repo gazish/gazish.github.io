@@ -1,0 +1,8 @@
+# raw data is downloaded by projects/online-retail-analytics/get_data.py
+projects/online-retail-analytics/raw/
+__pycache__/
+*.pyc
+*.duckdb
+node_modules/
+_site/
+.DS_Store
