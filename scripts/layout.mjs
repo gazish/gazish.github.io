@@ -41,7 +41,7 @@ function head(page) {
   const img = `${SITE}/assets/img/og-card.png`;
   return `
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script>try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+<script>try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);if(sessionStorage.getItem('cv-ok')==='0')document.documentElement.classList.add('no-cv')}catch(e){}</script>
 <link rel="preload" href="/assets/fonts/schibsted-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/css/site.css">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">

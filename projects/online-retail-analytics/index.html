@@ -8,7 +8,7 @@
 <meta name="x-og-image-alt" content="Online retail KPI dashboard by Gazi Shafayet Hossain">
 <!-- layout:head -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script>try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+<script>try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);if(sessionStorage.getItem('cv-ok')==='0')document.documentElement.classList.add('no-cv')}catch(e){}</script>
 <link rel="preload" href="/assets/fonts/schibsted-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/css/site.css">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -120,7 +120,7 @@
 
       <div class="case-body">
         <h2 id="findings">Key findings</h2>
-        <p class="keyresult">Net sales grew 1.6% between the two 12-month periods. By market, all of the growth was outside the UK. By customer, gross sales to identified customers fell 2.6%, so the rise is in sales with no customer ID.</p>
+        <p class="keyresult">Net sales grew 1.6% between the two 12-month periods. By market, all of the growth was outside the UK. By customer, gross sales (before cancellations) to identified customers fell 2.6%, so the rise is in sales with no customer ID.</p>
         <ul>
           <li><strong>UK flat, international up.</strong> UK net sales fell 0.4%; international net sales grew 14.1% and now make up 15.6% of the total. Country figures swing on a few wholesale accounts: Australia (9 customers) added £108k and Ireland (3) lost £91k.</li>
           <li><strong>Larger orders only where there is no customer ID.</strong> Average order value rose 5.7%, but for identified customers it barely moved (£456 to £459). The average order without an ID went from £685 to £1,055.</li>

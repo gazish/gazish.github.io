@@ -42,6 +42,7 @@
   var links = document.querySelectorAll('a[href$="Gazi_Shafayet_Hossain_CV.pdf"]');
   if (!links.length || !window.fetch) return;
   function hide() {
+    document.documentElement.classList.add('no-cv');
     links.forEach(function (a) { var li = a.closest('li'); (li || a).hidden = true; });
   }
   var cached = null;

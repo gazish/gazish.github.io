@@ -8,7 +8,7 @@
 <meta name="x-og-image-alt" content="Decision analysis tool by Gazi Shafayet Hossain">
 <!-- layout:head -->
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script>try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+<script>try{var t=localStorage.getItem('theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t);if(sessionStorage.getItem('cv-ok')==='0')document.documentElement.classList.add('no-cv')}catch(e){}</script>
 <link rel="preload" href="/assets/fonts/schibsted-grotesk-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/css/site.css">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -98,7 +98,7 @@
       <h1>Decision analysis tool: weighted sum, AHP and sensitivity</h1>
       <p class="lede">Compare options on several criteria, set the weights directly or derive them from pairwise comparisons, and see how stable the ranking is when the weights and the scores change. Everything runs in your browser.</p>
       <div class="callout">
-        <p><strong>Illustrative example data.</strong> The five climate adaptation measures and all numbers in the table are made up for this demo. They are not real municipal data and not results from my thesis. Edit the table or replace it with your own decision.</p>
+        <p><strong>Illustrative example data.</strong> The five climate adaptation measures (green roofs, street trees and parks, stormwater retention ponds, bigger sewer pipes and a heat and flood early-warning system) and all numbers in the table are made up for this demo. They are not real municipal data and not results from my thesis. Edit the table or replace it with your own decision.</p>
       </div>
     </header>
   </div>
@@ -229,7 +229,7 @@
         <p>Plain JavaScript modules and SVG, with no chart or maths library. The maths sits in one module (<code>mcda.js</code>) with no browser code, covered by 15 unit tests run with Node's built-in test runner. The tests check the AHP weights, λmax and consistency ratio on a 3 x 3 example worked by hand, and compare the stability intervals and the exact rank intervals with brute-force searches.</p>
 
         <h2 id="result">Result (example output, illustrative data)</h2>
-        <p>With the example data and the default weights, stormwater retention ponds rank first with 63.8 points, 8.0 points ahead of green roofs. The most sensitive weight is flood risk reduction: lowering it from 30% to 21.8% puts street trees and pocket parks first. With the default uncertainty ratings and fixed weights, the exact best- and worst-case ranks put the ponds between 1st and 3rd. In the Monte Carlo run with moderate weight changes and uncertain values, the ponds come first in 82% of scenarios.</p>
+        <p>With the example data and the default weights, retention ponds rank first with 63.8 points, 8.0 points ahead of green roofs. The most sensitive weight is flood protection: lowering it from 30% to 21.8% puts street trees and parks first. With the default uncertainty ratings and fixed weights, the exact best- and worst-case ranks put the ponds between 1st and 3rd. In the Monte Carlo run with moderate weight changes and uncertain values, the ponds come first in 82% of scenarios.</p>
 
         <h2 id="next">What I would do next</h2>
         <ul>

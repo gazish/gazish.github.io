@@ -6,18 +6,18 @@ import { h, svg, fmt, mount, tooltip, hBarPath, heatmap, dataTable, figureShell,
 /* ---------- example (illustrative, made-up numbers) ---------- */
 const EXAMPLE = {
   alternatives: [
-    'Green roofs on public buildings',
-    'Street trees and pocket parks',
-    'Stormwater retention ponds',
-    'Larger sewer and drain pipes',
-    'Heat and flood early-warning system',
+    'Green roofs',
+    'Street trees and parks',
+    'Retention ponds',
+    'Bigger sewer pipes',
+    'Early-warning system',
   ],
   criteria: [
-    { id: 'c1', name: 'Lifetime cost', unit: 'MSEK', dir: 'min', unc: 0.05 },
-    { id: 'c2', name: 'Flood risk reduction', unit: '0 to 10', dir: 'max', unc: 0.05 },
-    { id: 'c3', name: 'Heat risk reduction', unit: '0 to 10', dir: 'max', unc: 0.05 },
+    { id: 'c1', name: 'Cost', unit: 'MSEK', dir: 'min', unc: 0.05 },
+    { id: 'c2', name: 'Flood protection', unit: '0 to 10', dir: 'max', unc: 0.05 },
+    { id: 'c3', name: 'Heat relief', unit: '0 to 10', dir: 'max', unc: 0.05 },
     { id: 'c4', name: 'Co-benefits', unit: '0 to 10', dir: 'max', unc: 0.15 },
-    { id: 'c5', name: 'Years to full effect', unit: 'years', dir: 'min', unc: 0.05 },
+    { id: 'c5', name: 'Time to effect', unit: 'years', dir: 'min', unc: 0.05 },
   ],
   matrix: [
     [45, 4, 6, 7, 3],

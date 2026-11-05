@@ -418,6 +418,9 @@ details > pre { margin-inline: 0; border: 0; border-radius: 0; background: trans
 .two-col { display: grid; gap: 1.5rem; }
 @media (min-width: 52em) { .two-col { grid-template-columns: 1fr 1fr; gap: 2.5rem; } }
 
+/* CV links are hidden until the PDF exists (see site.js) */
+.no-cv a[href$="_CV.pdf"], .no-cv li:has(> a[href$="_CV.pdf"]) { display: none !important; }
+
 /* motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; }
