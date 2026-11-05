@@ -399,7 +399,8 @@ export function dataTable(caption, columns, rows) {
     tb.appendChild(row);
   });
   t.appendChild(tb);
-  return h('div', { class: 'table-wrap' }, t);
+  // scrollable regions must be reachable by keyboard
+  return h('div', { class: 'table-wrap', tabindex: '0', role: 'region', 'aria-label': caption || 'Data table' }, t);
 }
 
 // A figure with a title, the chart, a legend slot and a "Show table" toggle.

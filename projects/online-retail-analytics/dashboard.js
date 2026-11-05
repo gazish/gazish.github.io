@@ -235,7 +235,7 @@ function renderRfm() {
       h('td', {}, bar(r.share_of_net_sales, 'c-accent')),
       h('td', { class: 'n', text: fmt.int(r.median_recency_days) }),
       h('td', { class: 'n', text: String(r.median_orders) })))));
-  host.querySelector('.fig-body').replaceChildren(h('div', { class: 'table-wrap' }, t));
+  host.querySelector('.fig-body').replaceChildren(h('div', { class: 'table-wrap', tabindex: '0', role: 'region', 'aria-label': 'RFM segments table' }, t));
 }
 
 function renderConcentration() {

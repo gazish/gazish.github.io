@@ -52,8 +52,8 @@ node scripts/sitemap.mjs    # refreshes sitemap.xml (when you add or remove a pa
 node scripts/check.mjs      # checks the rules below; the deploy runs this too
 ```
 
-`scripts/check.mjs` fails on: em or en dashes, banned cliché phrases
-("passionate", "leveraged", "seamless" and similar), broken internal links,
+`scripts/check.mjs` fails on: em or en dashes, banned cliché phrases (the
+list is at the top of the script), broken internal links,
 missing titles, descriptions or canonical links, pages without exactly one
 `<h1>`, skipped heading levels, images without alt text and invalid JSON-LD.
 
