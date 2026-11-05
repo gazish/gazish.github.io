@@ -5,7 +5,7 @@ Gazi to read when picking the work up.
 
 ## Things you should confirm or add
 
-1. **Add the CV PDF** at `cv/Gazi_Shafayet_Hossain_CV.pdf`. Every "Download CV"
+1. **CV PDF.** Added. It still shows your phone number, and it is public; upload a copy without it if you want the number private. Every "Download CV"
    button points there.
 2. **Switch on Pages:** Settings > Pages > Build and deployment > Source:
    **GitHub Actions**. Then merge the pull request to `main`.
@@ -18,11 +18,10 @@ Gazi to read when picking the work up.
    directly on the thesis page.
 5. **Tech Valley Networks and Shimanto Bank** have no bullet points because I
    had no details. One line each on what you did would help.
-6. **Work authorisation.** Swedish recruiters often ask whether you can work in
+6. **Work authorisation.** (Availability is now on the site: "available immediately", from your CV.) Swedish recruiters often ask whether you can work in
    Sweden without sponsorship. If that applies to you, a short line on the
    About and Contact pages would answer it up front.
-7. **Swedish level.** The site says "learning at SFI". If you know your
-   course level (for example SFI D), adding it is more concrete.
+7. **Swedish level.** Done: the site now says "basic, SFI course 3C in progress", from your CV.
 8. **The two projects built in this session.** The decision analysis tool
    is written in JavaScript and the retail project in SQL and Python. Read
    through the code before interviews so you can explain any part of it. I did

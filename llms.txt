@@ -9,10 +9,11 @@ This file is a plain summary of the website https://gazish.github.io for search 
 - Name: Gazi Shafayet Hossain
 - Location: Stockholm, Sweden
 - Target roles: Data Analyst, BI Analyst (Sweden and the EU)
+- Availability: available immediately
 - Email: hossaingazishafayet@gmail.com
 - LinkedIn: https://www.linkedin.com/in/gazishafayet
 - GitHub: https://github.com/gazish
-- Languages: English (fluent), Bengali (native), Swedish (learning at SFI)
+- Languages: English (fluent), Bengali (native), Swedish (basic, SFI course 3C in progress)
 
 ## Education
 
@@ -22,7 +23,7 @@ This file is a plain summary of the website https://gazish.github.io for search 
 ## Experience
 
 - Data Analyst (volunteer), Erasmus Student Network, remote, May 2025 to Apr 2026. Replaced a manual monthly reporting process with three Looker Studio dashboards covering about 5,000 to 6,000 activities a month, available to 519 local sections in 45 countries. Cleaned and consolidated multi-source data. Documented dashboard logic and data definitions for handover.
-- Junior Officer, Cards Data and Reporting, Eastern Bank PLC, Dhaka, Jul 2023 to Aug 2024. Analysed transaction and revenue data across about 25,000 corporate and co-brand card accounts (150,000+ transactions a month) with SQL. Found where co-brand usage was concentrated by region and flagged those regions for acquisition. Built monthly revenue and portfolio reporting in Excel (Power Query, PivotTables) on SQL extracts for senior management. Data and product point of contact for 120+ branches. Context, not claimed as a result: active co-brand users grew 12% over the period.
+- Junior Officer, Cards Data and Reporting, Eastern Bank PLC, Dhaka, Jul 2023 to Aug 2024. Analysed transaction and revenue data across about 25,000 corporate and co-brand card accounts (150,000+ transactions a month) with SQL. Found where co-brand usage was concentrated by region and flagged those regions for acquisition. Built monthly revenue and portfolio reporting in Excel (Power Query, PivotTables) on SQL extracts for senior management (Heads of Cards and Digital Banking, the Product team, the Deputy Managing Director of Retail and SME Banking), and automated the monthly data preparation with Power Query. Data and product point of contact for 120+ branches, answering card queries in the CRM. Context, not claimed as a result: active co-brand users grew 12% over the period.
 - Executive, Procurement and Reporting, Tech Valley Networks Ltd., Mar 2022 to Jun 2023.
 - Junior Officer, FZ Technologies Ltd., Feb 2021 to Feb 2022. Survey data quality and weekly stakeholder reporting.
 - IT Intern, Shimanto Bank PLC, Sep 2020 to Dec 2020.
@@ -30,8 +31,9 @@ This file is a plain summary of the website https://gazish.github.io for search 
 ## Skills and evidence
 
 - Used at work: SQL; Excel (Power Query, PivotTables); Looker Studio; data cleaning and consolidation; reporting to management and stakeholders.
-- Study and projects: Python (pandas, NumPy) and R from coursework; statistics; multi-criteria decision analysis (MCDA); sensitivity and uncertainty analysis; stakeholder elicitation.
-- Course certificates only: Power BI and Tableau (Udemy, 2026). Not yet used at work.
+- Study and projects: Python (pandas, NumPy) and R from MSc coursework (statistical data analysis, Bayesian statistics, machine learning, decision and risk analysis); multi-criteria decision analysis (MCDA); sensitivity and uncertainty analysis; stakeholder elicitation.
+- Course certificates only, not yet used at work: Microsoft Power BI Desktop for Business Intelligence (Udemy, Aug 2026), Tableau A-Z (Udemy, Nov 2026). Also R Programming A-Z (Udemy, Aug 2026) and Data Fundamentals (IBM SkillsBuild, Sep 2024).
+- Other tools: Git and GitHub, Jira, Confluence.
 
 ## Projects
 
